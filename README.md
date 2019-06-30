@@ -1,1 +1,1 @@
-# entity_link_bilstm_crf
+# info_extraction
