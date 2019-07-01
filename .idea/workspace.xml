@@ -3,7 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="0f1ac612-fcb0-4ead-b76b-cb973ebb02d7" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/spo_model.py" beforeDir="false" afterPath="$PROJECT_DIR$/spo_model.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/log/2019-07-01 16:15:02.txt" beforeDir="false" afterPath="$PROJECT_DIR$/log/2019-07-01 16:15:02.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/train_char.py" beforeDir="false" afterPath="$PROJECT_DIR$/train_char.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -13,28 +13,16 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="CoverageDataManager">
-    <SUITE FILE_PATH="coverage/entity_link_bilstm_crf$train_char.coverage" NAME="train_char Coverage Results" MODIFIED="1561968901540" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/entity_link_bilstm_crf$train_char.coverage" NAME="train_char Coverage Results" MODIFIED="1561969775166" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/entity_link_bilstm_crf$train_ner.coverage" NAME="train_ner Coverage Results" MODIFIED="1561967240787" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
   <component name="FileEditorManager">
     <leaf>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/train_ner.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-476">
-              <caret line="35" column="24" lean-forward="true" selection-start-line="15" selection-start-column="68" selection-end-line="15" selection-end-column="102" />
-              <folding>
-                <element signature="e#22#34#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/spo_model.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="554">
-              <caret line="486" column="54" lean-forward="true" selection-start-line="486" selection-start-column="54" selection-end-line="486" selection-end-column="54" />
+            <state relative-caret-position="-262">
+              <caret line="438" column="18" lean-forward="true" selection-start-line="438" selection-start-column="18" selection-end-line="438" selection-end-column="18" />
               <folding>
                 <element signature="e#20#32#0" expanded="true" />
               </folding>
@@ -45,11 +33,20 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/train_char.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="303">
-              <caret line="107" column="57" selection-start-line="107" selection-start-column="57" selection-end-line="107" selection-end-column="57" />
+            <state relative-caret-position="405">
+              <caret line="108" column="33" lean-forward="true" selection-start-line="108" selection-start-column="33" selection-end-line="108" selection-end-column="33" />
               <folding>
                 <element signature="e#0#19#0" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/EDA.ipynb">
+          <provider selected="true" editor-type-id="ipnb-editor">
+            <state>
+              <selected id="0" />
             </state>
           </provider>
         </entry>
@@ -83,24 +80,6 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/tokenize_pkg/tokenize.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="475">
-              <caret line="209" column="47" selection-start-line="209" selection-start-column="47" selection-end-line="209" selection-end-column="47" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/spo_dataset.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="204">
-              <caret line="15" selection-start-line="15" selection-end-line="15" />
-            </state>
-          </provider>
-        </entry>
-      </file>
     </leaf>
   </component>
   <component name="FindInProjectRecents">
@@ -119,6 +98,7 @@
         <option value="$PROJECT_DIR$/utils.py" />
         <option value="$PROJECT_DIR$/train_ner.py" />
         <option value="$PROJECT_DIR$/spo_model.py" />
+        <option value="$PROJECT_DIR$/README.md" />
         <option value="$PROJECT_DIR$/train_char.py" />
       </list>
     </option>
@@ -140,6 +120,11 @@
             <path>
               <item name="entity_link_bilstm_crf" type="b2602c69:ProjectViewProjectNode" />
               <item name="entity_link_bilstm_crf" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="entity_link_bilstm_crf" type="b2602c69:ProjectViewProjectNode" />
+              <item name="entity_link_bilstm_crf" type="462c0819:PsiDirectoryNode" />
+              <item name="log" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -230,12 +215,12 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1561945545087</updated>
-      <workItem from="1561945546259" duration="14576000" />
+      <workItem from="1561945546259" duration="15607000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="14576000" />
+    <option name="totallyTimeSpent" value="15607000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="65" y="-4" width="1855" height="1204" extended-state="6" />
@@ -277,8 +262,13 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/train_char.py</url>
-          <line>110</line>
+          <line>111</line>
           <option name="timeStamp" value="17" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/train_char.py</url>
+          <line>107</line>
+          <option name="timeStamp" value="18" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
@@ -302,20 +292,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="273">
           <caret line="767" column="8" selection-start-line="767" selection-start-column="8" selection-end-line="767" selection-end-column="8" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/EDA.ipynb">
-      <provider selected="true" editor-type-id="ipnb-editor">
-        <state>
-          <selected id="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/EMBEDDING_analysis.ipynb">
-      <provider selected="true" editor-type-id="ipnb-editor">
-        <state>
-          <selected id="0" />
         </state>
       </provider>
     </entry>
@@ -352,16 +328,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/train_ner.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-476">
-          <caret line="35" column="24" lean-forward="true" selection-start-line="15" selection-start-column="68" selection-end-line="15" selection-end-column="102" />
-          <folding>
-            <element signature="e#22#34#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/log/2019-07-01 15:47:27.txt">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
@@ -388,10 +354,53 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/log/2019-07-01 16:13:29.txt">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/log/2019-07-01 16:15:02.txt">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/log/2019-07-01 16:13:43.txt">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/EMBEDDING_analysis.ipynb">
+      <provider selected="true" editor-type-id="ipnb-editor">
+        <state>
+          <selected id="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/EDA.ipynb">
+      <provider selected="true" editor-type-id="ipnb-editor">
+        <state>
+          <selected id="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/README.md">
+      <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
+        <state split_layout="SPLIT">
+          <first_editor relative-caret-position="34">
+            <caret line="2" column="18" lean-forward="true" selection-start-line="2" selection-start-column="18" selection-end-line="2" selection-end-column="18" />
+          </first_editor>
+          <second_editor />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/train_ner.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-221">
+          <caret line="35" column="24" selection-start-line="15" selection-start-column="68" selection-end-line="15" selection-end-column="102" />
+          <folding>
+            <element signature="e#22#34#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/spo_model.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="554">
-          <caret line="486" column="54" lean-forward="true" selection-start-line="486" selection-start-column="54" selection-end-line="486" selection-end-column="54" />
+        <state relative-caret-position="-262">
+          <caret line="438" column="18" lean-forward="true" selection-start-line="438" selection-start-column="18" selection-end-line="438" selection-end-column="18" />
           <folding>
             <element signature="e#20#32#0" expanded="true" />
           </folding>
@@ -400,8 +409,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/train_char.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="303">
-          <caret line="107" column="57" selection-start-line="107" selection-start-column="57" selection-end-line="107" selection-end-column="57" />
+        <state relative-caret-position="405">
+          <caret line="108" column="33" lean-forward="true" selection-start-line="108" selection-start-column="33" selection-end-line="108" selection-end-column="33" />
           <folding>
             <element signature="e#0#19#0" expanded="true" />
           </folding>

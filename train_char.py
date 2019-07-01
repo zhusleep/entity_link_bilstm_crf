@@ -53,7 +53,7 @@ else:
 
 model = SPO_Model_Simple(vocab_size=embedding_matrix.shape[0],
                  word_embed_size=embedding_matrix.shape[1], encoder_size=128, dropout=0.5,
-                 seq_dropout=0.5, init_embedding=embedding_matrix)
+                 seq_dropout=0, init_embedding=embedding_matrix)
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model.to(device)
 
@@ -104,8 +104,10 @@ for epoch in range(25):
         with torch.no_grad():
             pred = model(X, mask_X, length)
             loss = model.cal_loss(X, mask_X, length, label=ner)
-        for i, item in enumerate(pred):
-            pred_set.append(item[0:length.cpu().numpy()[i]])
+        # for i, item in enumerate(pred):
+        #     #pred_set.append(item[0:length.cpu().numpy()[i]])
+        #     pred_set.append(item)
+        pred_set.extend(pred)
         #pred_set.extend(pred)
         for item in label:
             label_set.append(item.numpy())

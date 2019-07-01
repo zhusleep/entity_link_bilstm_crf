@@ -463,7 +463,7 @@ class SPO_Model_Simple(nn.Module):
 
     def cal_loss(self, X, mask_X, length, label=None):
         X = self.word_embedding(X)
-        X = torch.squeeze(self.dropout1d(torch.unsqueeze(X, -1)), -1)
+        # X = torch.squeeze(self.dropout1d(torch.unsqueeze(X, -1)), -1)
         X1 = self.LSTM(X, length)
         logits = self.NER(X1)
         if not self.use_crf:
