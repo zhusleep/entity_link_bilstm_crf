@@ -4,7 +4,7 @@ import numpy as np
 import torch, os
 from data_prepare import data_manager,read_kb
 from spo_dataset import SPO_BERT, get_mask, collate_fn_withchar, collate_fn
-from spo_model import SPOModel, SPO_Model_Simple
+from spo_model import SPOModel, SPO_Model_Bert
 from torch.utils.data import DataLoader, RandomSampler, TensorDataset
 from tokenize_pkg.tokenize import Tokenizer
 from tqdm import tqdm as tqdm
@@ -26,6 +26,12 @@ seed_torch(2019)
 file_namne = 'data/raw_data/train.json'
 train_X, train_ner, dev_X, dev_ner = data_manager.parseData(file_name=file_namne,valid_num=10000)
 assert len(train_X) == len(train_ner)
+## deal for bert
+train_X = [['[CLS]']+list(temp)+['[SEP]'] for temp in train_X]
+dev_X = [['[CLS]']+list(temp)+['[SEP]'] for temp in dev_X]
+train_ner = [[0]+temp+[0]for temp in train_ner]
+dev_ner = [[0]+temp+[0] for temp in dev_ner]
+
 
 BERT_MODEL = 'bert-base-chinese'
 CASED = False
@@ -36,30 +42,27 @@ t = BertTokenizer.from_pretrained(
 #    cache_dir="~/.pytorch_pretrained_bert/bert-large-uncased-vocab.txt"
 )
 
-print('一共有%d 个字' % t.num_words)
 
 train_dataset = SPO_BERT(train_X, t,  ner=train_ner)
 valid_dataset = SPO_BERT(dev_X, t, ner=dev_ner)
 
-batch_size = 1024
+batch_size = 256
 
 
-# 准备embedding数据
-#embedding_file = 'embedding/miniembedding_baike.npy'
-embedding_file = 'embedding/miniembedding_engineer_qq_att.npy'
+# # 准备embedding数据
+# #embedding_file = 'embedding/miniembedding_baike.npy'
+# embedding_file = 'embedding/miniembedding_engineer_qq_att.npy'
+#
+# if os.path.exists(embedding_file):
+#     embedding_matrix = np.load(embedding_file)
+# else:
+#     #embedding = '/home/zhukaihua/Desktop/nlp/embedding/baike'
+#     #embedding = '/home/zhu/Desktop/word_embedding/sgns.baidubaike.bigram-char'
+#     embedding = '/home/zhukaihua/Desktop/nlp/embedding/Tencent_AILab_ChineseEmbedding.txt'
+#     embedding_matrix = load_glove(embedding, t.num_words+100, t)
+#     np.save(embedding_file, embedding_matrix)
 
-if os.path.exists(embedding_file):
-    embedding_matrix = np.load(embedding_file)
-else:
-    #embedding = '/home/zhukaihua/Desktop/nlp/embedding/baike'
-    #embedding = '/home/zhu/Desktop/word_embedding/sgns.baidubaike.bigram-char'
-    embedding = '/home/zhukaihua/Desktop/nlp/embedding/Tencent_AILab_ChineseEmbedding.txt'
-    embedding_matrix = load_glove(embedding, t.num_words+100, t)
-    np.save(embedding_file, embedding_matrix)
-
-model = SPO_Model_Simple(vocab_size=embedding_matrix.shape[0],
-                 word_embed_size=embedding_matrix.shape[1], encoder_size=128, dropout=0.5,
-                 seq_dropout=0, init_embedding=embedding_matrix)
+model = SPO_Model_Bert(encoder_size=128, dropout=0.5, num_tags=5)
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model.to(device)
 
@@ -92,7 +95,7 @@ for epoch in range(10):
         nn.utils.clip_grad_norm_(model.parameters(), clip)
         optimizer.step()
         train_loss += loss.item()
-        #break
+
     train_loss = train_loss/len(train_X)
 
     model.eval()
@@ -131,11 +134,11 @@ label_mention = []
 for index,row in dev.iterrows():
     temp = []
     for item in pred_result[index]:
-        temp.append(row['text'][item[0]:item[1]])
+        temp.append(''.join(row['text'][item[0]:item[1]]))
     pred_mention.append(temp)
     temp = []
     for item in label_result[index]:
-        temp.append(row['text'][item[0]:item[1]])
+        temp.append(''.join(row['text'][item[0]:item[1]]))
     label_mention.append(temp)
 dev['pred'] = pred_mention
 dev['label'] = label_mention

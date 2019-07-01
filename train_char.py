@@ -39,8 +39,8 @@ batch_size = 1024
 
 
 # 准备embedding数据
-#embedding_file = 'embedding/miniembedding_baike.npy'
-embedding_file = 'embedding/miniembedding_engineer_qq_att.npy'
+embedding_file = 'embedding/miniembedding_baike.npy'
+#embedding_file = 'embedding/miniembedding_engineer_qq_att.npy'
 
 if os.path.exists(embedding_file):
     embedding_matrix = np.load(embedding_file)

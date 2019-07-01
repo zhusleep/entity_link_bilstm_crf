@@ -51,15 +51,8 @@ class SPO_BERT(Dataset):
         self.tokenizer = tokenizer
         self.X = self.deal_for_bert(X, self.tokenizer)
         # X = pad_sequences(X, maxlen=198)
+        self.ner = ner
         self.length = [len(sen) for sen in self.X]
-        self.ner = self.deal_margin(ner)
-
-    def deal_margin(self,ner):
-        bert_label = []
-        for s in ner:
-            s = [0]+s+[0]
-            bert_label.append(s)
-        return bert_label
 
     def deal_for_bert(self,x,t):
         text = {}
@@ -81,11 +74,10 @@ class SPO_BERT(Dataset):
                 if w in self.tokenizer.vocab:
                     temp.append(w)
                 else:
-                    temp.append(['UNK'])
+                    temp.append('[UNK]')
 
             #sen = t.tokenize(''.join(item))
-            sen = ['[CLS]']+temp+['[SEP]']
-            indexed_tokens = t.convert_tokens_to_ids(sen)
+            indexed_tokens = t.convert_tokens_to_ids(temp)
             bert_tokens.append(indexed_tokens)
         return bert_tokens
 
@@ -94,7 +86,7 @@ class SPO_BERT(Dataset):
 
     def __getitem__(self, index):
         sentence = torch.tensor(self.X[index])
-        ner = self.ner[index]
+        ner = torch.tensor(self.ner[index])
         length = self.length[index]
         # if self.ner is not None:
         #     ner = torch.tensor(self.ner[index])

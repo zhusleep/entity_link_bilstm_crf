@@ -512,16 +512,12 @@ class SPO_Model_Simple(nn.Module):
 
 class SPO_Model_Bert(nn.Module):
     def __init__(self,
-                 vocab_size=20000,
-                 word_embed_size=300,
-                 init_embedding=None,
-                 bidirectional=True,
                  encoder_size=64,
                  dim_num_feat=0,
                  dropout=0.5,
                  seq_dropout=0.1,
-                 pos_embed_size=100,
-                 pos_dim=10):
+                 num_tags=5
+              ):
         super(SPO_Model_Bert, self).__init__()
         # self.word_embedding = nn.Embedding(vocab_size,
         #                                    word_embed_size,
@@ -549,33 +545,52 @@ class SPO_Model_Bert(nn.Module):
         bert_model = 'bert-base-chinese'
         self.bert = BertModel.from_pretrained(bert_model)
         self.use_layer = -1
-        # self.char_model =CharModel(embed_size=char_embed_size,
-        #                            vocab_size=char_vocab_size,
-        #                                encoder_size=encoder_size,
-        #                                init_embedding=char_init_embedding,
-        #                                bidirectional=bidirectional)
-        self.apply(self._init_qa_weights)
+        self.LSTM = LSTMEncoder(embed_size=768,
+                                encoder_size=encoder_size,
+                                bidirectional=True)
+        hidden_size=100
+        self.hidden = nn.Linear(2*encoder_size, hidden_size)
+        self.NER = nn.Linear(hidden_size, num_tags)
+        self.crf_model = CRF(num_tags=num_tags, batch_first=True)
 
-    def forward(self, token_tensor, pos_tags, mask_X, length, num_feats):
-        batch_size = token_tensor.size()[0]
-        #self.bert.eval()
-        #with torch.no_grad():
+        self.use_crf = True
+
+    def cal_loss(self,token_tensor,mask_X,length,label=None):
+        # self.bert.eval()
+        # with torch.no_grad():
         bert_outputs, _ = self.bert(token_tensor, attention_mask=(token_tensor > 0).long(), token_type_ids=None,
-                                        output_all_encoded_layers=True)
+                                    output_all_encoded_layers=True)
+
         bert_outputs = torch.cat(bert_outputs[self.use_layer:], dim=-1)
-        X1 = bert_outputs
-        # X = self.word_embedding(X)
-        # pos_X = self.pos_embedding(pos_tags)
-        # X = torch.cat([X, pos_X], dim=-1)
-        # #X = torch.squeeze(self.dropout1d(torch.unsqueeze(X, -1)), -1)
-        # X1 = self.LSTM(X, length)
+        X1 = self.LSTM(bert_outputs, length)
+        X1 = self.hidden(X1)
+        logits = self.NER(X1)
+        if not self.use_crf:
+            class_probabilities = F.softmax(logits, dim=2)
+            loss = sequence_cross_entropy_with_logits(class_probabilities, label, weights=mask_X,
+                                                      label_smoothing=False)
+        else:
+            loss = -1 * self.crf_model(logits, label, mask=mask_X)
+        return loss
 
-        v = self.lstm_attention(X1, mask=mask_X)
-        v = self.mlp(v)
-        v = torch.cat([v, num_feats], dim=-1)
-        v = self.mlp2(v)
+    def forward(self, token_tensor, mask_X, length):
+        batch_size = token_tensor.size()[0]
 
-        return v
+        self.bert.eval()
+        with torch.no_grad():
+            bert_outputs, _ = self.bert(token_tensor, attention_mask=(token_tensor > 0).long(), token_type_ids=None,
+                                        output_all_encoded_layers=True)
+
+        bert_outputs = torch.cat(bert_outputs[self.use_layer:], dim=-1)
+
+        X1 = self.LSTM(bert_outputs, length)
+        X1 = self.hidden(X1)
+        logits = self.NER(X1)
+        if self.use_crf:
+            pred = self.crf_model.decode(logits, mask=mask_X)
+        else:
+            pred = logits.argmax(dim=-1).cpu().numpy()
+        return pred
 
 
 # Mask attention layer

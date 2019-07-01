@@ -25,14 +25,14 @@ def calc_f1(pred,label,dev,ner_list):
             if word==B_token:
                 start = index
             elif word==S_token:
-                if label_sentence[index:index+1] in kb_set: ## 在数据库中发现实体名
+                if ''.join(label_sentence[index:index+1]) in kb_set: ## 在数据库中发现实体名
                     span.append((index, index+1))
                     start = None
                 else:
                     start = None
             elif word==E_token and start is not None:
                 end = index
-                if label_sentence[start:end + 1] in kb_set:
+                if ''.join(label_sentence[start:end + 1]) in kb_set:
                     span.append((start,end+1))
                     start = None
                 else:
@@ -42,7 +42,7 @@ def calc_f1(pred,label,dev,ner_list):
             return span
         new_span = []
         for i in range(len(span)-1):
-            if span[i][1]==span[i+1][0] and label_sentence[span[i][0]:span[i+1][1]] in kb_set:
+            if span[i][1]==span[i+1][0] and ''.join(label_sentence[span[i][0]:span[i+1][1]]) in kb_set:
                 new_span.append((span[i][0], span[i+1][1]))
                 if i == len(span)-2:
                     return new_span
