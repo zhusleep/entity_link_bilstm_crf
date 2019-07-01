@@ -2,52 +2,51 @@ import random, os, torch
 import numpy as np
 from sklearn.metrics import classification_report
 
-def get_threshold(predict, label):
-    thre_list = []
-    for i in range(50):
-        preds = sorted(list(predict[:, i].flatten()), reverse=True)
-        n = sum(preds)
-        m = 0
-        e = 0
+
+def calc_f1(pred,label,ner_list):
+    ## ['O', 'B', 'I', 'E', 'S']
+    B_token = ner_list.index('B')
+    I_token = ner_list.index('I')
+    E_token = ner_list.index('E')
+    S_token = ner_list.index('S')
+    O_token = ner_list.index('O')
+    def parse(sentence):
+        """
+        find B*E or S
+        :param sentence:
+        :return:
+        """
+        span = []
+        start = None
+        for index, word in enumerate(sentence):
+            if word==B_token:
+                start = index
+            elif word==S_token:
+                span.append((index, index))
+                start = None
+            elif word==E_token and start is not None:
+                end = index
+                span.append((start,end))
+                start = None
+        return span
+    pred_count = 0
+    label_count = 0
+    acc_count = 0
+    for i in range(len(pred)):
+        assert len(pred[i])==len(label[i])
+        m_pred = parse(pred[i])
+        m_label = parse(label[i])
+        pred_count += len(m_pred)
+        label_count += len(m_label)
+        acc_count += sum([1 if x in m_label else 0 for x in m_pred])
+
+    acc = acc_count/pred_count
+    recall = acc_count/label_count
+    if acc!=0 and recall!=0:
+        f1 = 2*acc*recall/(acc+recall)
+    else:
         f1 = 0
-        cut_thre = 0
-        for threshold in preds:
-            e += threshold # 正例期望个数
-            m += 1 #正例提交个数
-            f1_temp = e/(m+n)
-            if f1<f1_temp:
-                f1=f1_temp
-                cut_thre=threshold
-        thre_list.append(cut_thre)
-    print('阈值', thre_list)
-    count = len(label)
-
-    thre_list = np.array(thre_list).reshape(1, -1).repeat(count, axis=0)
-    result = np.where(predict < thre_list, 0, 1)
-    result_f = result.flatten()
-    label_f = label.flatten()
-    # # classification report
-    # def cal_cli(m):
-    #     temp = []
-    #     for item in m:
-    #         temp_row = []
-    #         for i, row in enumerate(item):
-    #             if row!=0:
-    #                 temp_row.append(row)
-    #             else:
-    #                 temp_row.append(0)
-    #
-    # for j in range(result):
-
-    # print(classification_report(label_f, result_f))
-
-    hit = sum([((label_f[i] == result_f[i]) & (label_f[i] == 1)) for i in range(count*50)])
-    acc = hit/sum(result_f)
-    recall = hit/sum(label_f)
-    f1 = 2*acc*recall/(acc+recall)
-    INFO = 'acc %f, recall%f, f1% f' % (acc, recall, f1)
-    return INFO
-
+    return acc,recall,f1
 
 def seed_torch(seed=1029):
     random.seed(seed)

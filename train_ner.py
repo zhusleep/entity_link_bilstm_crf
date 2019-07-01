@@ -131,8 +131,7 @@ for epoch in range(25):
     model.eval()
     valid_loss = 0
     ner_pred_set = []
-    intent_pred_set = []
-    intent_label_set = []
+
     ner_label_set = []
     total_length = 0
     pred_n = 0

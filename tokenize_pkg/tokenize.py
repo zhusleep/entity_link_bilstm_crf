@@ -207,7 +207,7 @@ class Tokenizer(object):
             if self.segment:
                 line = jieba.lcut(self.preprocessing(line))
             else:
-                line = line
+                line = self.preprocessing(line)
             new_sentence.append(line)
 
         if self.voc is None:

@@ -7,7 +7,7 @@ from torch.nn import init
 
 from torchcrf import CRF
 from tIme_distributed import TimeDistributed
-
+from utils import sequence_cross_entropy_with_logits
 
 class LSTMEncoder(nn.Module):
     def __init__(self,
@@ -456,58 +456,36 @@ class SPO_Model_Simple(nn.Module):
         self.attention = SoftAttention()
         self.lstm_attention = Attention(encoder_size*2)
         self.gru_attention = Attention(encoder_size*2)
-
-        self.mlp = nn.Sequential(
-            nn.BatchNorm1d(2*encoder_size),
-            nn.Dropout(p=dropout),
-            nn.Linear(in_features=2*encoder_size, out_features=64),
-            nn.Sigmoid()
-        )
-        self.crf_model = CRF(num_tags=num_tags)
-        # self.char_model =CharModel(embed_size=char_embed_size,
-        #                            vocab_size=char_vocab_size,
-        #                                encoder_size=encoder_size,
-        #                                init_embedding=char_init_embedding,
-        #                                bidirectional=bidirectional)
+        self.crf_model = CRF(num_tags=num_tags, batch_first=True)
         self.apply(self._init_qa_weights)
+        self.NER = nn.Linear(2 * self.encoder_size, num_tags)
+        self.use_crf = False
 
-        self.linear = Linears(in_features=2*encoder_size,
-                          out_features=num_tags,
-                          hiddens=[encoder_size],
-                          activation='tanh')
-        self.input_dropout = nn.Dropout(p=0.5)
-
-
-    def forward(self, X, mask_X, length, label=None):
-        batch_size = X.size()[0]
-        seq_len = X.size()[1]
+    def cal_loss(self, X, mask_X, length, label=None):
         X = self.word_embedding(X)
         X = torch.squeeze(self.dropout1d(torch.unsqueeze(X, -1)), -1)
         X1 = self.LSTM(X, length)
-        output = X1.contiguous().view(-1, self.encoder_size*2)
-        output = self.input_dropout(output)
-        output = output.view(batch_size, seq_len, self.label_size)
-        X2 = self.crf_model.decode(output)
-
-        if label is not None:
-            X2 = X2.permute(1,0,2)
-            mask_X = mask_X.permute(1,0,2)
-            label = label.permute(1,0,2)
-
-
-            loss = self.crf_model(X2, label, mask=mask_X)
-            return loss
+        logits = self.NER(X1)
+        if not self.use_crf:
+            class_probabilities = F.softmax(logits, dim=2)
+            loss = sequence_cross_entropy_with_logits(class_probabilities, label, mask_X,
+                                                      label_smoothing=False)
         else:
-            pass
-        # v = self.lstm_attention(X1, mask=mask_X)
+            loss = self.crf_model(logits, label, mask=mask_X)
+        return loss
 
-    def forward_model(self, inputs):
-        batch_size, seq_len, input_dim = inputs.size()
-        output = inputs.contiguous().view(-1, self.input_dim)
-        output = self.input_dropout(output)
-        # Fully-connected layer
-        output = self.linear.forward(output)
-        return output
+    def forward(self, X, mask_X, length):
+        # batch_size = X.size()[0]
+        # seq_len = X.size()[1]
+        X = self.word_embedding(X)
+        X = torch.squeeze(self.dropout1d(torch.unsqueeze(X, -1)), -1)
+        X1 = self.LSTM(X, length)
+        logits = self.NER(X1)
+        if self.use_crf:
+            pred = self.crf_model.decode(logits, mask=mask_X)
+        else:
+            pred = logits.argmax(dim=-1)
+        return pred
 
     @staticmethod
     def _init_qa_weights(module):
@@ -546,16 +524,7 @@ class SPO_Model_Bert(nn.Module):
         #                                    padding_idx=0)
         # self.pos_embedding = nn.Embedding(pos_embed_size, pos_dim, padding_idx=0)
         self.seq_dropout = seq_dropout
-        # self.embed_size = word_embed_size
-        # self.embed_size += pos_dim
-        # if init_embedding is not None:
-        # #     self.word_embedding.weight.data.copy_(torch.from_numpy(init_embedding))
-        # self.LSTM = LSTMEncoder(embed_size=self.embed_size,
-        #                            encoder_size=encoder_size,
-        #                            bidirectional=bidirectional)
-        # self.GRU = GRUEncoder(embed_size=self.embed_size,
-        #                         encoder_size=encoder_size,
-        #                         bidirectional=bidirectional)
+
         self.dropout1d = nn.Dropout2d(self.seq_dropout)
         self.attention = SoftAttention()
         self.lstm_attention = Attention(768)
@@ -603,24 +572,6 @@ class SPO_Model_Bert(nn.Module):
         v = self.mlp2(v)
 
         return v
-
-    @staticmethod
-    def _init_qa_weights(module):
-        '''
-        Initialize the weights of the qa model
-        :param module:
-        :return:
-        '''
-        if isinstance(module, nn.Linear):
-            nn.init.xavier_uniform_(module.weight.data)
-            nn.init.constant_(module.bias.data, 0)
-        elif isinstance(module, nn.LSTM):
-            nn.init.xavier_normal_(module.weight_ih_l0.data)
-            nn.init.orthogonal_(module.weight_hh_l0.data)
-            nn.init.constant_(module.bias_ih_l0.data, 0)
-            nn.init.constant_(module.bias_hh_l0.data, 0)
-            hidden_size = module.bias_hh_l0.data.shape[0]//4
-            module.bias_hh_l0.data[hidden_size:(2*hidden_size)] = 1.0
 
 
 # Mask attention layer

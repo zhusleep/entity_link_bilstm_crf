@@ -9,7 +9,7 @@ from torch.utils.data import DataLoader, RandomSampler, TensorDataset
 from tokenize_pkg.tokenize import Tokenizer
 from tqdm import tqdm as tqdm
 import torch.nn as nn
-from utils import seed_torch, read_data, load_glove, get_threshold
+from utils import seed_torch, read_data, load_glove, calc_f1
 import logging
 import time
 
@@ -35,7 +35,7 @@ print('一共有%d 个字' % t.num_words)
 train_dataset = SPO(train_X, t, max_len=50, ner=train_ner)
 valid_dataset = SPO(dev_X, t, max_len=50, ner=dev_ner)
 
-batch_size = 40
+batch_size = 1024
 
 
 # 准备embedding数据
@@ -45,7 +45,8 @@ embedding_file = 'embedding/miniembedding_baike.npy'
 if os.path.exists(embedding_file):
     embedding_matrix = np.load(embedding_file)
 else:
-    embedding = '/home/zhu/Desktop/word_embedding/sgns.baidubaike.bigram-char'
+    embedding = '/home/zhukaihua/Desktop/nlp/embedding/baike'
+    #embedding = '/home/zhu/Desktop/word_embedding/sgns.baidubaike.bigram-char'
     #embedding = '/home/zhukaihua/Desktop/nlp/embedding/Tencent_AILab_ChineseEmbedding.txt'
     embedding_matrix = load_glove(embedding, t.num_words+100, t)
     np.save(embedding_file, embedding_matrix)
@@ -59,7 +60,6 @@ model.to(device)
 train_dataloader = DataLoader(train_dataset, collate_fn=collate_fn, shuffle=True, batch_size=batch_size)
 valid_dataloader = DataLoader(valid_dataset, collate_fn=collate_fn, shuffle=False, batch_size=batch_size)
 
-loss_fn = nn.BCELoss()
 optimizer = torch.optim.Adam(model.parameters())
 clip = 50
 
@@ -67,20 +67,22 @@ for epoch in range(25):
     model.train()
     train_loss = 0
     for index, X, ner, length in tqdm(train_dataloader):
+        #model.zero_grad()
         X = nn.utils.rnn.pad_sequence(X, batch_first=True).type(torch.LongTensor)
         X = X.cuda()
         length = length.cuda()
         #ner = ner.type(torch.float).cuda()
-        mask_X = get_mask(X, length, is_cuda=True).type(torch.float)
+        mask_X = get_mask(X, length, is_cuda=True)
         ner = nn.utils.rnn.pad_sequence(ner, batch_first=True).type(torch.LongTensor)
-        ner.cuda()
-        loss = model(X, mask_X, length, label=ner)
+        ner = ner.cuda()
+
+        loss = model.cal_loss(X, mask_X, length, label=ner)
+        loss.backward()
 
         #loss = loss_fn(pred, ner)
+        optimizer.step()
         optimizer.zero_grad()
-        loss.backward()
         # Clip gradients: gradients are modified in place
-        _ = nn.utils.clip_grad_norm_(model.parameters(), clip)
         #_ = nn.utils.clip_grad_norm_(model.parameters(), clip)
         optimizer.step()
         train_loss += loss.item()
@@ -91,27 +93,27 @@ for epoch in range(25):
     valid_loss = 0
     pred_set = []
     label_set = []
-    for index, X, pos_tags, length, numerical_features, label in tqdm(valid_dataloader):
+    for index, X, ner, length in tqdm(valid_dataloader):
         X = nn.utils.rnn.pad_sequence(X, batch_first=True).type(torch.LongTensor)
         X = X.cuda()
-        pos_tags = nn.utils.rnn.pad_sequence(pos_tags, batch_first=True).type(torch.LongTensor)
-        pos_tags = pos_tags.cuda()
         length = length.cuda()
-        n_feats = numerical_features.type(torch.float).cuda()
-        label = label.type(torch.float).cuda()
-        mask_X = get_mask(X, length, is_cuda=True).type(torch.float)
+        mask_X = get_mask(X, length, is_cuda=True)
+        label = ner
+        ner = nn.utils.rnn.pad_sequence(ner, batch_first=True).type(torch.LongTensor)
+        ner.cuda()
         with torch.no_grad():
-            pred = model(X, pos_tags, mask_X, length, n_feats)
-        loss = loss_fn(pred, label)
-        pred_set.append(pred.cpu().numpy())
-        label_set.append(label.cpu().numpy())
-        valid_loss += loss
+            pred = model(X, mask_X, length)
+            loss = model.cal_loss(X, mask_X, length,label=ner)
+        pred_set.extend(pred)
+        for item in label:
+            label_set.append(item.numpy())
+        valid_loss += loss.item()
     valid_loss = valid_loss/len(dev_X)
-    pred_set = np.concatenate(pred_set, axis=0)
-    label_set = np.concatenate(label_set, axis=0)
-    INFO_THRE = get_threshold(pred_set, label_set)
-    INFO = 'epoch %d, train loss %f, valid loss %f' % (epoch, train_loss, valid_loss)
-    logging.info(INFO+'\t'+INFO_THRE)
-    print(INFO+'\t'+INFO_THRE)
+
+    acc,recall,f1 = calc_f1(pred_set, label_set, data_manager.ner_list)
+    INFO = 'epoch %d, train loss %f, valid loss %f, acc %f, recall %f, f1 %f '% (epoch, train_loss, valid_loss,acc,recall,f1)
+    logging.info(INFO)
+    print(INFO)
+    #print(INFO+'\t'+INFO_THRE)
 
 

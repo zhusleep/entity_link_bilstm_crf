@@ -26,18 +26,6 @@ class SPO(Dataset):
             temp.append(item[0:self.max_len])
         return temp
 
-    def cal_word_char_token(self):
-        sentence = []
-        for item in self.raw_X:
-            sentence.append(self.combined_char_t.transform(item))
-        return sentence
-
-    def cal_numerical_f(self, arr):
-        length = [len(sen) for sen in arr]
-        length = np.array(length).reshape((-1, 1))
-
-        return length
-
     def __len__(self):
         return len(self.X)
 

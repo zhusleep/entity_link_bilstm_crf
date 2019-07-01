@@ -1,6 +1,0 @@
-09-May-19 15:05:43 - epoch 0, train loss 0.000518, valid loss 0.000115	acc 0.323686, recall0.860827, f1 0.470468
-09-May-19 15:09:28 - epoch 1, train loss 0.000108, valid loss 0.000069	acc 0.719185, recall0.861259, f1 0.783836
-09-May-19 15:13:13 - epoch 2, train loss 0.000079, valid loss 0.000052	acc 0.830513, recall0.894057, f1 0.861114
-09-May-19 15:16:58 - epoch 3, train loss 0.000063, valid loss 0.000043	acc 0.877416, recall0.905296, f1 0.891138
-09-May-19 15:20:42 - epoch 4, train loss 0.000052, valid loss 0.000040	acc 0.904623, recall0.903355, f1 0.903989
-09-May-19 15:24:29 - epoch 5, train loss 0.000044, valid loss 0.000037	acc 0.912058, recall0.906158, f1 0.909098
