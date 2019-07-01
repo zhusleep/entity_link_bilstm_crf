@@ -1,16 +1,19 @@
 import random, os, torch
 import numpy as np
+from data_prepare import read_kb
 from sklearn.metrics import classification_report
+kb_set = read_kb('data/raw_data/kb_data')
 
 
-def calc_f1(pred,label,ner_list):
+def calc_f1(pred,label,dev,ner_list):
     ## ['O', 'B', 'I', 'E', 'S']
     B_token = ner_list.index('B')
     I_token = ner_list.index('I')
     E_token = ner_list.index('E')
     S_token = ner_list.index('S')
     O_token = ner_list.index('O')
-    def parse(sentence):
+
+    def parse(sentence,label_sentence,sign):
         """
         find B*E or S
         :param sentence:
@@ -22,20 +25,42 @@ def calc_f1(pred,label,ner_list):
             if word==B_token:
                 start = index
             elif word==S_token:
-                span.append((index, index))
-                start = None
+                if label_sentence[index:index+1] in kb_set: ## 在数据库中发现实体名
+                    span.append((index, index+1))
+                    start = None
+                else:
+                    start = None
             elif word==E_token and start is not None:
                 end = index
-                span.append((start,end))
-                start = None
-        return span
+                if label_sentence[start:end + 1] in kb_set:
+                    span.append((start,end+1))
+                    start = None
+                else:
+                    start = None
+        # 相邻两entity可以合并则合并
+        if len(span) <= 1 or sign == 'label':
+            return span
+        new_span = []
+        for i in range(len(span)-1):
+            if span[i][1]==span[i+1][0] and label_sentence[span[i][0]:span[i+1][1]] in kb_set:
+                new_span.append((span[i][0], span[i+1][1]))
+                if i == len(span)-2:
+                    return new_span
+            else:
+                new_span.append((span[i][0], span[i][1]))
+        new_span.append((span[-1][0], span[-1][1]))
+        return new_span
     pred_count = 0
     label_count = 0
     acc_count = 0
+    pred_result = []
+    label_result = []
     for i in range(len(pred)):
         assert len(pred[i])==len(label[i])
-        m_pred = parse(pred[i])
-        m_label = parse(label[i])
+        m_pred = parse(pred[i],dev[i],'pred')
+        m_label = parse(label[i],dev[i],'label')
+        pred_result.append(m_pred)
+        label_result.append(m_label)
         pred_count += len(m_pred)
         label_count += len(m_label)
         acc_count += sum([1 if x in m_label else 0 for x in m_pred])
@@ -46,7 +71,7 @@ def calc_f1(pred,label,ner_list):
         f1 = 2*acc*recall/(acc+recall)
     else:
         f1 = 0
-    return acc,recall,f1
+    return acc,recall,f1,pred_result,label_result
 
 def seed_torch(seed=1029):
     random.seed(seed)

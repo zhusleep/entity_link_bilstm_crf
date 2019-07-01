@@ -3,13 +3,14 @@ import numpy as np
 
 import torch, os
 from data_prepare import data_manager,read_kb
-from spo_dataset import SPO, get_mask, collate_fn_withchar, collate_fn
+from spo_dataset import SPO_BERT, get_mask, collate_fn_withchar, collate_fn
 from spo_model import SPOModel, SPO_Model_Simple
 from torch.utils.data import DataLoader, RandomSampler, TensorDataset
 from tokenize_pkg.tokenize import Tokenizer
 from tqdm import tqdm as tqdm
 import torch.nn as nn
 from utils import seed_torch, read_data, load_glove, calc_f1
+from pytorch_pretrained_bert import BertTokenizer
 import logging
 import time
 
@@ -26,14 +27,19 @@ file_namne = 'data/raw_data/train.json'
 train_X, train_ner, dev_X, dev_ner = data_manager.parseData(file_name=file_namne,valid_num=10000)
 assert len(train_X) == len(train_ner)
 
-t = Tokenizer(max_feature=10000, segment=False, lowercase=True)
-t.fit(train_X+dev_X)
+BERT_MODEL = 'bert-base-chinese'
+CASED = False
+t = BertTokenizer.from_pretrained(
+    BERT_MODEL,
+    do_lower_case=True,
+    never_split = ("[UNK]", "[SEP]", "[PAD]", "[CLS]", "[MASK]")
+#    cache_dir="~/.pytorch_pretrained_bert/bert-large-uncased-vocab.txt"
+)
 
 print('一共有%d 个字' % t.num_words)
 
-
-train_dataset = SPO(train_X, t, max_len=50, ner=train_ner)
-valid_dataset = SPO(dev_X, t, max_len=50, ner=dev_ner)
+train_dataset = SPO_BERT(train_X, t,  ner=train_ner)
+valid_dataset = SPO_BERT(dev_X, t, ner=dev_ner)
 
 batch_size = 1024
 

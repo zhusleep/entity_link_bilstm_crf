@@ -458,13 +458,16 @@ class SPO_Model_Simple(nn.Module):
         self.gru_attention = Attention(encoder_size*2)
         self.crf_model = CRF(num_tags=num_tags, batch_first=True)
         self.apply(self._init_qa_weights)
-        self.NER = nn.Linear(2 * self.encoder_size, num_tags)
+        hidden_size = 100
+        self.hidden = nn.Linear(2*self.encoder_size, hidden_size)
+        self.NER = nn.Linear(hidden_size, num_tags)
         self.use_crf = True
 
     def cal_loss(self, X, mask_X, length, label=None):
         X = self.word_embedding(X)
         # X = torch.squeeze(self.dropout1d(torch.unsqueeze(X, -1)), -1)
         X1 = self.LSTM(X, length)
+        X1 = self.hidden(X1)
         logits = self.NER(X1)
         if not self.use_crf:
             class_probabilities = F.softmax(logits, dim=2)
@@ -480,6 +483,7 @@ class SPO_Model_Simple(nn.Module):
         X = self.word_embedding(X)
         X = torch.squeeze(self.dropout1d(torch.unsqueeze(X, -1)), -1)
         X1 = self.LSTM(X, length)
+        X1 = self.hidden(X1)
         logits = self.NER(X1)
         if self.use_crf:
             pred = self.crf_model.decode(logits, mask=mask_X)

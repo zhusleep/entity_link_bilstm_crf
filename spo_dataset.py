@@ -43,70 +43,67 @@ class SPO(Dataset):
             return index, sentence,length
 
 
-
-
 class SPO_BERT(Dataset):
-    def __init__(self, X, pos, tokenizer, pos_t, label=None,  ner=None, combined_char_t=None):
+    def __init__(self, X, tokenizer, label=None,  ner=None):
         super(SPO_BERT, self).__init__()
         self.raw_X = X
-        self.raw_pos = pos
         self.label = label
         self.tokenizer = tokenizer
-        self.pos_t = pos_t
-        self.X = self.deal_for_bert(X, tokenizer)
-        self.pos = pos_t.transform(pos)
+        self.X = self.deal_for_bert(X, self.tokenizer)
         # X = pad_sequences(X, maxlen=198)
         self.length = [len(sen) for sen in self.X]
-        self.numerical_df = self.cal_numerical_f(self.X)
-        self.ner = ner
-        self.combined_char_t = combined_char_t
-        if combined_char_t is not None:
-            self.combined_char = self.cal_word_char_token()
+        self.ner = self.deal_margin(ner)
+
+    def deal_margin(self,ner):
+        bert_label = []
+        for s in ner:
+            s = [0]+s+[0]
+            bert_label.append(s)
+        return bert_label
 
     def deal_for_bert(self,x,t):
-        temp = []
-        for item in tqdm(x):
-            sen = t.tokenize(''.join(item))
-            sen = ['[CLS]']+sen+['[SEP]']
+        text = {}
+        for s in x:
+            for word in s:
+                if word in text:
+                    text[word] += 1
+                else:
+                    text[word] = 1
+        extra_token_id = 1
+        for w in sorted(text.items(), key=lambda x: x[1])[-90:]:
+            self.tokenizer.vocab[w[0]] = extra_token_id
+            extra_token_id += 1
+
+        bert_tokens = []
+        for item in x:
+            temp = []
+            for w in item:
+                if w in self.tokenizer.vocab:
+                    temp.append(w)
+                else:
+                    temp.append(['UNK'])
+
+            #sen = t.tokenize(''.join(item))
+            sen = ['[CLS]']+temp+['[SEP]']
             indexed_tokens = t.convert_tokens_to_ids(sen)
-            temp.append(indexed_tokens)
-        return temp
-
-    def cal_word_char_token(self):
-        sentence = []
-        for item in self.raw_X:
-            sentence.append(self.combined_char_t.transform(item))
-        return sentence
-
-    def cal_numerical_f(self, arr):
-        length = [len(sen) for sen in arr]
-        length = np.array(length).reshape((-1, 1))
-
-        return length
+            bert_tokens.append(indexed_tokens)
+        return bert_tokens
 
     def __len__(self):
         return len(self.X)
 
     def __getitem__(self, index):
         sentence = torch.tensor(self.X[index])
-        pos = torch.tensor(self.pos[index])
-        if len(sentence)!=len(pos):
-            i=1
-        numerical_features = self.numerical_df[index]
-        label = self.label[index]
+        ner = self.ner[index]
         length = self.length[index]
         # if self.ner is not None:
         #     ner = torch.tensor(self.ner[index])
         #if self.combined_char_t is not None:
 
-        if label is not None:
-            if self.combined_char_t is not None:
-                char_vocab = self.combined_char[index]
-                return index, sentence, pos, length, numerical_features, char_vocab, label
-            else:
-                return index, sentence, pos, length, numerical_features, label
+        if  ner is not None:
+            return index, sentence, ner,length
         else:
-            return index, sentence, pos, length, numerical_features
+            return index, sentence,length
 
 
 

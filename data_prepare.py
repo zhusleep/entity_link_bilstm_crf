@@ -53,3 +53,15 @@ class DataManager(object):
 
 
 data_manager = DataManager()
+
+
+def read_kb(filename):
+    #kb_data = []
+    kb_dict = []
+    with open(filename, 'r') as f:
+        for line in f:
+            item = json.loads(line)
+            kb_dict.append(item['subject'])
+            for alia in item['alias']:
+                kb_dict.append(alia)
+    return set(kb_dict)
