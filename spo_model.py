@@ -459,7 +459,7 @@ class SPO_Model_Simple(nn.Module):
         self.crf_model = CRF(num_tags=num_tags, batch_first=True)
         self.apply(self._init_qa_weights)
         self.NER = nn.Linear(2 * self.encoder_size, num_tags)
-        self.use_crf = False
+        self.use_crf = True
 
     def cal_loss(self, X, mask_X, length, label=None):
         X = self.word_embedding(X)
@@ -468,10 +468,10 @@ class SPO_Model_Simple(nn.Module):
         logits = self.NER(X1)
         if not self.use_crf:
             class_probabilities = F.softmax(logits, dim=2)
-            loss = sequence_cross_entropy_with_logits(class_probabilities, label, mask_X,
+            loss = sequence_cross_entropy_with_logits(class_probabilities, label, weights=mask_X,
                                                       label_smoothing=False)
         else:
-            loss = self.crf_model(logits, label, mask=mask_X)
+            loss = -1*self.crf_model(logits, label, mask=mask_X)
         return loss
 
     def forward(self, X, mask_X, length):
@@ -484,7 +484,7 @@ class SPO_Model_Simple(nn.Module):
         if self.use_crf:
             pred = self.crf_model.decode(logits, mask=mask_X)
         else:
-            pred = logits.argmax(dim=-1)
+            pred = logits.argmax(dim=-1).cpu().numpy()
         return pred
 
     @staticmethod

@@ -1,0 +1,3 @@
+01-Jul-19 16:15:29 - epoch 0, train loss 19.804913, valid loss 11.036148, acc 0.712271, recall 0.575540, f1 0.636647 
+01-Jul-19 16:15:49 - epoch 1, train loss 14.995907, valid loss 9.587131, acc 0.735538, recall 0.602355, f1 0.662318 
+01-Jul-19 16:16:10 - epoch 2, train loss 13.430523, valid loss 8.380471, acc 0.687136, recall 0.696722, f1 0.691896 

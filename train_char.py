@@ -53,7 +53,7 @@ else:
 
 model = SPO_Model_Simple(vocab_size=embedding_matrix.shape[0],
                  word_embed_size=embedding_matrix.shape[1], encoder_size=128, dropout=0.5,
-                 seq_dropout=0.0, init_embedding=embedding_matrix)
+                 seq_dropout=0.5, init_embedding=embedding_matrix)
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model.to(device)
 
@@ -72,7 +72,7 @@ for epoch in range(25):
         X = X.cuda()
         length = length.cuda()
         #ner = ner.type(torch.float).cuda()
-        mask_X = get_mask(X, length, is_cuda=True)
+        mask_X = get_mask(X, length, is_cuda=True).cuda()
         ner = nn.utils.rnn.pad_sequence(ner, batch_first=True).type(torch.LongTensor)
         ner = ner.cuda()
 
@@ -83,7 +83,7 @@ for epoch in range(25):
         optimizer.step()
         optimizer.zero_grad()
         # Clip gradients: gradients are modified in place
-        #_ = nn.utils.clip_grad_norm_(model.parameters(), clip)
+        nn.utils.clip_grad_norm_(model.parameters(), clip)
         optimizer.step()
         train_loss += loss.item()
         #break
@@ -97,14 +97,16 @@ for epoch in range(25):
         X = nn.utils.rnn.pad_sequence(X, batch_first=True).type(torch.LongTensor)
         X = X.cuda()
         length = length.cuda()
-        mask_X = get_mask(X, length, is_cuda=True)
+        mask_X = get_mask(X, length, is_cuda=True).cuda()
         label = ner
         ner = nn.utils.rnn.pad_sequence(ner, batch_first=True).type(torch.LongTensor)
-        ner.cuda()
+        ner = ner.cuda()
         with torch.no_grad():
             pred = model(X, mask_X, length)
-            loss = model.cal_loss(X, mask_X, length,label=ner)
-        pred_set.extend(pred)
+            loss = model.cal_loss(X, mask_X, length, label=ner)
+        for i, item in enumerate(pred):
+            pred_set.append(item[0:length.cpu().numpy()[i]])
+        #pred_set.extend(pred)
         for item in label:
             label_set.append(item.numpy())
         valid_loss += loss.item()

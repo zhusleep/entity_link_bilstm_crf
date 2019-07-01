@@ -1,7 +1,0 @@
-01-Jul-19 13:41:47 - epoch 0, train loss -457.642574, valid loss -934.530981, acc 0.000000, recall 0.000000, f1 100000.000000 
-01-Jul-19 13:42:06 - epoch 1, train loss -1372.882551, valid loss -1831.189950, acc 0.000000, recall 0.000000, f1 100000.000000 
-01-Jul-19 13:42:27 - epoch 2, train loss -2262.454248, valid loss -2713.479125, acc 0.000000, recall 0.000000, f1 100000.000000 
-01-Jul-19 13:42:47 - epoch 3, train loss -3141.641667, valid loss -3590.501275, acc 0.000000, recall 0.000000, f1 100000.000000 
-01-Jul-19 13:43:07 - epoch 4, train loss -4017.629130, valid loss -4465.390850, acc 0.000000, recall 0.000000, f1 100000.000000 
-01-Jul-19 13:43:26 - epoch 5, train loss -4892.120672, valid loss -5339.186875, acc 0.000000, recall 0.000000, f1 100000.000000 
-01-Jul-19 13:43:46 - epoch 6, train loss -5765.373709, valid loss -6212.372700, acc 0.000000, recall 0.000000, f1 100000.000000 

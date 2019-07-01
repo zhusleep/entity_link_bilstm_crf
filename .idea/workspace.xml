@@ -2,74 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="0f1ac612-fcb0-4ead-b76b-cb973ebb02d7" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/EDA.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/EDA.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/log/2019-05-09 10:19:40.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/log/2019-05-09 13:04:05.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/log/2019-05-09 15:01:48.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/log/2019-05-09 15:25:26.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/log/2019-05-09 15:32:59.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/log/2019-05-09 16:13:18.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/log/2019-05-09 16:27:03.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/log/2019-05-10 17:00:13.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/log/2019-05-10 18:50:48.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/log/2019-05-10 19:27:02.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/log/2019-05-10 19:32:05.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/log/2019-05-10 20:08:30.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/log/2019-05-10 20:08:57.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/log/2019-05-10 20:09:03.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/log/2019-05-10 20:09:51.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/log/2019-05-10 20:10:19.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/log/2019-05-10 20:10:57.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/log/2019-05-10 21:20:12.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/log/2019-05-10 21:22:52.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/log/2019-05-10 21:25:13.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/log/2019-05-10 21:25:44.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/log/2019-05-10 21:27:29.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/log/2019-05-10 21:31:32.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/log/2019-05-10 21:36:03.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/log/2019-05-10 21:37:40.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/log/2019-05-10 21:41:26.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/log/2019-05-10 21:42:55.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/log/2019-05-10 21:43:08.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/log/2019-05-10 21:43:11.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/log/2019-05-10 21:43:15.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/log/2019-05-10 21:44:11.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/log/2019-05-10 21:46:50.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/log/2019-05-10 21:53:20.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/log/2019-05-10 21:55:33.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/log/2019-05-10 21:58:39.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/log/2019-05-10 21:59:29.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/log/2019-05-10 22:00:44.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/log/2019-05-10 22:01:17.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/log/2019-05-10 22:02:54.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/log/2019-05-10 22:03:08.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/log/2019-05-10 22:05:00.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/log/2019-05-10 22:10:39.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/log/2019-05-10 22:12:47.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/log/2019-05-10 22:12:57.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/log/2019-05-10 22:13:20.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/log/2019-05-10 22:15:11.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/log/2019-05-10 22:16:54.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/log/2019-05-10 22:18:23.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/log/2019-06-30 20:22:05.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/log/2019-06-30 20:23:03.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/log/2019-06-30 20:24:12.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/log/2019-06-30 20:49:26.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/log/2019-06-30 20:50:22.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/log/2019-06-30 20:51:07.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/log/2019-06-30 20:53:10.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/log/2019-06-30 20:57:53.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/log/2019-06-30 20:58:11.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/log/2019-06-30 21:00:30.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/log/2019-06-30 21:00:56.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/log/2019-06-30 21:03:01.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/log/2019-06-30 21:03:19.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/spo_dataset.py" beforeDir="false" afterPath="$PROJECT_DIR$/spo_dataset.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/spo_model.py" beforeDir="false" afterPath="$PROJECT_DIR$/spo_model.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tokenize_pkg/tokenize.py" beforeDir="false" afterPath="$PROJECT_DIR$/tokenize_pkg/tokenize.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/train_char.py" beforeDir="false" afterPath="$PROJECT_DIR$/train_char.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -78,15 +13,19 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="CoverageDataManager">
-    <SUITE FILE_PATH="coverage/entity_link_bilstm_crf$train_char.coverage" NAME="train_char Coverage Results" MODIFIED="1561961321700" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/entity_link_bilstm_crf$train_char.coverage" NAME="train_char Coverage Results" MODIFIED="1561968901540" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/entity_link_bilstm_crf$train_ner.coverage" NAME="train_ner Coverage Results" MODIFIED="1561967240787" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
   <component name="FileEditorManager">
     <leaf>
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/train_ner.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="340">
-              <caret line="63" column="13" selection-start-line="63" selection-start-column="13" selection-end-line="63" selection-end-column="13" />
+            <state relative-caret-position="-476">
+              <caret line="35" column="24" lean-forward="true" selection-start-line="15" selection-start-column="68" selection-end-line="15" selection-end-column="102" />
+              <folding>
+                <element signature="e#22#34#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -94,8 +33,11 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/spo_model.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="387">
-              <caret line="496" column="19" lean-forward="true" selection-start-line="496" selection-start-column="19" selection-end-line="496" selection-end-column="19" />
+            <state relative-caret-position="554">
+              <caret line="486" column="54" lean-forward="true" selection-start-line="486" selection-start-column="54" selection-end-line="486" selection-end-column="54" />
+              <folding>
+                <element signature="e#20#32#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -103,8 +45,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/train_char.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="354">
-              <caret line="72" column="20" lean-forward="true" selection-start-line="72" selection-start-column="20" selection-end-line="72" selection-end-column="20" />
+            <state relative-caret-position="303">
+              <caret line="107" column="57" selection-start-line="107" selection-start-column="57" selection-end-line="107" selection-end-column="57" />
               <folding>
                 <element signature="e#0#19#0" expanded="true" />
               </folding>
@@ -115,8 +57,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/utils.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="537">
-              <caret line="47" column="13" selection-start-line="47" selection-start-column="13" selection-end-line="47" selection-end-column="13" />
+            <state relative-caret-position="197">
+              <caret line="109" column="46" selection-start-line="109" selection-start-column="39" selection-end-line="109" selection-end-column="46" />
               <folding>
                 <element signature="e#0#24#0" expanded="true" />
               </folding>
@@ -161,6 +103,11 @@
       </file>
     </leaf>
   </component>
+  <component name="FindInProjectRecents">
+    <findStrings>
+      <find>sequence_cross_entropy_with_logits</find>
+    </findStrings>
+  </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
@@ -169,8 +116,9 @@
       <list>
         <option value="$PROJECT_DIR$/spo_dataset.py" />
         <option value="$PROJECT_DIR$/tokenize_pkg/tokenize.py" />
-        <option value="$PROJECT_DIR$/spo_model.py" />
         <option value="$PROJECT_DIR$/utils.py" />
+        <option value="$PROJECT_DIR$/train_ner.py" />
+        <option value="$PROJECT_DIR$/spo_model.py" />
         <option value="$PROJECT_DIR$/train_char.py" />
       </list>
     </option>
@@ -192,11 +140,6 @@
             <path>
               <item name="entity_link_bilstm_crf" type="b2602c69:ProjectViewProjectNode" />
               <item name="entity_link_bilstm_crf" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="entity_link_bilstm_crf" type="b2602c69:ProjectViewProjectNode" />
-              <item name="entity_link_bilstm_crf" type="462c0819:PsiDirectoryNode" />
-              <item name="log" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -225,7 +168,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager">
+  <component name="RunManager" selected="Python.train_char">
     <configuration name="train_char" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="entity_link_bilstm_crf" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -248,9 +191,32 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <configuration name="train_ner" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <module name="entity_link_bilstm_crf" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/train_ner.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <recent_temporary>
       <list>
         <item itemvalue="Python.train_char" />
+        <item itemvalue="Python.train_ner" />
       </list>
     </recent_temporary>
   </component>
@@ -264,12 +230,12 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1561945545087</updated>
-      <workItem from="1561945546259" duration="10807000" />
+      <workItem from="1561945546259" duration="14576000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="10807000" />
+    <option name="totallyTimeSpent" value="14576000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="65" y="-4" width="1855" height="1204" extended-state="6" />
@@ -279,7 +245,7 @@
       <window_info content_ui="combo" id="Project" order="1" visible="true" weight="0.2498618" />
       <window_info id="Structure" order="2" side_tool="true" weight="0.25" />
       <window_info anchor="bottom" id="Database Changes" order="0" />
-      <window_info anchor="bottom" id="Terminal" order="1" />
+      <window_info anchor="bottom" id="Terminal" order="1" weight="0.3298479" />
       <window_info anchor="bottom" id="Event Log" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Version Control" order="3" />
       <window_info anchor="bottom" id="Python Console" order="4" />
@@ -309,6 +275,11 @@
           <line>42</line>
           <option name="timeStamp" value="16" />
         </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/train_char.py</url>
+          <line>110</line>
+          <option name="timeStamp" value="17" />
+        </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
   </component>
@@ -324,13 +295,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="245">
           <caret line="489" selection-start-line="489" selection-end-line="489" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/train_ner.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="340">
-          <caret line="63" column="13" selection-start-line="63" selection-start-column="13" selection-end-line="63" selection-end-column="13" />
         </state>
       </provider>
     </entry>
@@ -362,32 +326,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/tIme_distributed.py">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
     <entry file="file://$PROJECT_DIR$/spo_dataset.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="204">
           <caret line="15" selection-start-line="15" selection-end-line="15" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/data_prepare.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="119">
-          <caret line="7" column="24" selection-start-line="7" selection-start-column="24" selection-end-line="7" selection-end-column="45" />
-          <folding>
-            <element signature="e#0#18#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/train.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1906">
-          <folding>
-            <element signature="e#0#19#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -401,27 +343,65 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/spo_model.py">
+    <entry file="file://$PROJECT_DIR$/train.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="387">
-          <caret line="496" column="19" lean-forward="true" selection-start-line="496" selection-start-column="19" selection-end-line="496" selection-end-column="19" />
+        <state relative-caret-position="-1377">
+          <folding>
+            <element signature="e#0#19#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/train_ner.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-476">
+          <caret line="35" column="24" lean-forward="true" selection-start-line="15" selection-start-column="68" selection-end-line="15" selection-end-column="102" />
+          <folding>
+            <element signature="e#22#34#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/log/2019-07-01 15:47:27.txt">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tIme_distributed.py">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
     <entry file="file://$PROJECT_DIR$/utils.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="537">
-          <caret line="47" column="13" selection-start-line="47" selection-start-column="13" selection-end-line="47" selection-end-column="13" />
+        <state relative-caret-position="197">
+          <caret line="109" column="46" selection-start-line="109" selection-start-column="39" selection-end-line="109" selection-end-column="46" />
           <folding>
             <element signature="e#0#24#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/data_prepare.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="119">
+          <caret line="7" column="24" selection-start-line="7" selection-start-column="24" selection-end-line="7" selection-end-column="45" />
+          <folding>
+            <element signature="e#0#18#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/spo_model.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="554">
+          <caret line="486" column="54" lean-forward="true" selection-start-line="486" selection-start-column="54" selection-end-line="486" selection-end-column="54" />
+          <folding>
+            <element signature="e#20#32#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/train_char.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="354">
-          <caret line="72" column="20" lean-forward="true" selection-start-line="72" selection-start-column="20" selection-end-line="72" selection-end-column="20" />
+        <state relative-caret-position="303">
+          <caret line="107" column="57" selection-start-line="107" selection-start-column="57" selection-end-line="107" selection-end-column="57" />
           <folding>
             <element signature="e#0#19#0" expanded="true" />
           </folding>
