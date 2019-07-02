@@ -526,22 +526,22 @@ class SPO_Model_Bert(nn.Module):
         self.seq_dropout = seq_dropout
 
         self.dropout1d = nn.Dropout2d(self.seq_dropout)
-        self.attention = SoftAttention()
-        self.lstm_attention = Attention(768)
-        self.gru_attention = Attention(encoder_size*2)
-
-        self.mlp = nn.Sequential(
-            nn.BatchNorm1d(768),
-            nn.Dropout(p=dropout),
-            nn.Linear(in_features=768, out_features=64),
-            nn.Sigmoid()
-        )
-        self.mlp2 = nn.Sequential(
-            nn.BatchNorm1d(64+dim_num_feat),
-            nn.Dropout(p=dropout),
-            nn.Linear(in_features=64+dim_num_feat, out_features=50),
-            nn.Sigmoid()
-        )
+        #self.attention = SoftAttention()
+        #self.lstm_attention = Attention(768)
+        #self.gru_attention = Attention(encoder_size*2)
+        #
+        # self.mlp = nn.Sequential(
+        #     nn.BatchNorm1d(768),
+        #     nn.Dropout(p=dropout),
+        #     nn.Linear(in_features=768, out_features=64),
+        #     nn.Sigmoid()
+        # )
+        # self.mlp2 = nn.Sequential(
+        #     nn.BatchNorm1d(64+dim_num_feat),
+        #     nn.Dropout(p=dropout),
+        #     nn.Linear(in_features=64+dim_num_feat, out_features=50),
+        #     nn.Sigmoid()
+        # )
         bert_model = 'bert-base-chinese'
         self.bert = BertModel.from_pretrained(bert_model)
         self.use_layer = -1
@@ -559,7 +559,7 @@ class SPO_Model_Bert(nn.Module):
         # self.bert.eval()
         # with torch.no_grad():
         bert_outputs, _ = self.bert(token_tensor, attention_mask=(token_tensor > 0).long(), token_type_ids=None,
-                                    output_all_encoded_layers=True)
+                            output_all_encoded_layers=True)
 
         bert_outputs = torch.cat(bert_outputs[self.use_layer:], dim=-1)
         X1 = self.LSTM(bert_outputs, length)

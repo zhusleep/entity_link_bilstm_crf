@@ -10,7 +10,7 @@ from tokenize_pkg.tokenize import Tokenizer
 from tqdm import tqdm as tqdm
 import torch.nn as nn
 from utils import seed_torch, read_data, load_glove, calc_f1
-from pytorch_pretrained_bert import BertTokenizer
+from pytorch_pretrained_bert import BertTokenizer,BertAdam
 import logging
 import time
 
@@ -46,7 +46,7 @@ t = BertTokenizer.from_pretrained(
 train_dataset = SPO_BERT(train_X, t,  ner=train_ner)
 valid_dataset = SPO_BERT(dev_X, t, ner=dev_ner)
 
-batch_size = 256
+batch_size = 60
 
 
 # # 准备embedding数据
@@ -69,10 +69,26 @@ model.to(device)
 train_dataloader = DataLoader(train_dataset, collate_fn=collate_fn, shuffle=True, batch_size=batch_size)
 valid_dataloader = DataLoader(valid_dataset, collate_fn=collate_fn, shuffle=False, batch_size=batch_size)
 
-optimizer = torch.optim.Adam(model.parameters())
+param_optimizer = list(model.named_parameters())
+no_decay = ['bias', 'LayerNorm.bias', 'LayerNorm.weight']
+optimizer_grouped_parameters = [
+    {'params': [p for n, p in param_optimizer if not any(nd in n for nd in no_decay)], 'weight_decay': 0.01},
+    {'params': [p for n, p in param_optimizer if any(nd in n for nd in no_decay)], 'weight_decay': 0.0}
+    ]
+
+epoch = 20
+t_total = int(epoch*len(train_X)/batch_size)
+optimizer = BertAdam([
+                {'params': model.LSTM.parameters()},
+                {'params': model.hidden.parameters()},
+                {'params': model.NER.parameters()},
+                {'params': model.crf_model.parameters()},
+                {'params': model.bert.parameters(), 'lr': 1e-6}
+            ],  lr=1e-3, warmup=0.05,t_total=t_total)
 clip = 50
 
-for epoch in range(10):
+
+for epoch in range(epoch):
     model.train()
     train_loss = 0
     for index, X, ner, length in tqdm(train_dataloader):
@@ -95,7 +111,6 @@ for epoch in range(10):
         nn.utils.clip_grad_norm_(model.parameters(), clip)
         optimizer.step()
         train_loss += loss.item()
-
     train_loss = train_loss/len(train_X)
 
     model.eval()

@@ -78,13 +78,12 @@ for epoch in range(10):
 
         loss = model.cal_loss(X, mask_X, length, label=ner)
         loss.backward()
+        nn.utils.clip_grad_norm_(model.parameters(), clip)
 
         #loss = loss_fn(pred, ner)
         optimizer.step()
         optimizer.zero_grad()
         # Clip gradients: gradients are modified in place
-        nn.utils.clip_grad_norm_(model.parameters(), clip)
-        optimizer.step()
         train_loss += loss.item()
         #break
     train_loss = train_loss/len(train_X)
