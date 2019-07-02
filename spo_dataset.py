@@ -55,17 +55,17 @@ class SPO_BERT(Dataset):
         self.length = [len(sen) for sen in self.X]
 
     def deal_for_bert(self,x,t):
-        text = {}
-        for s in x:
-            for word in s:
-                if word in text:
-                    text[word] += 1
-                else:
-                    text[word] = 1
-        extra_token_id = 1
-        for w in sorted(text.items(), key=lambda x: x[1])[-90:]:
-            self.tokenizer.vocab[w[0]] = extra_token_id
-            extra_token_id += 1
+        # text = {}
+        # for s in x:
+        #     for word in s:
+        #         if word in text:
+        #             text[word] += 1
+        #         else:
+        #             text[word] = 1
+        # extra_token_id = 1
+        # for w in sorted(text.items(), key=lambda x: x[1])[-90:]:
+        #     self.tokenizer.vocab[w[0]] = extra_token_id
+        #     extra_token_id += 1
 
         bert_tokens = []
         for item in x:

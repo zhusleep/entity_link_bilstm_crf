@@ -46,7 +46,7 @@ t = BertTokenizer.from_pretrained(
 train_dataset = SPO_BERT(train_X, t,  ner=train_ner)
 valid_dataset = SPO_BERT(dev_X, t, ner=dev_ner)
 
-batch_size = 60
+batch_size = 2
 
 
 # # 准备embedding数据
