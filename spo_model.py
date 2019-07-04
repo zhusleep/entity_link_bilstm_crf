@@ -593,6 +593,76 @@ class SPO_Model_Bert(nn.Module):
         return pred
 
 
+from allennlp.modules.span_extractors import SelfAttentiveSpanExtractor, EndpointSpanExtractor
+
+
+class EntityLink(nn.Module):
+    def __init__(self,
+                 encoder_size=64,
+                 dim_num_feat=0,
+                 dropout=0.2,
+                 seq_dropout=0.1,
+                 num_outputs=5
+              ):
+        super(EntityLink, self).__init__()
+        # self.word_embedding = nn.Embedding(vocab_size,
+        #                                    word_embed_size,
+        #                                    padding_idx=0)
+        # self.pos_embedding = nn.Embedding(pos_embed_size, pos_dim, padding_idx=0)
+        self.seq_dropout = seq_dropout
+
+        self.dropout1d = nn.Dropout2d(self.seq_dropout)
+        self.span_extractor = SelfAttentiveSpanExtractor(768 * 1)
+
+        bert_model = 'bert-base-chinese'
+        self.bert = BertModel.from_pretrained(bert_model)
+        self.use_layer = -1
+        self.LSTM = LSTMEncoder(embed_size=768,
+                                encoder_size=encoder_size,
+                                bidirectional=True)
+        hidden_size=100
+        self.hidden = nn.Linear(2*encoder_size, hidden_size)
+        self.classify = nn.Sequential(
+            nn.BatchNorm1d(768),
+            nn.Dropout(p=dropout),
+            nn.Linear(in_features=768, out_features=num_outputs)
+        )
+    def forward(self,token_tensor,mask_X,pos,length):
+        self.bert.eval()
+        with torch.no_grad():
+            bert_outputs, _ = self.bert(token_tensor, attention_mask=(token_tensor > 0).long(), token_type_ids=None,
+                            output_all_encoded_layers=True)
+
+        bert_outputs = torch.cat(bert_outputs[self.use_layer:], dim=-1)
+        #X1 = self.LSTM(bert_outputs, length)
+        spans_contexts = self.span_extractor(
+            bert_outputs,
+            pos
+        )
+        pred = self.classify(spans_contexts.squeeze(0))
+
+        return pred
+
+    # def forward(self, token_tensor, mask_X, length):
+    #     batch_size = token_tensor.size()[0]
+    #
+    #     self.bert.eval()
+    #     with torch.no_grad():
+    #         bert_outputs, _ = self.bert(token_tensor, attention_mask=(token_tensor > 0).long(), token_type_ids=None,
+    #                                     output_all_encoded_layers=True)
+    #
+    #     bert_outputs = torch.cat(bert_outputs[self.use_layer:], dim=-1)
+    #
+    #     X1 = self.LSTM(bert_outputs, length)
+    #     X1 = self.hidden(X1)
+    #     logits = self.NER(X1)
+    #     if self.use_crf:
+    #         pred = self.crf_model.decode(logits, mask=mask_X)
+    #     else:
+    #         pred = logits.argmax(dim=-1).cpu().numpy()
+    #     return pred
+
+
 # Mask attention layer
 class Attn(nn.Module):
     def __init__(self, method, hidden_size):

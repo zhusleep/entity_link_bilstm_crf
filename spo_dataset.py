@@ -93,7 +93,51 @@ class SPO_BERT(Dataset):
         #if self.combined_char_t is not None:
 
         if  ner is not None:
-            return index, sentence, ner,length
+            return index, sentence, ner, length
+        else:
+            return index, sentence, length
+
+
+class SPO_BERT_LINK(Dataset):
+    def __init__(self, X, tokenizer, pos, type=None):
+        super(SPO_BERT_LINK, self).__init__()
+        self.raw_X = X
+        self.type = type
+        self.tokenizer = tokenizer
+        self.X = self.deal_for_bert(X, self.tokenizer)
+        # X = pad_sequences(X, maxlen=198)
+        self.pos = pos
+        self.length = [len(sen) for sen in self.X]
+
+    def deal_for_bert(self,x,t):
+        bert_tokens = []
+        for item in x:
+            temp = []
+            for w in item:
+                if w in self.tokenizer.vocab:
+                    temp.append(w)
+                else:
+                    temp.append('[UNK]')
+
+            #sen = t.tokenize(''.join(item))
+            indexed_tokens = t.convert_tokens_to_ids(temp)
+            bert_tokens.append(indexed_tokens)
+        return bert_tokens
+
+    def __len__(self):
+        return len(self.X)
+
+    def __getitem__(self, index):
+        sentence = torch.tensor(self.X[index])
+        pos = self.pos[index]
+        type = self.type[index]
+        length = self.length[index]
+        # if self.ner is not None:
+        #     ner = torch.tensor(self.ner[index])
+        #if self.combined_char_t is not None:
+
+        if  type is not None:
+            return index, sentence, type, pos, length
         else:
             return index, sentence,length
 
@@ -135,6 +179,20 @@ def collate_fn(batch):
     else:
         index, X, length = zip(*batch)
         length = torch.tensor(length, dtype=torch.int)
+        return index, X, length,
+
+
+def collate_fn_link(batch):
+
+    if len(batch[0]) == 5:
+        index, sentence, type, pos, length = zip(*batch)
+        pos = torch.tensor(pos, dtype=torch.int)
+        length = torch.tensor(length, dtype=torch.int)
+        type= torch.tensor(type, dtype=torch.long)
+        return index, sentence, type, pos, length,
+    else:
+        index, X, length = zip(*batch)
+        length = torch.tensor(length, dtype=torch.long)
         return index, X, length,
 
 

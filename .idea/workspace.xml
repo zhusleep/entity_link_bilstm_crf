@@ -2,26 +2,11 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="0f1ac612-fcb0-4ead-b76b-cb973ebb02d7" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/entity_link_bilstm_crf.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/entity_link_bilstm_crf.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/log/2019-07-02 00:23:58.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/log/2019-07-02 00:26:09.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/log/2019-07-02 00:27:43.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/log/2019-07-02 00:30:08.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/log/2019-07-02 23:33:24.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/log/2019-07-02 23:34:53.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/log/2019-07-02 23:35:07.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/log/2019-07-02 23:35:21.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/log/2019-07-02 23:35:57.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/log/2019-07-03 00:06:10.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/log/2019-07-03 00:06:41.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/log/2019-07-03 00:07:04.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/log/2019-07-03 00:07:51.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/log/2019-07-03 00:08:50.txt" beforeDir="false" afterPath="$PROJECT_DIR$/log/2019-07-03 00:08:50.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/result/analysis.csv" beforeDir="false" afterPath="$PROJECT_DIR$/result/analysis.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/train_char.py" beforeDir="false" afterPath="$PROJECT_DIR$/train_char.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/train_char_bert_now.py" beforeDir="false" afterPath="$PROJECT_DIR$/train_char_bert_now.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/data_prepare.py" beforeDir="false" afterPath="$PROJECT_DIR$/data_prepare.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/entity_linking.py" beforeDir="false" afterPath="$PROJECT_DIR$/entity_linking.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spo_dataset.py" beforeDir="false" afterPath="$PROJECT_DIR$/spo_dataset.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spo_model.py" beforeDir="false" afterPath="$PROJECT_DIR$/spo_model.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -33,51 +18,68 @@
   <component name="CoverageDataManager">
     <SUITE FILE_PATH="coverage/entity_link_bilstm_crf$spo_model.coverage" NAME="spo_model Coverage Results" MODIFIED="1562024833036" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/entity_link_bilstm_crf$train_char.coverage" NAME="train_char Coverage Results" MODIFIED="1562128605975" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/entity_link_bilstm_crf$pytorch_bert_selfattentivespanextractor.coverage" NAME="pytorch-bert-selfattentivespanextractor Coverage Results" MODIFIED="1562229196080" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$USER_HOME$/Downloads" />
     <SUITE FILE_PATH="coverage/entity_link_bilstm_crf$train_char_bert_now.coverage" NAME="train_char_bert_now Coverage Results" MODIFIED="1562207277295" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/entity_link_bilstm_crf$entity_linking.coverage" NAME="entity_linking Coverage Results" MODIFIED="1562246738270" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/entity_link_bilstm_crf$train_ner.coverage" NAME="train_ner Coverage Results" MODIFIED="1561967240787" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
   <component name="FileEditorManager">
-    <splitter split-orientation="horizontal" split-proportion="0.72915274">
+    <splitter split-orientation="horizontal" split-proportion="0.5164766">
       <split-first>
         <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
           <file pinned="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/train_char.py">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="339">
-                  <caret line="38" selection-start-line="38" selection-end-line="38" />
-                  <folding>
-                    <element signature="e#0#19#0" expanded="true" />
-                  </folding>
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/spo_dataset.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="153">
-                  <caret line="51" column="48" selection-start-line="51" selection-start-column="48" selection-end-line="51" selection-end-column="48" />
+                <state relative-caret-position="407">
+                  <caret line="190" column="38" selection-start-line="190" selection-start-column="38" selection-end-line="190" selection-end-column="38" />
                 </state>
               </provider>
             </entry>
           </file>
           <file pinned="false" current-in-tab="true">
-            <entry file="file://$PROJECT_DIR$/train_char_bert_now.py">
+            <entry file="file://$PROJECT_DIR$/entity_linking.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="333">
-                  <caret line="85" column="59" selection-start-line="85" selection-start-column="59" selection-end-line="85" selection-end-column="59" />
+                <state relative-caret-position="527">
+                  <caret line="111" column="26" lean-forward="true" selection-start-line="111" selection-start-column="26" selection-end-line="111" selection-end-column="26" />
                   <folding>
-                    <element signature="e#0#19#0" expanded="true" />
+                    <element signature="e#20#39#0" expanded="true" />
                   </folding>
                 </state>
               </provider>
             </entry>
           </file>
           <file pinned="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/result/analysis.csv">
+            <entry file="file://$USER_HOME$/anaconda3/envs/nlp/lib/python3.7/codecs.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="408">
-                  <caret line="24" column="87" selection-start-line="24" selection-start-column="87" selection-end-line="24" selection-end-column="87" />
+                <state relative-caret-position="190">
+                  <caret line="320" selection-start-line="320" selection-end-line="320" />
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file pinned="false" current-in-tab="false">
+            <entry file="file://$USER_HOME$/anaconda3/envs/nlp/lib/python3.7/site-packages/torch/nn/functional.py">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="645">
+                  <caret line="1272" column="4" selection-start-line="1272" selection-start-column="4" selection-end-line="1272" selection-end-column="4" />
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file pinned="false" current-in-tab="false">
+            <entry file="file://$USER_HOME$/anaconda3/envs/nlp/lib/python3.7/site-packages/torch/nn/modules/module.py">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="245">
+                  <caret line="488" selection-start-line="488" selection-end-line="488" />
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file pinned="false" current-in-tab="false">
+            <entry file="file://$USER_HOME$/anaconda3/envs/nlp/lib/python3.7/site-packages/torch/nn/modules/loss.py">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="-1081">
+                  <caret line="96" column="13" selection-start-line="96" selection-start-column="6" selection-end-line="96" selection-end-column="13" />
                 </state>
               </provider>
             </entry>
@@ -85,8 +87,8 @@
           <file pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/utils.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="444">
-                  <caret line="71" column="8" selection-start-line="71" selection-start-column="8" selection-end-line="71" selection-end-column="8" />
+                <state relative-caret-position="133">
+                  <caret line="82" column="9" selection-start-line="82" selection-start-column="9" selection-end-line="82" selection-end-column="9" />
                   <folding>
                     <element signature="e#0#24#0" expanded="true" />
                   </folding>
@@ -101,10 +103,58 @@
           <file pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/spo_model.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="17">
-                  <caret line="552" column="33" selection-start-line="552" selection-start-column="33" selection-end-line="552" selection-end-column="33" />
+                <state relative-caret-position="190">
+                  <caret line="643" selection-start-line="643" selection-end-line="643" />
                   <folding>
                     <element signature="e#20#32#0" expanded="true" />
+                  </folding>
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file pinned="false" current-in-tab="false">
+            <entry file="file://$USER_HOME$/anaconda3/envs/nlp/lib/python3.7/site-packages/torch/nn/modules/activation.py">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="617">
+                  <caret line="935" column="21" selection-start-line="935" selection-start-column="21" selection-end-line="935" selection-end-column="21" />
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file pinned="false" current-in-tab="false">
+            <entry file="file:///usr/local/lib/python3.5/dist-packages/spacy/__init__.py">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="136">
+                  <caret line="14" selection-start-line="14" selection-end-line="14" />
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file pinned="false" current-in-tab="false">
+            <entry file="file://$USER_HOME$/anaconda3/envs/nlp/lib/python3.7/site-packages/allennlp/modules/span_extractors/self_attentive_span_extractor.py">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="303">
+                  <caret line="92" column="44" selection-start-line="92" selection-start-column="44" selection-end-line="92" selection-end-column="44" />
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file pinned="false" current-in-tab="false">
+            <entry file="file://$USER_HOME$/anaconda3/envs/nlp/lib/python3.7/site-packages/allennlp/nn/util.py">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="-222">
+                  <caret line="997" column="4" selection-start-line="997" selection-start-column="4" selection-end-line="997" selection-end-column="4" />
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/data_prepare.py">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="187">
+                  <caret line="89" column="52" selection-start-line="89" selection-start-column="52" selection-end-line="89" selection-end-column="52" />
+                  <folding>
+                    <element signature="e#0#18#0" expanded="true" />
                   </folding>
                 </state>
               </provider>
@@ -136,23 +186,24 @@
         <option value="$PROJECT_DIR$/tokenize_pkg/tokenize.py" />
         <option value="$PROJECT_DIR$/train_ner.py" />
         <option value="$PROJECT_DIR$/README.md" />
-        <option value="$PROJECT_DIR$/data_prepare.py" />
         <option value="$PROJECT_DIR$/result/analysis.csv" />
-        <option value="$PROJECT_DIR$/entity_linking.py" />
-        <option value="$PROJECT_DIR$/spo_dataset.py" />
-        <option value="$PROJECT_DIR$/spo_model.py" />
         <option value="$PROJECT_DIR$/log/2019-07-03 00:08:50.txt" />
         <option value="$PROJECT_DIR$/train_char.py" />
-        <option value="$PROJECT_DIR$/utils.py" />
         <option value="$PROJECT_DIR$/train_char_bert_now.py" />
+        <option value="$USER_HOME$/Downloads/pytorch-bert-selfattentivespanextractor.py" />
+        <option value="$PROJECT_DIR$/utils.py" />
+        <option value="$PROJECT_DIR$/spo_dataset.py" />
+        <option value="$PROJECT_DIR$/data_prepare.py" />
+        <option value="$PROJECT_DIR$/spo_model.py" />
+        <option value="$PROJECT_DIR$/entity_linking.py" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds" extendedState="6">
     <option name="x" value="992" />
-    <option name="y" value="-4" />
-    <option name="width" value="926" />
-    <option name="height" value="1168" />
+    <option name="y" value="24" />
+    <option name="width" value="928" />
+    <option name="height" value="1176" />
   </component>
   <component name="ProjectView">
     <navigator proportions="" version="1">
@@ -180,11 +231,6 @@
             <path>
               <item name="entity_link_bilstm_crf" type="b2602c69:ProjectViewProjectNode" />
               <item name="entity_link_bilstm_crf" type="462c0819:PsiDirectoryNode" />
-              <item name="log" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="entity_link_bilstm_crf" type="b2602c69:ProjectViewProjectNode" />
-              <item name="entity_link_bilstm_crf" type="462c0819:PsiDirectoryNode" />
               <item name="result" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
@@ -202,7 +248,7 @@
   <component name="PropertiesComponent">
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/../chexiang-classification" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../数据集/信息抽取" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
     <property name="restartRequiresConfirmation" value="false" />
@@ -220,7 +266,51 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.train_char_bert_now">
+  <component name="RunManager" selected="Python.entity_linking">
+    <configuration name="entity_linking" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <module name="entity_link_bilstm_crf" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/entity_linking.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="pytorch-bert-selfattentivespanextractor" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <module name="entity_link_bilstm_crf" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$USER_HOME$/Downloads" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$USER_HOME$/Downloads/pytorch-bert-selfattentivespanextractor.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <configuration name="spo_model" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="entity_link_bilstm_crf" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -287,34 +377,13 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="train_ner" type="PythonConfigurationType" factoryName="Python" temporary="true">
-      <module name="entity_link_bilstm_crf" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/train_ner.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.entity_linking" />
+        <item itemvalue="Python.pytorch-bert-selfattentivespanextractor" />
         <item itemvalue="Python.train_char_bert_now" />
         <item itemvalue="Python.train_char" />
         <item itemvalue="Python.spo_model" />
-        <item itemvalue="Python.train_ner" />
       </list>
     </recent_temporary>
   </component>
@@ -335,25 +404,25 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="56335000" />
+    <option name="totallyTimeSpent" value="73819000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="65" y="-4" width="1855" height="1204" extended-state="6" />
     <editor active="true" />
     <layout>
       <window_info id="Favorites" order="0" side_tool="true" />
-      <window_info content_ui="combo" id="Project" order="1" visible="true" weight="0.1713654" />
+      <window_info content_ui="combo" id="Project" order="1" visible="true" weight="0.12769486" />
       <window_info id="Structure" order="2" side_tool="true" weight="0.25" />
       <window_info anchor="bottom" id="Database Changes" order="0" />
-      <window_info anchor="bottom" id="Terminal" order="1" weight="0.29657796" />
+      <window_info anchor="bottom" id="Terminal" order="1" weight="0.26806083" />
       <window_info anchor="bottom" id="Event Log" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Version Control" order="3" weight="0.42775667" />
       <window_info anchor="bottom" id="Python Console" order="4" weight="0.3298479" />
       <window_info anchor="bottom" id="Docker" order="5" show_stripe_button="false" />
       <window_info anchor="bottom" id="Message" order="6" />
       <window_info anchor="bottom" id="Find" order="7" weight="0.32930845" />
-      <window_info active="true" anchor="bottom" id="Run" order="8" visible="true" weight="0.4591255" />
-      <window_info anchor="bottom" id="Debug" order="9" weight="0.3212928" />
+      <window_info active="true" anchor="bottom" id="Run" order="8" visible="true" weight="0.27471483" />
+      <window_info anchor="bottom" id="Debug" order="9" weight="0.40874526" />
       <window_info anchor="bottom" id="Cvs" order="10" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="11" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="12" />
@@ -408,56 +477,20 @@
           <line>27</line>
           <option name="timeStamp" value="31" />
         </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$USER_HOME$/Downloads/pytorch-bert-selfattentivespanextractor.py</url>
+          <line>184</line>
+          <option name="timeStamp" value="32" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/entity_linking.py</url>
+          <line>107</line>
+          <option name="timeStamp" value="39" />
+        </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/log/2019-07-01 23:58:44.txt" />
-    <entry file="file://$PROJECT_DIR$/train.py" />
-    <entry file="file://$PROJECT_DIR$/tIme_distributed.py">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/entity_linking.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="51">
-          <caret line="3" selection-start-line="3" selection-end-line="3" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/train_ner.py">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$USER_HOME$/anaconda3/envs/nlp/lib/python3.7/site-packages/pytorch_pretrained_bert/optimization.py" />
-    <entry file="file://$PROJECT_DIR$/log/2019-07-02 16:22:32.txt" />
-    <entry file="file://$PROJECT_DIR$/log/2019-07-02 16:12:49.txt" />
-    <entry file="file://$PROJECT_DIR$/log/2019-07-02 16:12:04.txt" />
-    <entry file="file://$PROJECT_DIR$/log/2019-07-02 16:11:19.txt" />
-    <entry file="file://$PROJECT_DIR$/log/2019-07-02 16:09:28.txt" />
-    <entry file="file://$PROJECT_DIR$/log/2019-07-02 15:39:59.txt" />
-    <entry file="file://$PROJECT_DIR$/log/2019-07-02 15:38:03.txt" />
-    <entry file="file://$PROJECT_DIR$/data_prepare.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-105">
-          <caret line="23" column="8" selection-start-line="23" selection-start-column="8" selection-end-line="23" selection-end-column="8" />
-          <folding>
-            <element signature="e#0#18#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/spo_model.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="17">
-          <caret line="552" column="33" selection-start-line="552" selection-start-column="33" selection-end-line="552" selection-end-column="33" />
-          <folding>
-            <element signature="e#20#32#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/log/2019-07-03 09:12:20.txt">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
     <entry file="file://$PROJECT_DIR$/log/2019-07-03 00:07:51.txt">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
@@ -552,6 +585,42 @@
     <entry file="file://$PROJECT_DIR$/log/2019-07-03 12:39:44.txt">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
+    <entry file="file://$USER_HOME$/Downloads/pytorch-bert-selfattentivespanextractor.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="306">
+          <caret line="39" column="12" lean-forward="true" selection-start-line="39" selection-start-column="12" selection-end-line="39" selection-end-column="12" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///usr/local/lib/python3.5/dist-packages/spacy/util.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="264">
+          <caret line="118" selection-start-line="118" selection-end-line="118" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///usr/local/lib/python3.5/dist-packages/allennlp/data/tokenizers/word_splitter.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="530">
+          <caret line="144" selection-start-line="144" selection-end-line="144" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/train_ner.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-1224" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/train_char.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="84">
+          <caret line="41" selection-start-line="41" selection-end-line="41" />
+          <folding>
+            <element signature="e#0#19#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/result/analysis.csv">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="408">
@@ -559,27 +628,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/spo_dataset.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="153">
-          <caret line="51" column="48" selection-start-line="51" selection-start-column="48" selection-end-line="51" selection-end-column="48" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/train_char.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="339">
-          <caret line="38" selection-start-line="38" selection-end-line="38" />
-          <folding>
-            <element signature="e#0#19#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/utils.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="444">
-          <caret line="71" column="8" selection-start-line="71" selection-start-column="8" selection-end-line="71" selection-end-column="8" />
+        <state relative-caret-position="133">
+          <caret line="82" column="9" selection-start-line="82" selection-start-column="9" selection-end-line="82" selection-end-column="9" />
           <folding>
             <element signature="e#0#24#0" expanded="true" />
           </folding>
@@ -588,10 +640,110 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/train_char_bert_now.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="333">
-          <caret line="85" column="59" selection-start-line="85" selection-start-column="59" selection-end-line="85" selection-end-column="59" />
+        <state relative-caret-position="1725">
+          <caret line="157" column="41" selection-start-line="157" selection-start-column="41" selection-end-line="157" selection-end-column="41" />
           <folding>
             <element signature="e#0#19#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/anaconda3/envs/nlp/lib/python3.7/site-packages/torch/utils/data/dataloader.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="198">
+          <caret line="767" column="8" selection-start-line="767" selection-start-column="8" selection-end-line="767" selection-end-column="8" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/anaconda3/envs/nlp/lib/python3.7/site-packages/allennlp/nn/util.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-222">
+          <caret line="997" column="4" selection-start-line="997" selection-start-column="4" selection-end-line="997" selection-end-column="4" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///usr/local/lib/python3.5/dist-packages/spacy/__init__.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="136">
+          <caret line="14" selection-start-line="14" selection-end-line="14" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/anaconda3/envs/nlp/lib/python3.7/site-packages/allennlp/modules/span_extractors/self_attentive_span_extractor.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="303">
+          <caret line="92" column="44" selection-start-line="92" selection-start-column="44" selection-end-line="92" selection-end-column="44" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/anaconda3/envs/nlp/lib/python3.7/site-packages/torch/nn/modules/loss.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-1081">
+          <caret line="96" column="13" selection-start-line="96" selection-start-column="6" selection-end-line="96" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/anaconda3/envs/nlp/lib/python3.7/site-packages/torch/nn/modules/module.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="245">
+          <caret line="488" selection-start-line="488" selection-end-line="488" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/spo_dataset.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="407">
+          <caret line="190" column="38" selection-start-line="190" selection-start-column="38" selection-end-line="190" selection-end-column="38" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/data_prepare.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="187">
+          <caret line="89" column="52" selection-start-line="89" selection-start-column="52" selection-end-line="89" selection-end-column="52" />
+          <folding>
+            <element signature="e#0#18#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/anaconda3/envs/nlp/lib/python3.7/site-packages/torch/nn/functional.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="645">
+          <caret line="1272" column="4" selection-start-line="1272" selection-start-column="4" selection-end-line="1272" selection-end-column="4" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/anaconda3/envs/nlp/lib/python3.7/site-packages/torch/nn/modules/activation.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="617">
+          <caret line="935" column="21" selection-start-line="935" selection-start-column="21" selection-end-line="935" selection-end-column="21" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/anaconda3/envs/nlp/lib/python3.7/codecs.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="190">
+          <caret line="320" selection-start-line="320" selection-end-line="320" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/spo_model.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="190">
+          <caret line="643" selection-start-line="643" selection-end-line="643" />
+          <folding>
+            <element signature="e#20#32#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/entity_linking.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="527">
+          <caret line="111" column="26" lean-forward="true" selection-start-line="111" selection-start-column="26" selection-end-line="111" selection-end-column="26" />
+          <folding>
+            <element signature="e#20#39#0" expanded="true" />
           </folding>
         </state>
       </provider>
