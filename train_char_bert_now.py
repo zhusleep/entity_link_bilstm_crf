@@ -46,7 +46,7 @@ t = BertTokenizer.from_pretrained(
 train_dataset = SPO_BERT(train_X, t,  ner=train_ner)
 valid_dataset = SPO_BERT(dev_X, t, ner=dev_ner)
 
-batch_size = 2
+batch_size = 60
 
 
 # # 准备embedding数据
@@ -83,7 +83,7 @@ optimizer = BertAdam([
                 {'params': model.hidden.parameters()},
                 {'params': model.NER.parameters()},
                 {'params': model.crf_model.parameters()},
-                {'params': model.bert.parameters(), 'lr': 1e-6}
+                {'params': model.bert.parameters(), 'lr': 2e-5}
             ],  lr=1e-3, warmup=0.05,t_total=t_total)
 clip = 50
 
@@ -140,10 +140,12 @@ for epoch in range(epoch):
     INFO = 'epoch %d, train loss %f, valid loss %f, acc %f, recall %f, f1 %f '% (epoch, train_loss, valid_loss,acc,recall,f1)
     logging.info(INFO)
     print(INFO)
+    if epoch ==2:break
     #print(INFO+'\t'+INFO_THRE)
 
 # 正负样本分析
-dev = pd.DataFrame(dev_X,columns=['text'])
+dev = pd.DataFrame()
+dev['text'] = dev_X
 pred_mention = []
 label_mention = []
 for index,row in dev.iterrows():

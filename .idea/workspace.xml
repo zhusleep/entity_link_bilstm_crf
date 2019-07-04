@@ -5,8 +5,24 @@
       <change beforePath="$PROJECT_DIR$/.idea/entity_link_bilstm_crf.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/entity_link_bilstm_crf.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/spo_dataset.py" beforeDir="false" afterPath="$PROJECT_DIR$/spo_dataset.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/log/2019-07-02 00:23:58.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/log/2019-07-02 00:26:09.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/log/2019-07-02 00:27:43.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/log/2019-07-02 00:30:08.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/log/2019-07-02 23:33:24.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/log/2019-07-02 23:34:53.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/log/2019-07-02 23:35:07.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/log/2019-07-02 23:35:21.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/log/2019-07-02 23:35:57.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/log/2019-07-03 00:06:10.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/log/2019-07-03 00:06:41.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/log/2019-07-03 00:07:04.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/log/2019-07-03 00:07:51.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/log/2019-07-03 00:08:50.txt" beforeDir="false" afterPath="$PROJECT_DIR$/log/2019-07-03 00:08:50.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/result/analysis.csv" beforeDir="false" afterPath="$PROJECT_DIR$/result/analysis.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/train_char.py" beforeDir="false" afterPath="$PROJECT_DIR$/train_char.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/train_char_bert_now.py" beforeDir="false" afterPath="$PROJECT_DIR$/train_char_bert_now.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -16,19 +32,22 @@
   </component>
   <component name="CoverageDataManager">
     <SUITE FILE_PATH="coverage/entity_link_bilstm_crf$spo_model.coverage" NAME="spo_model Coverage Results" MODIFIED="1562024833036" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/entity_link_bilstm_crf$train_char.coverage" NAME="train_char Coverage Results" MODIFIED="1561986331105" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/entity_link_bilstm_crf$train_char_bert_now.coverage" NAME="train_char_bert_now Coverage Results" MODIFIED="1562067474382" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/entity_link_bilstm_crf$train_char.coverage" NAME="train_char Coverage Results" MODIFIED="1562128605975" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/entity_link_bilstm_crf$train_char_bert_now.coverage" NAME="train_char_bert_now Coverage Results" MODIFIED="1562207277295" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/entity_link_bilstm_crf$train_ner.coverage" NAME="train_ner Coverage Results" MODIFIED="1561967240787" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
   <component name="FileEditorManager">
-    <splitter split-orientation="horizontal" split-proportion="0.5056704">
+    <splitter split-orientation="horizontal" split-proportion="0.72915274">
       <split-first>
         <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-          <file pinned="false" current-in-tab="true">
-            <entry file="file://$PROJECT_DIR$/train_char_bert_now.py">
+          <file pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/train_char.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="285">
-                  <caret line="48" column="14" selection-start-line="48" selection-start-column="14" selection-end-line="48" selection-end-column="14" />
+                <state relative-caret-position="339">
+                  <caret line="38" selection-start-line="38" selection-end-line="38" />
+                  <folding>
+                    <element signature="e#0#19#0" expanded="true" />
+                  </folding>
                 </state>
               </provider>
             </entry>
@@ -36,19 +55,40 @@
           <file pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/spo_dataset.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="305">
-                  <caret line="67" column="33" lean-forward="true" selection-start-line="67" selection-start-column="33" selection-end-line="67" selection-end-column="33" />
+                <state relative-caret-position="153">
+                  <caret line="51" column="48" selection-start-line="51" selection-start-column="48" selection-end-line="51" selection-end-column="48" />
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file pinned="false" current-in-tab="true">
+            <entry file="file://$PROJECT_DIR$/train_char_bert_now.py">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="333">
+                  <caret line="85" column="59" selection-start-line="85" selection-start-column="59" selection-end-line="85" selection-end-column="59" />
+                  <folding>
+                    <element signature="e#0#19#0" expanded="true" />
+                  </folding>
                 </state>
               </provider>
             </entry>
           </file>
           <file pinned="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/data_prepare.py">
+            <entry file="file://$PROJECT_DIR$/result/analysis.csv">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="-105">
-                  <caret line="23" column="8" selection-start-line="23" selection-start-column="8" selection-end-line="23" selection-end-column="8" />
+                <state relative-caret-position="408">
+                  <caret line="24" column="87" selection-start-line="24" selection-start-column="87" selection-end-line="24" selection-end-column="87" />
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/utils.py">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="444">
+                  <caret line="71" column="8" selection-start-line="71" selection-start-column="8" selection-end-line="71" selection-end-column="8" />
                   <folding>
-                    <element signature="e#0#18#0" expanded="true" />
+                    <element signature="e#0#24#0" expanded="true" />
                   </folding>
                 </state>
               </provider>
@@ -61,22 +101,10 @@
           <file pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/spo_model.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="235">
-                  <caret line="560" column="8" selection-start-line="560" selection-start-column="8" selection-end-line="560" selection-end-column="8" />
+                <state relative-caret-position="17">
+                  <caret line="552" column="33" selection-start-line="552" selection-start-column="33" selection-end-line="552" selection-end-column="33" />
                   <folding>
                     <element signature="e#20#32#0" expanded="true" />
-                  </folding>
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file pinned="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/train_char.py">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="356">
-                  <caret line="51" column="13" lean-forward="true" selection-start-line="51" selection-start-column="13" selection-end-line="51" selection-end-column="13" />
-                  <folding>
-                    <element signature="e#0#19#0" expanded="true" />
                   </folding>
                 </state>
               </provider>
@@ -109,12 +137,13 @@
         <option value="$PROJECT_DIR$/train_ner.py" />
         <option value="$PROJECT_DIR$/README.md" />
         <option value="$PROJECT_DIR$/data_prepare.py" />
-        <option value="$PROJECT_DIR$/utils.py" />
         <option value="$PROJECT_DIR$/result/analysis.csv" />
         <option value="$PROJECT_DIR$/entity_linking.py" />
-        <option value="$PROJECT_DIR$/train_char.py" />
         <option value="$PROJECT_DIR$/spo_dataset.py" />
         <option value="$PROJECT_DIR$/spo_model.py" />
+        <option value="$PROJECT_DIR$/log/2019-07-03 00:08:50.txt" />
+        <option value="$PROJECT_DIR$/train_char.py" />
+        <option value="$PROJECT_DIR$/utils.py" />
         <option value="$PROJECT_DIR$/train_char_bert_now.py" />
       </list>
     </option>
@@ -173,7 +202,7 @@
   <component name="PropertiesComponent">
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../chexiang-classification" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
     <property name="restartRequiresConfirmation" value="false" />
@@ -306,14 +335,14 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="43741000" />
+    <option name="totallyTimeSpent" value="56335000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="67" y="25" width="1853" height="1055" extended-state="6" />
+    <frame x="65" y="-4" width="1855" height="1204" extended-state="6" />
     <editor active="true" />
     <layout>
       <window_info id="Favorites" order="0" side_tool="true" />
-      <window_info content_ui="combo" id="Project" order="1" visible="true" weight="0.1713191" />
+      <window_info content_ui="combo" id="Project" order="1" visible="true" weight="0.1713654" />
       <window_info id="Structure" order="2" side_tool="true" weight="0.25" />
       <window_info anchor="bottom" id="Database Changes" order="0" />
       <window_info anchor="bottom" id="Terminal" order="1" weight="0.29657796" />
@@ -323,7 +352,7 @@
       <window_info anchor="bottom" id="Docker" order="5" show_stripe_button="false" />
       <window_info anchor="bottom" id="Message" order="6" />
       <window_info anchor="bottom" id="Find" order="7" weight="0.32930845" />
-      <window_info active="true" anchor="bottom" id="Run" order="8" visible="true" weight="0.2546652" />
+      <window_info active="true" anchor="bottom" id="Run" order="8" visible="true" weight="0.4591255" />
       <window_info anchor="bottom" id="Debug" order="9" weight="0.3212928" />
       <window_info anchor="bottom" id="Cvs" order="10" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="11" weight="0.4" />
@@ -383,52 +412,7 @@
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file:///usr/local/lib/python3.6/dist-packages/pytorch_pretrained_bert/tokenization.py" />
-    <entry file="file://$PROJECT_DIR$/README.md">
-      <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
-        <state split_layout="SPLIT">
-          <first_editor relative-caret-position="34">
-            <caret line="2" column="18" selection-start-line="2" selection-start-column="18" selection-end-line="2" selection-end-column="18" />
-          </first_editor>
-          <second_editor />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/data/dev_data.json" />
-    <entry file="file://$PROJECT_DIR$/result/analysis.csv">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-225">
-          <caret line="18" column="58" lean-forward="true" selection-start-line="18" selection-start-column="58" selection-end-line="18" selection-end-column="58" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/log/2019-07-01 23:56:39.txt" />
-    <entry file="file://$PROJECT_DIR$/log/2019-07-01 23:48:54.txt" />
-    <entry file="file://$PROJECT_DIR$/log/2019-07-01 23:45:51.txt" />
-    <entry file="file://$PROJECT_DIR$/log/2019-07-01 23:40:47.txt" />
-    <entry file="file://$PROJECT_DIR$/log/2019-07-01 23:40:19.txt" />
-    <entry file="file://$PROJECT_DIR$/log/2019-07-01 23:39:21.txt" />
-    <entry file="file://$PROJECT_DIR$/log/2019-07-01 23:38:47.txt" />
-    <entry file="file://$PROJECT_DIR$/log/2019-07-01 23:37:57.txt" />
-    <entry file="file://$PROJECT_DIR$/log/2019-07-01 23:37:11.txt" />
-    <entry file="file://$PROJECT_DIR$/log/2019-07-01 23:34:52.txt" />
-    <entry file="file://$PROJECT_DIR$/log/2019-07-01 23:02:47.txt" />
-    <entry file="file://$PROJECT_DIR$/log/2019-07-01 23:12:25.txt" />
-    <entry file="file://$PROJECT_DIR$/log/2019-07-01 23:11:10.txt" />
-    <entry file="file://$PROJECT_DIR$/train_char_bert.py" />
-    <entry file="file://$PROJECT_DIR$/log/2019-07-02 07:51:18.txt" />
-    <entry file="file://$PROJECT_DIR$/log/2019-07-02 07:50:46.txt" />
-    <entry file="file://$PROJECT_DIR$/log/2019-07-02 07:49:12.txt" />
-    <entry file="file://$PROJECT_DIR$/log/2019-07-02 07:54:02.txt" />
-    <entry file="file://$PROJECT_DIR$/log/2019-07-02 07:48:04.txt" />
-    <entry file="file://$PROJECT_DIR$/log/2019-07-02 07:47:32.txt" />
-    <entry file="file://$PROJECT_DIR$/log/2019-07-02 07:45:17.txt" />
-    <entry file="file://$PROJECT_DIR$/log/2019-07-02 07:44:45.txt" />
-    <entry file="file://$PROJECT_DIR$/log/2019-07-02 00:22:02.txt" />
     <entry file="file://$PROJECT_DIR$/log/2019-07-01 23:58:44.txt" />
-    <entry file="file://$PROJECT_DIR$/log/2019-07-01 20:24:07.txt">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
     <entry file="file://$PROJECT_DIR$/train.py" />
     <entry file="file://$PROJECT_DIR$/tIme_distributed.py">
       <provider selected="true" editor-type-id="text-editor" />
@@ -443,21 +427,7 @@
     <entry file="file://$PROJECT_DIR$/train_ner.py">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/utils.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="748">
-          <caret line="47" column="35" selection-start-line="47" selection-start-column="35" selection-end-line="47" selection-end-column="35" />
-          <folding>
-            <element signature="e#0#24#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$USER_HOME$/anaconda3/envs/nlp/lib/python3.7/site-packages/pytorch_pretrained_bert/optimization.py" />
-    <entry file="file://$PROJECT_DIR$/log/2019-07-01 21:05:36.txt" />
-    <entry file="file://$PROJECT_DIR$/log/2019-07-02 07:55:29.txt" />
-    <entry file="file://$PROJECT_DIR$/log/2019-07-02 18:52:04.txt" />
-    <entry file="file://$PROJECT_DIR$/log/2019-07-02 16:59:04.txt" />
     <entry file="file://$PROJECT_DIR$/log/2019-07-02 16:22:32.txt" />
     <entry file="file://$PROJECT_DIR$/log/2019-07-02 16:12:49.txt" />
     <entry file="file://$PROJECT_DIR$/log/2019-07-02 16:12:04.txt" />
@@ -465,16 +435,6 @@
     <entry file="file://$PROJECT_DIR$/log/2019-07-02 16:09:28.txt" />
     <entry file="file://$PROJECT_DIR$/log/2019-07-02 15:39:59.txt" />
     <entry file="file://$PROJECT_DIR$/log/2019-07-02 15:38:03.txt" />
-    <entry file="file://$PROJECT_DIR$/train_char.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="356">
-          <caret line="51" column="13" lean-forward="true" selection-start-line="51" selection-start-column="13" selection-end-line="51" selection-end-column="13" />
-          <folding>
-            <element signature="e#0#19#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/data_prepare.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-105">
@@ -485,27 +445,154 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/spo_dataset.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="305">
-          <caret line="67" column="33" lean-forward="true" selection-start-line="67" selection-start-column="33" selection-end-line="67" selection-end-column="33" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/spo_model.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="235">
-          <caret line="560" column="8" selection-start-line="560" selection-start-column="8" selection-end-line="560" selection-end-column="8" />
+        <state relative-caret-position="17">
+          <caret line="552" column="33" selection-start-line="552" selection-start-column="33" selection-end-line="552" selection-end-column="33" />
           <folding>
             <element signature="e#20#32#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/log/2019-07-03 09:12:20.txt">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/log/2019-07-03 00:07:51.txt">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/log/2019-07-03 00:07:04.txt">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/log/2019-07-03 00:06:41.txt">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/log/2019-07-03 00:06:10.txt">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/log/2019-07-02 23:35:57.txt">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/log/2019-07-02 23:35:21.txt">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/log/2019-07-02 23:35:07.txt">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/log/2019-07-02 23:33:24.txt">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/log/2019-07-02 23:34:53.txt">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/log/2019-07-01 16:39:09.txt">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/log/2019-07-02 14:47:30.txt">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/log/2019-07-02 19:37:59.txt">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/log/2019-07-02 18:52:04.txt">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/log/2019-07-02 16:59:04.txt">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/log/2019-07-02 13:18:40.txt">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/log/2019-07-02 12:19:08.txt">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/log/2019-07-02 12:16:34.txt">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/log/2019-07-02 07:55:29.txt">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/log/2019-07-02 00:30:08.txt">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/log/2019-07-02 00:27:43.txt">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/log/2019-07-02 00:23:58.txt">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/log/2019-07-02 18:52:10.txt">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/log/2019-07-01 20:24:07.txt">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/log/2019-07-01 21:05:36.txt">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/log/2019-07-03 10:57:28.txt">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/log/2019-07-03 10:58:36.txt">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/log/2019-07-03 09:19:28.txt">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/log/2019-07-03 00:08:50.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <caret column="2" selection-start-column="2" selection-end-column="2" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/log/2019-07-03 12:36:51.txt">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/log/2019-07-03 12:39:44.txt">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/result/analysis.csv">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="408">
+          <caret line="24" column="87" selection-start-line="24" selection-start-column="87" selection-end-line="24" selection-end-column="87" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/spo_dataset.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="153">
+          <caret line="51" column="48" selection-start-line="51" selection-start-column="48" selection-end-line="51" selection-end-column="48" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/train_char.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="339">
+          <caret line="38" selection-start-line="38" selection-end-line="38" />
+          <folding>
+            <element signature="e#0#19#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/utils.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="444">
+          <caret line="71" column="8" selection-start-line="71" selection-start-column="8" selection-end-line="71" selection-end-column="8" />
+          <folding>
+            <element signature="e#0#24#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/train_char_bert_now.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="285">
-          <caret line="48" column="14" selection-start-line="48" selection-start-column="14" selection-end-line="48" selection-end-column="14" />
+        <state relative-caret-position="333">
+          <caret line="85" column="59" selection-start-line="85" selection-start-column="59" selection-end-line="85" selection-end-column="59" />
+          <folding>
+            <element signature="e#0#19#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>

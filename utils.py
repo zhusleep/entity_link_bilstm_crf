@@ -65,13 +65,20 @@ def calc_f1(pred,label,dev,ner_list):
         label_count += len(m_label)
         acc_count += sum([1 if x in m_label else 0 for x in m_pred])
 
-    acc = acc_count/pred_count
+    if pred_count==0:
+        print('somtthing wrong')
+        acc = 0
+    else:
+        acc = acc_count/pred_count
     recall = acc_count/label_count
     if acc!=0 and recall!=0:
         f1 = 2*acc*recall/(acc+recall)
     else:
         f1 = 0
+        print('something wrong!')
+
     return acc,recall,f1,pred_result,label_result
+
 
 def seed_torch(seed=1029):
     random.seed(seed)

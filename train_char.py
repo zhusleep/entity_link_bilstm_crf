@@ -35,7 +35,7 @@ print('一共有%d 个字' % t.num_words)
 train_dataset = SPO(train_X, t, max_len=50, ner=train_ner)
 valid_dataset = SPO(dev_X, t, max_len=50, ner=dev_ner)
 
-batch_size = 1024
+batch_size = 2
 
 
 # 准备embedding数据
