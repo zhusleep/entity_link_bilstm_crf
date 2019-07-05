@@ -105,11 +105,10 @@ for epoch in range(epoch):
         loss.backward()
 
         #loss = loss_fn(pred, ner)
+        nn.utils.clip_grad_norm_(model.parameters(), clip)
         optimizer.step()
         optimizer.zero_grad()
         # Clip gradients: gradients are modified in place
-        nn.utils.clip_grad_norm_(model.parameters(), clip)
-        optimizer.step()
         train_loss += loss.item()
     train_loss = train_loss/len(train_X)
 

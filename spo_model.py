@@ -596,7 +596,7 @@ class SPO_Model_Bert(nn.Module):
 from allennlp.modules.span_extractors import SelfAttentiveSpanExtractor, EndpointSpanExtractor
 
 
-class EntityLink(nn.Module):
+class EntityLink_bert(nn.Module):
     def __init__(self,
                  encoder_size=64,
                  dim_num_feat=0,
@@ -604,7 +604,7 @@ class EntityLink(nn.Module):
                  seq_dropout=0.1,
                  num_outputs=5
               ):
-        super(EntityLink, self).__init__()
+        super(EntityLink_bert, self).__init__()
         # self.word_embedding = nn.Embedding(vocab_size,
         #                                    word_embed_size,
         #                                    padding_idx=0)
@@ -612,7 +612,7 @@ class EntityLink(nn.Module):
         self.seq_dropout = seq_dropout
 
         self.dropout1d = nn.Dropout2d(self.seq_dropout)
-        self.span_extractor = SelfAttentiveSpanExtractor(768 * 1)
+        self.span_extractor = EndpointSpanExtractor(768 * 1)
 
         bert_model = 'bert-base-chinese'
         self.bert = BertModel.from_pretrained(bert_model)
@@ -623,10 +623,11 @@ class EntityLink(nn.Module):
         hidden_size=100
         self.hidden = nn.Linear(2*encoder_size, hidden_size)
         self.classify = nn.Sequential(
-            nn.BatchNorm1d(768),
+            nn.BatchNorm1d(768*2),
             nn.Dropout(p=dropout),
-            nn.Linear(in_features=768, out_features=num_outputs)
+            nn.Linear(in_features=768*2, out_features=num_outputs)
         )
+
     def forward(self,token_tensor,mask_X,pos,length):
         self.bert.eval()
         with torch.no_grad():
@@ -639,8 +640,9 @@ class EntityLink(nn.Module):
             bert_outputs,
             pos
         )
-        pred = self.classify(spans_contexts.squeeze(0))
-
+        #bert_outputs[:,pos]
+        pred = self.classify(spans_contexts)
+        #print(pred.size())
         return pred
 
     # def forward(self, token_tensor, mask_X, length):
@@ -661,6 +663,62 @@ class EntityLink(nn.Module):
     #     else:
     #         pred = logits.argmax(dim=-1).cpu().numpy()
     #     return pred
+
+
+class EntityLink(nn.Module):
+    def __init__(self,
+                 vocab_size,
+                 init_embedding,
+                 word_embed_size=300,
+                 encoder_size=64,
+                 dim_num_feat=0,
+                 dropout=0.2,
+                 seq_dropout=0.1,
+                 num_outputs=5
+              ):
+        super(EntityLink, self).__init__()
+        # self.word_embedding = nn.Embedding(vocab_size,
+        #                                    word_embed_size,
+        #                                    padding_idx=0)
+        # self.pos_embedding = nn.Embedding(pos_embed_size, pos_dim, padding_idx=0)
+        self.word_embedding = nn.Embedding(vocab_size,
+                                           word_embed_size,
+                                           padding_idx=0)
+        self.seq_dropout = seq_dropout
+        self.embed_size = word_embed_size
+        self.encoder_size = encoder_size
+        if init_embedding is not None:
+            self.word_embedding.weight.data.copy_(torch.from_numpy(init_embedding))
+        self.seq_dropout = seq_dropout
+
+        self.dropout1d = nn.Dropout2d(self.seq_dropout)
+        self.span_extractor = SelfAttentiveSpanExtractor(2*encoder_size)
+
+        bert_model = 'bert-base-chinese'
+        self.use_layer = -1
+        self.LSTM = LSTMEncoder(embed_size=word_embed_size,
+                                encoder_size=encoder_size,
+                                bidirectional=True)
+        hidden_size=100
+        self.hidden = nn.Linear(2*encoder_size, hidden_size)
+        self.classify = nn.Sequential(
+            nn.BatchNorm1d(encoder_size*2),
+            nn.Dropout(p=dropout),
+            nn.Linear(in_features=encoder_size*2, out_features=num_outputs)
+        )
+
+    def forward(self,token_tensor,mask_X,pos,length):
+        X = self.word_embedding(token_tensor)
+
+        X1 = self.LSTM(X, length)
+
+        spans_contexts = self.span_extractor(
+            X1,
+            pos
+        )
+        pred = self.classify(spans_contexts.squeeze(0))
+        #print(pred.size())
+        return pred
 
 
 # Mask attention layer
