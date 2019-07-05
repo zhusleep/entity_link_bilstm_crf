@@ -84,8 +84,8 @@ class DataManager(object):
         type_list = list(set(type_list))
         self.type_list = type_list
         train_num = 200000
-        train_part = e_link[0:train_num]
-        valid_part = e_link[train_num:]
+        train_part = e_link[0:200000]
+        valid_part = e_link[200000:]
 
         train_X = [x[0] for x in train_part]
         train_pos = [x[1] for x in train_part]
@@ -103,8 +103,7 @@ class DataManager(object):
         #valid_type = [type_list.index(x[2]) for x in valid_part]
         return train_X,train_pos,train_type,valid_X,valid_pos,valid_type
 
-
-    def parse_v1(self,file_name, valid_num):
+    def parse_v2(self,file_name, valid_num):
         # type classification
         kb_data = []
         kb = {}
@@ -125,8 +124,13 @@ class DataManager(object):
                 for m in mention_ner:
                     if m['kb_id'] == 'NIL':
                         continue
+                    # query 特征
                     sentence = s['text']
+                    # mention 特征
                     pos = [int(m['offset']), int(m['offset'])+len(m['mention'])-1]
+                    # kb candidate特征
+                    candidate = kb[m['kb_id']]
+                    # 结构化知识 摘要，type, 标签，属性信息
 
                     m_type = kb[m['kb_id']]['type'][0]
 

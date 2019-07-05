@@ -121,7 +121,7 @@ for epoch in range(epoch):
 
         pred_set.append(pred.cpu().numpy())
         label_set.append(type.cpu().numpy())
-        valid_loss += loss
+        valid_loss += loss.item()
     valid_loss = valid_loss / len(dev_X)
     pred_set = np.concatenate(pred_set, axis=0)
     label_set = np.concatenate(label_set, axis=0)
