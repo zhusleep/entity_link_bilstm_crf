@@ -2,7 +2,7 @@
 import torch
 from torch import nn
 from torch.nn import functional as F
-from pytorch_pretrained_bert.modeling import BertModel
+#from pytorch_pretrained_bert.modeling import BertModel
 from torch.nn import init
 
 from torchcrf import CRF
@@ -830,7 +830,7 @@ class EntityLink_v3(nn.Module):
         self.span_extractor = EndpointSpanExtractor(encoder_size*2)
 
         bert_model = 'bert-base-chinese'
-        self.bert = BertModel.from_pretrained(bert_model)
+        #self.bert = BertModel.from_pretrained(bert_model)
         self.use_layer = -1
         self.lstm_attention = Attention(encoder_size*2)
 

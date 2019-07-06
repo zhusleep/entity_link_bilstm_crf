@@ -80,6 +80,18 @@ def calc_f1(pred,label,dev,ner_list):
     return acc,recall,f1,pred_result,label_result
 
 
+def split_list(item, n):
+    new_item = []
+    i = 0
+    while True:
+        new_item.append(item[n*i:n*(i+1)])
+        if n*(i+1) >= len(item):
+            break
+        else:
+            i += 1
+    return new_item
+
+
 def get_threshold(predict, label, num_feature):
     thre_list = []
     for i in range(num_feature):

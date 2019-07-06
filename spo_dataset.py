@@ -212,46 +212,38 @@ class entity_linking_v3(Dataset):
         # X = pad_sequences(X, maxlen=198)
         # self.length = [len(sen) for sen in self.X]
 
-    def bert_tokenize(self, x):
-        temp = []
-        for w in x:
-            if w in self.tokenizer.vocab:
-                temp.append(w)
-            else:
-                temp.append('[UNK]')
-        temp = ['[CLS]'] + temp + ['[SEP]']
-        temp = temp[0:self.max_len]
-        # sen = t.tokenize(''.join(item))
-        bert_tokens = self.tokenizer.convert_tokens_to_ids(temp)
-        return bert_tokens
-
     def deal_for_tokenization(self, X):
         text = []
-        for sen in X:
-            text.append(sen['query'])
-            text.append(sen['candidate_abstract'])
-            text.append(sen['candidate_labels'])
+        for one_batch in X:
+            for sen in one_batch:
+                text.append(sen['query'])
+                text.append(sen['candidate_abstract'])
+                text.append(sen['candidate_labels'])
         self.tokenizer.fit(text)
 
         new_x = []
         print('deal for tokenization')
-        for sen in tqdm(X):
-            sen['query'] = self.tokenizer.transform([sen['query']])[0]
-            sen['candidate_abstract'] = self.tokenizer.transform([sen['candidate_abstract']])[0]
-            sen['candidate_labels'] = self.tokenizer.transform([sen['candidate_labels']])[0]
-            sen['pos'] = [sen['pos'][0], sen['pos'][1]]
-            if not sen['candidate_abstract']:
-                sen['candidate_abstract'] = [1]
-            if not sen['candidate_labels']:
-                sen['candidate_labels'] = [1]
-
-            new_x.append(sen)
+        for one_batch in tqdm(X):
+            batch_sample = []
+            for sen in one_batch:
+                sen['query'] = self.tokenizer.transform([sen['query']])[0]
+                sen['candidate_abstract'] = self.tokenizer.transform([sen['candidate_abstract']])[0]
+                sen['candidate_labels'] = self.tokenizer.transform([sen['candidate_labels']])[0]
+                sen['pos'] = [sen['pos'][0], sen['pos'][1]]
+                if not sen['candidate_abstract']:
+                    sen['candidate_abstract'] = [1]
+                if not sen['candidate_labels']:
+                    sen['candidate_labels'] = [1]
+                batch_sample.append(sen)
+            new_x.append(batch_sample)
         return new_x
 
     def __len__(self):
         return len(self.X)
 
     def __getitem__(self, index):
+        return self.X[index]
+
         label = self.X[index]['label']
         query = torch.tensor(self.X[index]['query'])
         pos = self.X[index]['pos']
@@ -373,6 +365,78 @@ def collate_fn_linking_v2(batch):
         # candidate_abstract_numwords = torch.tensor(candidate_abstract_numwords)
         # candidate_numattrs = torch.tensor(candidate_numattrs)
         return index, label, query, l_query, pos, candidate_abstract, l_abstract, candidate_labels, l_labels, \
+            candidate_type, candidate_abstract_numwords, candidate_numattrs
+    else:
+        index, X, length = zip(*batch)
+        length = torch.tensor(length, dtype=torch.long)
+        return index, X, length,
+
+
+def collate_fn_linking_v3(batch):
+
+    #print(len(batch[0]))
+    if len(batch[0]) != 0:
+        label_batch = []
+        query_batch = []
+        pos_batch = []
+        candidate_labels_batch = []
+        candidate_abstract_batch = []
+        candidate_type_batch = []
+        candidate_numattrs_batch = []
+        candidate_abstract_numwords_batch = []
+        l_abstract_batch = []
+        l_query_batch = []
+        l_labels_batch = []
+        for pair in zip(*batch):
+            pair = pair[0]
+            label = pair['label']
+            label_batch.append(label)
+            query = torch.tensor(pair['query'])
+            query_batch.append(query)
+            pos = pair['pos']
+            pos_batch.append(pos)
+            candidate_abstract = torch.tensor(pair['candidate_abstract'])
+            candidate_abstract_batch.append(candidate_abstract)
+            candidate_labels = torch.tensor(pair['candidate_labels'])
+            candidate_labels_batch.append(candidate_labels)
+            candidate_type = pair['candidate_type']
+            candidate_type_batch.append(candidate_type)
+            candidate_abstract_numwords = pair['candidate_abstract_numwords']
+            candidate_abstract_numwords_batch.append(candidate_abstract_numwords)
+            candidate_numattrs = pair['candidate_numattrs']
+            candidate_numattrs_batch.append(candidate_numattrs)
+            l_abstract = len(candidate_abstract)
+            l_abstract_batch.append(l_abstract)
+            l_query = len(query)
+            l_query_batch.append(l_query)
+            l_labels = len(candidate_labels)
+            l_labels_batch.append(l_labels)
+
+        # rename
+        label = label_batch
+        query = query_batch
+        pos = pos_batch
+        candidate_labels = candidate_labels_batch
+        candidate_abstract = candidate_abstract_batch
+        candidate_type = candidate_type_batch
+        candidate_numattrs = candidate_numattrs_batch
+        candidate_abstract_numwords = candidate_abstract_numwords_batch
+        l_abstract = l_abstract_batch
+        l_query = l_query_batch
+        l_labels = l_labels_batch
+
+        pos = torch.tensor(pos, dtype=torch.int)
+        l_query = torch.tensor(l_query, dtype=torch.int)
+        l_abstract = torch.tensor(l_abstract, dtype=torch.int)
+        l_labels = torch.tensor(l_labels, dtype=torch.int)
+        candidate_abstract_numwords = torch.tensor(candidate_abstract_numwords, dtype=torch.int)
+        candidate_numattrs = torch.tensor(candidate_numattrs, dtype=torch.int)
+
+        candidate_type = torch.tensor(candidate_type, dtype=torch.long)
+        label = torch.tensor(label)
+        # candidate_abstract_numwords = torch.tensor(candidate_abstract_numwords)
+        # candidate_numattrs = torch.tensor(candidate_numattrs)
+        return  label, query, l_query, pos, candidate_abstract, l_abstract, candidate_labels, l_labels, \
             candidate_type, candidate_abstract_numwords, candidate_numattrs
     else:
         index, X, length = zip(*batch)
