@@ -83,7 +83,7 @@ def calc_f1(pred,label,dev,ner_list):
 def split_list(item, n):
     new_item = []
     i = 0
-    if n>150:
+    if len(item)>150:
         item_tail = item[-2:]
         item_head = item[0:-2]
         while True:
