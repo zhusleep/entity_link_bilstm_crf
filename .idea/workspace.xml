@@ -1,16 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="0f1ac612-fcb0-4ead-b76b-cb973ebb02d7" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.ipynb_checkpoints/entitylinking-checkpoint.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/.ipynb_checkpoints/entitylinking-checkpoint.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data_prepare.py" beforeDir="false" afterPath="$PROJECT_DIR$/data_prepare.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/entity_linking_v3.py" beforeDir="false" afterPath="$PROJECT_DIR$/entity_linking_v3.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/entitylinking.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/entitylinking.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/spo_dataset.py" beforeDir="false" afterPath="$PROJECT_DIR$/spo_dataset.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/spo_model.py" beforeDir="false" afterPath="$PROJECT_DIR$/spo_model.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils.py" afterDir="false" />
-    </list>
+    <list default="true" id="0f1ac612-fcb0-4ead-b76b-cb973ebb02d7" name="Default Changelist" comment="" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -399,14 +390,14 @@
       <window_info content_ui="combo" id="Project" order="1" visible="true" weight="0.10344828" />
       <window_info id="Structure" order="2" side_tool="true" weight="0.25" />
       <window_info anchor="bottom" id="Database Changes" order="0" />
-      <window_info active="true" anchor="bottom" id="Terminal" order="1" visible="true" weight="0.17233808" />
+      <window_info anchor="bottom" id="Terminal" order="1" weight="0.17233808" />
       <window_info anchor="bottom" id="Event Log" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Version Control" order="3" weight="0.42775667" />
       <window_info anchor="bottom" id="Python Console" order="4" weight="0.3298479" />
       <window_info anchor="bottom" id="Docker" order="5" show_stripe_button="false" />
       <window_info anchor="bottom" id="Message" order="6" />
       <window_info anchor="bottom" id="Find" order="7" weight="0.32930845" />
-      <window_info anchor="bottom" id="Run" order="8" weight="0.2360044" />
+      <window_info active="true" anchor="bottom" id="Run" order="8" visible="true" weight="0.2360044" />
       <window_info anchor="bottom" id="Debug" order="9" weight="0.32162458" />
       <window_info anchor="bottom" id="Cvs" order="10" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="11" weight="0.4" />
