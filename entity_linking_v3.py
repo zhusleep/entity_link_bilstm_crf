@@ -90,7 +90,7 @@ for epoch in range(epoch):
         candidate_numattrs_sp = split_list(candidate_numattrs, n_split)
         candidate_abstract_numwords_sp = split_list(candidate_abstract_numwords, n_split)
 
-        parts = query_sp
+        parts = len(query_sp)
         pred_set = []
         for i in range(parts):
             query = query_sp[i]
