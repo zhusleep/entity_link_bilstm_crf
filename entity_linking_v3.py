@@ -176,8 +176,8 @@ for epoch in range(epoch):
         #
         # # Clip gradients: gradients are modified in place
         # train_loss += loss.item()/len(label)
-
-    # train_loss = train_loss/len(train_part)
+        #break
+    #train_loss = train_loss/len(train_part)
 
     model.eval()
     valid_loss = 0
@@ -203,7 +203,7 @@ for epoch in range(epoch):
         candidate_numattrs_sp = split_list(candidate_numattrs, n_split)
         candidate_abstract_numwords_sp = split_list(candidate_abstract_numwords, n_split)
 
-        parts = int(len(label) / 150) + 1
+        parts = len(query_sp)
         pred_set = []
         for i in range(parts):
             query = query_sp[i]
@@ -254,7 +254,7 @@ for epoch in range(epoch):
         if np.argmax(pred, axis=0) == np.argmax(label):
             hit += 1
         # Clip gradients: gradients are modified in place
-        train_loss += loss.item() / len(label)
+        valid_loss += loss.item() / len(label)
         # ner = ner.type(torch.float).cuda()
         # print(index)
     acc = hit/len(valid_part)
