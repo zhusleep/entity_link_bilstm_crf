@@ -142,6 +142,136 @@ class SPO_BERT_LINK(Dataset):
             return index, sentence,length
 
 
+class entity_linking_v2(Dataset):
+    def __init__(self, X, tokenizer, max_len=510):
+        super(entity_linking_v2, self).__init__()
+        # self.raw_X = X
+        self.tokenizer = tokenizer
+        self.max_len = max_len
+
+        self.X = self.deal_for_bert(X)
+        # X = pad_sequences(X, maxlen=198)
+        # self.length = [len(sen) for sen in self.X]
+
+    def bert_tokenize(self,x):
+        temp = []
+        for w in x:
+            if w in self.tokenizer.vocab:
+                temp.append(w)
+            else:
+                temp.append('[UNK]')
+        temp = ['[CLS]'] + temp + ['[SEP]']
+        temp = temp[0:self.max_len]
+        # sen = t.tokenize(''.join(item))
+        bert_tokens = self.tokenizer.convert_tokens_to_ids(temp)
+        return bert_tokens
+
+    def deal_for_bert(self, X):
+        new_x = []
+        print('deal for bert tokenization')
+        for sen in tqdm(X):
+            sen['query'] = self.bert_tokenize(sen['query'])
+            sen['candidate_abstract'] = self.bert_tokenize(sen['candidate_abstract'])
+            sen['candidate_labels'] = self.bert_tokenize(sen['candidate_labels'])
+            sen['pos'] = [sen['pos'][0], sen['pos'][1]]
+            new_x.append(sen)
+        return new_x
+
+    def __len__(self):
+        return len(self.X)
+
+    def __getitem__(self, index):
+        label = self.X[index]['label']
+        query = torch.tensor(self.X[index]['query'])
+        pos = self.X[index]['pos']
+        candidate_abstract = torch.tensor(self.X[index]['candidate_abstract'])
+        candidate_labels = torch.tensor(self.X[index]['candidate_labels'])
+        candidate_type = self.X[index]['candidate_type']
+        candidate_abstract_numwords = self.X[index]['candidate_abstract_numwords']
+        candidate_numattrs = self.X[index]['candidate_numattrs']
+
+        l_abstract = len(candidate_abstract)
+        l_query = len(query)
+        l_labels = len(candidate_labels)
+
+        if label is not None:
+            return index, label, query, l_query, pos, candidate_abstract, l_abstract, candidate_labels, l_labels, \
+                   candidate_type, candidate_abstract_numwords, candidate_numattrs
+        else:
+            return index
+
+
+class entity_linking_v3(Dataset):
+    def __init__(self, X, tokenizer, max_len=500):
+        super(entity_linking_v3, self).__init__()
+        # self.raw_X = X
+        self.tokenizer = tokenizer
+        self.max_len = max_len
+
+        self.X = self.deal_for_tokenization(X)
+        # X = pad_sequences(X, maxlen=198)
+        # self.length = [len(sen) for sen in self.X]
+
+    def bert_tokenize(self, x):
+        temp = []
+        for w in x:
+            if w in self.tokenizer.vocab:
+                temp.append(w)
+            else:
+                temp.append('[UNK]')
+        temp = ['[CLS]'] + temp + ['[SEP]']
+        temp = temp[0:self.max_len]
+        # sen = t.tokenize(''.join(item))
+        bert_tokens = self.tokenizer.convert_tokens_to_ids(temp)
+        return bert_tokens
+
+    def deal_for_tokenization(self, X):
+        text = []
+        for sen in X:
+            text.append(sen['query'])
+            text.append(sen['candidate_abstract'])
+            text.append(sen['candidate_labels'])
+        self.tokenizer.fit(text)
+
+        new_x = []
+        print('deal for tokenization')
+        for sen in tqdm(X):
+            sen['query'] = self.tokenizer.transform([sen['query']])[0]
+            sen['candidate_abstract'] = self.tokenizer.transform([sen['candidate_abstract']])[0]
+            sen['candidate_labels'] = self.tokenizer.transform([sen['candidate_labels']])[0]
+            sen['pos'] = [sen['pos'][0], sen['pos'][1]]
+            if not sen['candidate_abstract']:
+                sen['candidate_abstract'] = [1]
+            if not sen['candidate_labels']:
+                sen['candidate_labels'] = [1]
+
+            new_x.append(sen)
+        return new_x
+
+    def __len__(self):
+        return len(self.X)
+
+    def __getitem__(self, index):
+        label = self.X[index]['label']
+        query = torch.tensor(self.X[index]['query'])
+        pos = self.X[index]['pos']
+        candidate_abstract = torch.tensor(self.X[index]['candidate_abstract'])
+        candidate_labels = torch.tensor(self.X[index]['candidate_labels'])
+        candidate_type = self.X[index]['candidate_type']
+        candidate_abstract_numwords = self.X[index]['candidate_abstract_numwords']
+        candidate_numattrs = self.X[index]['candidate_numattrs']
+
+        l_abstract = len(candidate_abstract)
+        l_query = len(query)
+        l_labels = len(candidate_labels)
+
+        if label is not None:
+            return index, label, query, l_query, pos, candidate_abstract, l_abstract, candidate_labels, l_labels, \
+                   candidate_type, candidate_abstract_numwords, candidate_numattrs
+        else:
+            return index
+
+
 class SPO_LINK(Dataset):
     def __init__(self, X, tokenizer, pos, type=None):
         super(SPO_LINK, self).__init__()
@@ -218,6 +348,32 @@ def collate_fn_link(batch):
         length = torch.tensor(length, dtype=torch.int)
         type= torch.tensor(type, dtype=torch.long)
         return index, sentence, type, pos, length
+    else:
+        index, X, length = zip(*batch)
+        length = torch.tensor(length, dtype=torch.long)
+        return index, X, length,
+
+
+def collate_fn_linking_v2(batch):
+
+    if len(batch[0]) == 12:
+        index, label, query, l_query, pos, candidate_abstract, l_abstract, candidate_labels, l_labels, \
+            candidate_type, candidate_abstract_numwords, candidate_numattrs = zip(*batch)
+
+        pos = torch.tensor(pos, dtype=torch.int)
+
+        l_query = torch.tensor(l_query, dtype=torch.int)
+        l_abstract = torch.tensor(l_abstract, dtype=torch.int)
+        l_labels = torch.tensor(l_labels, dtype=torch.int)
+        candidate_abstract_numwords = torch.tensor(candidate_abstract_numwords, dtype=torch.int)
+        candidate_numattrs = torch.tensor(candidate_numattrs, dtype=torch.int)
+
+        candidate_type = torch.tensor(candidate_type, dtype=torch.long)
+        label = torch.tensor(label)
+        # candidate_abstract_numwords = torch.tensor(candidate_abstract_numwords)
+        # candidate_numattrs = torch.tensor(candidate_numattrs)
+        return index, label, query, l_query, pos, candidate_abstract, l_abstract, candidate_labels, l_labels, \
+            candidate_type, candidate_abstract_numwords, candidate_numattrs
     else:
         index, X, length = zip(*batch)
         length = torch.tensor(length, dtype=torch.long)

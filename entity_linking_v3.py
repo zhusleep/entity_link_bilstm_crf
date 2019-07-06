@@ -4,8 +4,8 @@ import numpy as np
 
 import torch, os
 from data_prepare import data_manager,read_kb
-from spo_dataset import entity_linking_v2, get_mask, collate_fn_linking_v2
-from spo_model import SPOModel, EntityLink_v2
+from spo_dataset import entity_linking_v3, get_mask, collate_fn_linking_v2
+from spo_model import SPOModel, EntityLink_v3
 from torch.utils.data import DataLoader, RandomSampler, TensorDataset
 from tokenize_pkg.tokenize import Tokenizer
 from tqdm import tqdm as tqdm
@@ -20,23 +20,36 @@ file_namne = 'data/raw_data/train.json'
 train_part, valid_part = data_manager.parse_v2(file_name=file_namne, valid_num=10000)
 seed_torch(2019)
 
-BERT_MODEL = 'bert-base-chinese'
-CASED = False
-t = BertTokenizer.from_pretrained(
-    BERT_MODEL,
-    do_lower_case=True,
-    never_split = ("[UNK]", "[SEP]", "[PAD]", "[CLS]", "[MASK]")
-#    cache_dir="~/.pytorch_pretrained_bert/bert-large-uncased-vocab.txt"
-)
+t = Tokenizer(max_feature=10000, segment=False, lowercase=True)
 
-train_dataset = entity_linking_v2(train_part, t, max_len=450)
-valid_dataset = entity_linking_v2(valid_part, t, max_len=450)
+train_dataset = entity_linking_v3(train_part, t)
+valid_dataset = entity_linking_v3(valid_part, t)
+
+batch_size = 1
 
 
-train_batch_size = 16
+# 准备embedding数据
+embedding_file = 'embedding/miniembedding_baike_link.npy'
+#embedding_file = 'embedding/miniembedding_engineer_qq_att.npy'
+
+if os.path.exists(embedding_file):
+    embedding_matrix = np.load(embedding_file)
+else:
+    #embedding = '/home/zhukaihua/Desktop/nlp/embedding/baike'
+    embedding = '/home/zhu/Desktop/word_embedding/sgns.baidubaike.bigram-char'
+    #embedding = '/home/zhukaihua/Desktop/nlp/embedding/Tencent_AILab_ChineseEmbedding.txt'
+    embedding_matrix = load_glove(embedding, t.num_words+100, t)
+    np.save(embedding_file, embedding_matrix)
+
+
+
+train_batch_size = 64
 valid_batch_size = 16
 
-model = EntityLink_v2(encoder_size=128, dropout=0.2)
+model = EntityLink_v3(vocab_size=embedding_matrix.shape[0], encoder_size=128,
+                      dropout=0.2,
+                      init_embedding=embedding_matrix)
+
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model.to(device)
 
@@ -44,15 +57,6 @@ train_dataloader = DataLoader(train_dataset, collate_fn=collate_fn_linking_v2, s
 valid_dataloader = DataLoader(valid_dataset, collate_fn=collate_fn_linking_v2, shuffle=True, batch_size=valid_batch_size)
 
 epoch = 20
-t_total = int(epoch*len(train_part)/train_batch_size)
-optimizer = BertAdam([
-                {'params': model.LSTM.parameters()},
-                {'params': model.hidden.parameters()},
-                {'params': model.classify.parameters()},
-                {'params': model.span_extractor.parameters()},
-                {'params': model.bert.parameters(), 'lr': 2e-5}
-            ],  lr=1e-3, warmup=0.05,t_total=t_total)
-clip = 50
 
 loss_fn = nn.BCELoss()
 use_cuda=True
@@ -60,6 +64,9 @@ if use_cuda:
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 else:
     device = torch.device("cpu")
+
+optimizer = torch.optim.Adam(model.parameters())
+
 model.to(device)
 for epoch in range(epoch):
     model.train()
@@ -101,35 +108,53 @@ for epoch in range(epoch):
 
         # Clip gradients: gradients are modified in place
         train_loss += loss.item()
-        # break
+
     train_loss = train_loss/len(train_part)
 
     model.eval()
     valid_loss = 0
     pred_set = []
     label_set = []
-    for index, X, type, pos, length in tqdm(valid_dataloader):
-        X = nn.utils.rnn.pad_sequence(X, batch_first=True).type(torch.LongTensor)
-        X = X.cuda()
-        length = length.cuda()
-        mask_X = get_mask(X, length, is_cuda=True).cuda()
-        pos = pos.type(torch.LongTensor).cuda()
-        type = type.cuda()
+    for index, label, query, l_query, pos, candidate_abstract, l_abstract, \
+        candidate_labels, l_labels, candidate_type, candidate_abstract_numwords, \
+        candidate_numattrs in tqdm(valid_dataloader):
+        model.zero_grad()
+        query = nn.utils.rnn.pad_sequence(query, batch_first=True).type(torch.LongTensor).to(device)
+        l_query = l_query.to(device)
+        mask_query = get_mask(query, l_query, is_cuda=use_cuda).to(device).type(torch.float)
 
+        candidate_abstract = nn.utils.rnn.pad_sequence(candidate_abstract, batch_first=True).type(torch.LongTensor).to(
+            device)
+        l_abstract = l_abstract.to(device)
+        mask_abstract = get_mask(candidate_abstract, l_abstract, is_cuda=use_cuda).to(device).type(torch.float)
+
+        candidate_labels = nn.utils.rnn.pad_sequence(candidate_labels, batch_first=True).type(torch.LongTensor).to(
+            device)
+        l_labels = l_labels.to(device)
+        mask_labels = get_mask(candidate_labels, l_labels, is_cuda=use_cuda).to(device).type(torch.float)
+
+        pos = pos.type(torch.LongTensor).to(device)
+
+        candidate_type = candidate_type.to(device)
+        label = label.type(torch.float).to(device).unsqueeze(1)
+        candidate_numattrs = candidate_numattrs.to(device).type(torch.float)
+        candidate_abstract_numwords = candidate_abstract_numwords.to(device).type(torch.float)
+        # ner = ner.type(torch.float).cuda()
+        # print(index)
         with torch.no_grad():
-            pred = model(X, mask_X, pos, length)
-        #print(pred.size(),type.size(),torch.max(type))
-
-        loss = loss_fn(pred, type)
+            pred = model(query, l_query, pos, candidate_abstract, l_abstract,
+                     candidate_labels, l_labels, candidate_type, candidate_abstract_numwords,
+                     candidate_numattrs, mask_abstract, mask_query, mask_labels)
+        loss = loss_fn(pred, label)
         #print('loss',loss)
         pred_set.append(pred.cpu().numpy())
-        label_set.append(type.cpu().numpy())
+        label_set.append(label.cpu().numpy())
         valid_loss += loss.item()
+
     valid_loss = valid_loss / len(valid_part)
     pred_set = np.concatenate(pred_set, axis=0)
     label_set = np.concatenate(label_set, axis=0)
-    top_class = np.argmax(pred_set, axis=1)
-    equals = top_class == label_set
-    accuracy = np.mean(equals)
-    print('acc', accuracy)
-    print('train loss　%f, val loss %f'% (train_loss, valid_loss))
+    INFO_THRE, thre_list = get_threshold(pred_set, label_set, num_feature=1)
+    INFO = 'epoch %d, train loss %f, valid loss %f' % (epoch, train_loss, valid_loss)
+    logging.info(INFO + '\t' + INFO_THRE)
+    print(INFO + '\t' + INFO_THRE)
