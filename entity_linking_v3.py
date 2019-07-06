@@ -76,6 +76,7 @@ for epoch in range(epoch):
         candidate_labels, l_labels, candidate_type, candidate_abstract_numwords,\
             candidate_numattrs in tqdm(train_dataloader):
         if label.size()[0]==1:continue
+
         #print(len(label))
         n_split = 150
         #if len(label > n_split):
