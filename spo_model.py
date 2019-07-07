@@ -825,6 +825,8 @@ class EntityLink_v3(nn.Module):
         self.encoder_size = encoder_size
         if init_embedding is not None:
             self.word_embedding.weight.data.copy_(torch.from_numpy(init_embedding))
+        for param in self.word_embedding.parameters():
+                param.requires_grad = False
 
         self.dropout1d = nn.Dropout2d(self.seq_dropout)
         self.span_extractor = EndpointSpanExtractor(encoder_size*2)
@@ -832,8 +834,17 @@ class EntityLink_v3(nn.Module):
         bert_model = 'bert-base-chinese'
         #self.bert = BertModel.from_pretrained(bert_model)
         self.use_layer = -1
+        self.query_attention = Attention(encoder_size*2)
+        self.abstract_attention = Attention(encoder_size*2)
         self.lstm_attention = Attention(encoder_size*2)
 
+
+        self.LSTM_query = LSTMEncoder(embed_size=300,
+                                encoder_size=encoder_size,
+                                bidirectional=True)
+        self.LSTM_abstract = LSTMEncoder(embed_size=300,
+                                encoder_size=encoder_size,
+                                bidirectional=True)
         self.LSTM = LSTMEncoder(embed_size=300,
                                 encoder_size=encoder_size,
                                 bidirectional=True)
@@ -847,10 +858,11 @@ class EntityLink_v3(nn.Module):
             nn.Linear(in_features=encoder_size*4, out_features=num_outputs)
         )
         self.mlp = nn.Sequential(
-            nn.BatchNorm1d(1536),
+            nn.BatchNorm1d(768),
             nn.Dropout(p=dropout),
-            nn.Linear(in_features=1536, out_features=128),
+            nn.Linear(in_features=768, out_features=128),
             nn.ReLU(inplace=True)
+
         )
         self.mlp2 = nn.Sequential(
             nn.BatchNorm1d(128 + 2),
@@ -858,6 +870,11 @@ class EntityLink_v3(nn.Module):
             nn.Linear(in_features=128+2, out_features=1),
             nn.Sigmoid()
         )
+        # chanel_num = 1
+        # filter_sizes = [1,2,3,5]
+        # filter_num = 50
+        # self.convs = nn.ModuleList(
+        # [nn.Conv2d(chanel_num, filter_num, (size, word_embed_size)) for size in filter_sizes])
 
     def forward(self, query, l_query, pos, candidate_abstract, l_abstract,
                 candidate_labels, l_labels, candidate_type, candidate_abstract_numwords,
@@ -866,22 +883,22 @@ class EntityLink_v3(nn.Module):
         candidate_abstract_bert_outputs = self.word_embedding(candidate_abstract)
         candidate_labels_bert_outputs = self.word_embedding(candidate_labels)
 
-        query_lstm = self.LSTM(query_bert_outputs, l_query)
-        query_attn_pool = self.lstm_attention(query_lstm, mask=mask_query)
+        query_lstm = self.LSTM_query(query_bert_outputs, l_query)
+        query_attn_pool = self.query_attention(query_lstm, mask=mask_query)
 
-        candidate_abstract_lstm = self.LSTM(candidate_abstract_bert_outputs, l_abstract)
-        candidate_abstract_pool = self.lstm_attention(candidate_abstract_lstm, mask=mask_abstract)
+        candidate_abstract_lstm = self.LSTM_abstract(candidate_abstract_bert_outputs, l_abstract)
+        candidate_abstract_pool = self.abstract_attention(candidate_abstract_lstm, mask=mask_abstract)
 
-        candidate_labels_lstm = self.LSTM(candidate_labels_bert_outputs, l_labels)
-        candidate_labels_pool = self.lstm_attention(candidate_labels_lstm, mask=mask_labels)
+        # candidate_labels_lstm = self.LSTM(candidate_labels_bert_outputs, l_labels)
+        # candidate_labels_pool = self.lstm_attention(candidate_labels_lstm, mask=mask_labels)
 
-        spans_contexts = self.span_extractor(query_lstm, pos)
-        spans_contexts = self.span_linear(spans_contexts)
+        # spans_contexts = self.span_extractor(query_lstm, pos)
+        # spans_contexts = self.span_linear(spans_contexts)
 
-        relation_vector = torch.cat([query_attn_pool, candidate_abstract_pool, candidate_labels_pool,
-                   query_attn_pool*candidate_abstract_pool,
-                   candidate_labels_pool*query_attn_pool,
-                   spans_contexts*candidate_labels_pool,
+        relation_vector = torch.cat([query_attn_pool, candidate_abstract_pool,
+                   query_attn_pool*candidate_abstract_pool
+                   # candidate_labels_pool*query_attn_pool,
+                   # spans_contexts*candidate_labels_pool,
                    ], dim=-1)
         # print(relation_vector.size())
 
@@ -890,6 +907,7 @@ class EntityLink_v3(nn.Module):
                                      candidate_abstract_numwords.unsqueeze(1),
                                      candidate_numattrs.unsqueeze(1)], dim=-1)
         # print(relation_vector.size())
+
         output = self.mlp2(relation_vector)
         # pred = self.classify(spans_contexts.squeeze(0))
 

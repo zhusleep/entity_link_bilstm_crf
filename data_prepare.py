@@ -190,9 +190,11 @@ class DataManager(object):
     def parse_v3(self,file_name, valid_num):
         if os.path.exists('data/features.pkl'):
             e_link = pickle.load(open('data/features.pkl', 'rb'))
-            train_num = 30000
+            train_num = 5000
             train_part = e_link[0:train_num]
-            valid_part = e_link[-10000:]
+            valid_part = e_link[-2000:]
+            # train_part = e_link[0:1000]
+            # valid_part = e_link[200000:]
             print('train size %d, valid size %d' % (len(train_part), len(valid_part)))
             return train_part, valid_part
         # type classification
@@ -218,6 +220,8 @@ class DataManager(object):
                 name_id[kb_item['subject']] = [kb_item['subject_id']]
             else:
                 name_id[kb_item['subject']].append(kb_item['subject_id'])
+        for id in name_id:
+            name_id[id] = list(set(name_id[id]))
         # ---------------------读取数据库知识
         e_link = []
 

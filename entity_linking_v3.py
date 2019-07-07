@@ -13,11 +13,20 @@ import torch.nn as nn
 from utils import seed_torch, read_data, load_glove, calc_f1,get_threshold, split_list
 from pytorch_pretrained_bert import BertTokenizer,BertAdam
 import logging
+from torch.nn import functional as F
+
 import time
 
+current_name = 'log/%s.txt' % time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+logging.basicConfig(filename=current_name,
+                    filemode='w',
+                    format='%(asctime)s - %(message)s',
+                    datefmt='%d-%b-%y %H:%M:%S',
+                    level=logging.INFO)
 
 file_namne = 'data/raw_data/train.json'
 train_part, valid_part = data_manager.parse_v3(file_name=file_namne, valid_num=10000)
+print(len(train_part), len(valid_part))
 seed_torch(2019)
 
 t = Tokenizer(max_feature=10000, segment=False, lowercase=True)
@@ -47,7 +56,7 @@ train_batch_size = 1
 valid_batch_size = 1
 
 model = EntityLink_v3(vocab_size=embedding_matrix.shape[0], encoder_size=128,
-                      dropout=0.2,
+                      dropout=0.5,
                       init_embedding=embedding_matrix)
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -59,6 +68,7 @@ valid_dataloader = DataLoader(valid_dataset, collate_fn=collate_fn_linking_v3, s
 epoch = 20
 
 loss_fn = nn.BCELoss()
+
 use_cuda=True
 if use_cuda:
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -66,6 +76,7 @@ else:
     device = torch.device("cpu")
 
 optimizer = torch.optim.Adam(model.parameters())
+# optimizer = BertAdam(warmup=0.05, t_total=len(train_dataloader))
 model.zero_grad()
 
 model.to(device)
@@ -78,7 +89,7 @@ for epoch in range(epoch):
         if label.size()[0]==1:continue
 
         #print(len(label))
-        n_split = 150
+        n_split = 100
         #if len(label > n_split):
         query_sp = split_list(query, n=n_split)
         l_query_sp = split_list(l_query, n=n_split)
@@ -134,6 +145,7 @@ for epoch in range(epoch):
         label = label.type(torch.float).to(device).unsqueeze(1)
 
         pred = torch.cat(pred_set, dim=0)
+        pred = F.softmax(pred, dim=0)
         loss = loss_fn(pred, label)
         loss.backward()
         #loss = loss_fn(pred, ner)
@@ -142,7 +154,7 @@ for epoch in range(epoch):
         # nn.utils.clip_grad_norm_(model.parameters(), clip)
 
         # Clip gradients: gradients are modified in place
-        train_loss += loss.item()/len(label)
+        train_loss += loss.item()/len(label)/len(train_dataloader)
         # query = nn.utils.rnn.pad_sequence(query, batch_first=True).type(torch.LongTensor).to(device)
         # l_query = l_query.to(device)
         # mask_query = get_mask(query, l_query, is_cuda=use_cuda).to(device).type(torch.float)
@@ -176,7 +188,7 @@ for epoch in range(epoch):
         #
         # # Clip gradients: gradients are modified in place
         # train_loss += loss.item()/len(label)
-        #break
+        # break
     #train_loss = train_loss/len(train_part)
 
     model.eval()
@@ -247,14 +259,15 @@ for epoch in range(epoch):
         label = label.type(torch.float).to(device).unsqueeze(1)
 
         pred = torch.cat(pred_set, dim=0)
+        pred = F.softmax(pred, dim=0)
         loss = loss_fn(pred, label)
         # nn.utils.clip_grad_norm_(model.parameters(), clip)
         pred = pred.cpu().numpy()
         label = label.cpu().numpy()
-        if np.argmax(pred, axis=0) == np.argmax(label):
+        if np.argmax(pred, axis=0) == np.argmax(label, axis=0):
             hit += 1
         # Clip gradients: gradients are modified in place
-        valid_loss += loss.item() / len(label)
+        valid_loss += loss.item() / len(label)/len(valid_dataloader)
         # ner = ner.type(torch.float).cuda()
         # print(index)
     acc = hit/len(valid_part)

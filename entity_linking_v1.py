@@ -68,7 +68,8 @@ t_total = int(epoch*len(train_X)/train_batch_size)
 #                 {'params': model.span_extractor.parameters()},
 #                 {'params': model.bert.parameters(), 'lr': 2e-5}
 #             ],  lr=1e-3, warmup=0.05,t_total=t_total)
-optimizer = torch.optim.Adam(model.parameters())
+optimizer = torch.optim.Adam({'params':model.word_embedding.parameters(),'lr':1e-4},
+                             model.parameters())
 
 clip = 50
 

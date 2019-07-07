@@ -83,16 +83,19 @@ def calc_f1(pred,label,dev,ner_list):
 def split_list(item, n):
     new_item = []
     i = 0
-    if len(item) > 150:
-        item_tail = item[-2:]
-        item_head = item[0:-2]
+    if len(item) > 100:
+
         while True:
-            new_item.append(item_head[n*i:n*(i+1)])
-            if n*(i+1) >= len(item_head):
+            if len(item)-n*(i+1)==1:
+                new_item.append(item[n*i:n*(i+1)-1])
+                new_item.append(item[n*(i+1)-1:])
+                break
+            else:
+                new_item.append(item[n*i:n*(i+1)])
+            if n*(i+1) >= len(item):
                 break
             else:
                 i += 1
-        new_item.append(item_tail)
         return new_item
     else:
         while True:
