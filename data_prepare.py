@@ -103,6 +103,10 @@ class DataManager(object):
         #valid_type = [type_list.index(x[2]) for x in valid_part]
         return train_X,train_pos,train_type,valid_X,valid_pos,valid_type
 
+
+
+
+
     def parse_v2(self,file_name, valid_num):
         if os.path.exists('data/features.pkl'):
             e_link = pickle.load(open('data/features.pkl', 'rb'))
@@ -278,6 +282,82 @@ class DataManager(object):
         #valid_type = [type_list.index(x[2]) for x in valid_part]
         return train_part, valid_part
 
+    def read_basic_info(self):
+        kb_data = []
+        kb = {}
+        type_list = []
+        with open('data/raw_data/kb_data', 'r') as f:
+            for line in f:
+                item = json.loads(line)
+                type_list.append(item['type'][0])
+                kb[item['subject_id']] = item
+                kb_data.append(item)
+        type_list = list(set(type_list))
+        self.type_list = type_list
+        name_id = {}
+        for kb_item in kb_data:
+            for item in kb_item['alias']:
+                if item not in name_id:
+                    name_id[item] = [kb_item['subject_id']]
+                else:
+                    name_id[item].append(kb_item['subject_id'])
+            if kb_item['subject'] not in name_id:
+                name_id[kb_item['subject']] = [kb_item['subject_id']]
+            else:
+                name_id[kb_item['subject']].append(kb_item['subject_id'])
+        for id in name_id:
+            name_id[id] = list(set(name_id[id]))
+        self.name_id = name_id
+        self.kb_data = kb_data
+        self.kb = kb
+
+    def read_entity_embedding(self, file_name):
+        self.read_basic_info()
+        e_link = []
+        with open(file_name, 'r') as f:
+            for line in tqdm(f):
+                s = json.loads(line)
+                mention_ner = s['mention_data']
+                for m in mention_ner:
+                    if m['mention'] not in self.name_id:
+                        continue
+                    one_bacth = []
+                    # query 特征
+                    sentence = s['text']
+                    # mention 特征
+                    pos = [int(m['offset']), int(m['offset']) + len(m['mention']) - 1]
+                    # kb candidate特征
+                    candidate_ids = self.name_id[m['mention']]
+                    # 结构化知识 摘要，type, 标签，属性信息,属性个数，摘要字数
+                    for m_candidate_id in candidate_ids:
+
+                        candidate_abstract = ''
+                        candidate_label = ''
+                        candidate_abstract_numwords = 0  # 摘要的丰富程度
+                        candidate_numattrs = 0  # 评价词条的丰富程度
+                        candidate_detail = kb[m_candidate_id]
+                        # todo query和abstract的重合程度/mention的tfidf特征
+                        for predicate in candidate_detail['data']:
+                            candidate_numattrs += 1
+                            if predicate['predicate'] == '摘要':
+                                candidate_abstract = predicate['object']
+                                candidate_abstract_numwords = len(candidate_abstract)
+                            if predicate['predicate'] == '标签':
+                                candidate_label += predicate['object']
+                        if m_candidate_id == m['kb_id']:
+                            label = 1
+                        else:
+                            label = 0
+
+                        one_bacth.append({'label': label,
+                                          'query': sentence,
+                                          'pos': pos,
+                                          'candidate_abstract': candidate_abstract,
+                                          'candidate_labels': candidate_label,
+                                          'candidate_type': self.type_list.index(candidate_detail['type'][0]),
+                                          'candidate_abstract_numwords': candidate_abstract_numwords,
+                                          'candidate_numattrs': candidate_numattrs})
+                    e_link.append(one_bacth)
 
 
 data_manager = DataManager()
