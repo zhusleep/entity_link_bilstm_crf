@@ -705,6 +705,69 @@ class EntityLink(nn.Module):
         return pred
 
 
+class EntityLink_entity_vector(nn.Module):
+    def __init__(self,
+                 vocab_size,
+                 init_embedding,
+                 word_embed_size=300,
+                 encoder_size=64,
+                 dim_num_feat=0,
+                 dropout=0.2,
+                 seq_dropout=0.1,
+                 num_outputs=5
+              ):
+        super(EntityLink_entity_vector, self).__init__()
+        # self.word_embedding = nn.Embedding(vocab_size,
+        #                                    word_embed_size,
+        #                                    padding_idx=0)
+        # self.pos_embedding = nn.Embedding(pos_embed_size, pos_dim, padding_idx=0)
+        self.word_embedding = nn.Embedding(vocab_size,
+                                           word_embed_size,
+                                           padding_idx=0)
+        self.seq_dropout = seq_dropout
+        self.embed_size = word_embed_size
+        self.encoder_size = encoder_size
+        if init_embedding is not None:
+            self.word_embedding.weight.data.copy_(torch.from_numpy(init_embedding))
+        self.seq_dropout = seq_dropout
+        #self.lstm_attention = Attention(encoder_size*2)
+
+        self.dropout1d = nn.Dropout2d(self.seq_dropout)
+        self.span_extractor = EndpointSpanExtractor(2*encoder_size)
+
+        bert_model = 'bert-base-chinese'
+        self.use_layer = -1
+        self.LSTM = LSTMEncoder(embed_size=word_embed_size,
+                                encoder_size=encoder_size,
+                                bidirectional=True)
+        hidden_size=100
+        self.hidden = nn.Linear(2*encoder_size, hidden_size)
+        self.classify = nn.Sequential(
+            nn.BatchNorm1d(encoder_size*4),
+            nn.Dropout(p=dropout),
+            nn.Linear(in_features=encoder_size*4, out_features=num_outputs)
+        )
+
+    def forward(self,token_tensor,mask_X,pos,vector,length):
+        X = self.word_embedding(token_tensor)
+
+        X1 = self.LSTM(X, length)
+
+        spans_contexts = self.span_extractor(
+            X1,
+            pos
+        )
+        pred = self.hidden(spans_contexts)
+        grades = torch.sum(pred*vector)
+
+        #X2 = self.lstm_attention(X1)
+        #X3 = torch.cat([spans_contexts.squeeze(0),X2],dim=-1)
+        #pred = self.classify(spans_contexts.squeeze(0))
+        #print(pred.size())
+        return
+
+
+
 class EntityLink_v2(nn.Module):
     def __init__(self,
                  encoder_size=64,

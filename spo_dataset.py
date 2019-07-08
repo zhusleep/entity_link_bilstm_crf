@@ -287,10 +287,41 @@ class SPO_LINK(Dataset):
         #if self.combined_char_t is not None:
         if pos[1]>length:
             raise Exception
-        if  type is not None:
+        if type is not None:
             return index, sentence, type, pos, length
         else:
-            return index, sentence,length
+            return index, sentence, length
+
+
+class Entity_Vector(Dataset):
+    def __init__(self, X, tokenizer, pos, vector, label=None):
+        super(Entity_Vector, self).__init__()
+        self.raw_X = X
+        self.label = label
+        self.tokenizer = tokenizer
+        self.X = tokenizer.transform(X)        # X = pad_sequences(X, maxlen=198)
+        self.pos = pos
+        self.vector = vector
+        self.length = [len(sen) for sen in self.X]
+
+    def __len__(self):
+        return len(self.X)
+
+    def __getitem__(self, index):
+        sentence = torch.tensor(self.X[index])
+        pos = self.pos[index]
+        label = self.label[index]
+        length = self.length[index]
+        vector = torch.tensor(self.vector[index])
+        # if self.ner is not None:
+        #     ner = torch.tensor(self.ner[index])
+        #if self.combined_char_t is not None:
+        if pos[1]>length:
+            raise Exception
+        if label is not None:
+            return index, sentence, label, pos, vector, length
+        else:
+            return index, sentence, length
 
 
 def pad_sequence(sequences):
@@ -340,6 +371,21 @@ def collate_fn_link(batch):
         length = torch.tensor(length, dtype=torch.int)
         type= torch.tensor(type, dtype=torch.long)
         return index, sentence, type, pos, length
+    else:
+        index, X, length = zip(*batch)
+        length = torch.tensor(length, dtype=torch.long)
+        return index, X, length,
+
+
+def collate_fn_link_entity_vector(batch):
+
+    if len(batch[0]) == 6:
+        index, sentence, label, pos, vector, length = zip(*batch)
+        pos = torch.tensor(pos, dtype=torch.int)
+        length = torch.tensor(length, dtype=torch.int)
+        label = torch.tensor(label, dtype=torch.long)
+
+        return index, sentence, label, pos, vector, length
     else:
         index, X, length = zip(*batch)
         length = torch.tensor(length, dtype=torch.long)

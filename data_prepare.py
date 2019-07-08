@@ -313,6 +313,8 @@ class DataManager(object):
 
     def read_entity_embedding(self, file_name):
         self.read_basic_info()
+        from gensim.models import Word2Vec
+        entity_embedding = Word2Vec.load('w2v.model')
         e_link = []
         with open(file_name, 'r') as f:
             for line in tqdm(f):
@@ -321,43 +323,23 @@ class DataManager(object):
                 for m in mention_ner:
                     if m['mention'] not in self.name_id:
                         continue
-                    one_bacth = []
-                    # query 特征
-                    sentence = s['text']
-                    # mention 特征
-                    pos = [int(m['offset']), int(m['offset']) + len(m['mention']) - 1]
-                    # kb candidate特征
                     candidate_ids = self.name_id[m['mention']]
-                    # 结构化知识 摘要，type, 标签，属性信息,属性个数，摘要字数
                     for m_candidate_id in candidate_ids:
 
-                        candidate_abstract = ''
-                        candidate_label = ''
-                        candidate_abstract_numwords = 0  # 摘要的丰富程度
-                        candidate_numattrs = 0  # 评价词条的丰富程度
-                        candidate_detail = kb[m_candidate_id]
-                        # todo query和abstract的重合程度/mention的tfidf特征
-                        for predicate in candidate_detail['data']:
-                            candidate_numattrs += 1
-                            if predicate['predicate'] == '摘要':
-                                candidate_abstract = predicate['object']
-                                candidate_abstract_numwords = len(candidate_abstract)
-                            if predicate['predicate'] == '标签':
-                                candidate_label += predicate['object']
-                        if m_candidate_id == m['kb_id']:
+                        sentence = s['text']
+                        # mention 特征
+                        pos = [int(m['offset']), int(m['offset']) + len(m['mention']) - 1]
+                        e_vector = entity_embedding.wv.word_vec(self.kb[m_candidate_id]['subject_id'])
+                        if m_candidate_id==m['kb_id']:
                             label = 1
                         else:
                             label = 0
 
-                        one_bacth.append({'label': label,
-                                          'query': sentence,
-                                          'pos': pos,
-                                          'candidate_abstract': candidate_abstract,
-                                          'candidate_labels': candidate_label,
-                                          'candidate_type': self.type_list.index(candidate_detail['type'][0]),
-                                          'candidate_abstract_numwords': candidate_abstract_numwords,
-                                          'candidate_numattrs': candidate_numattrs})
-                    e_link.append(one_bacth)
+                        e_link.append([sentence, pos, e_vector, label])
+        train_num = 80000
+        train_part = e_link[0:train_num]
+        valid_part = e_link[train_num:]
+        return train_part, valid_part
 
 
 data_manager = DataManager()
