@@ -17,7 +17,7 @@ import time
 
 
 file_namne = 'data/raw_data/train.json'
-train_X, train_pos, train_type, dev_X, dev_pos, dev_type = data_manager.parse_mention(file_name=file_namne,valid_num=10000)
+train_X, train_pos, train_type, dev_X, dev_pos, dev_type = data_manager.parse_mention(file_name=file_namne, valid_num=10000)
 seed_torch(2019)
 
 t = Tokenizer(max_feature=10000, segment=False, lowercase=True)

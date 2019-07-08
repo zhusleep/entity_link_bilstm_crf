@@ -2,7 +2,7 @@
 import torch
 from torch import nn
 from torch.nn import functional as F
-#from pytorch_pretrained_bert.modeling import BertModel
+from pytorch_pretrained_bert.modeling import BertModel
 from torch.nn import init
 
 from torchcrf import CRF
