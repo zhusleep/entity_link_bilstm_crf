@@ -1,0 +1,13 @@
+07-Jul-19 13:03:51 - epoch 0, train loss 0.147183, valid loss 0.148383, acc0.701000	
+07-Jul-19 13:04:36 - epoch 1, train loss 0.145323, valid loss 0.149499, acc0.663000	
+07-Jul-19 13:05:21 - epoch 2, train loss 0.144784, valid loss 0.149072, acc0.684000	
+07-Jul-19 13:06:07 - epoch 3, train loss 0.144069, valid loss 0.153403, acc0.594500	
+07-Jul-19 13:06:52 - epoch 4, train loss 0.143752, valid loss 0.152316, acc0.596000	
+07-Jul-19 13:07:37 - epoch 5, train loss 0.143479, valid loss 0.154699, acc0.550500	
+07-Jul-19 13:08:22 - epoch 6, train loss 0.143064, valid loss 0.155247, acc0.542500	
+07-Jul-19 13:09:07 - epoch 7, train loss 0.142958, valid loss 0.154509, acc0.566500	
+07-Jul-19 13:09:52 - epoch 8, train loss 0.142591, valid loss 0.155322, acc0.531000	
+07-Jul-19 13:10:37 - epoch 9, train loss 0.142679, valid loss 0.155059, acc0.544000	
+07-Jul-19 13:11:22 - epoch 10, train loss 0.142328, valid loss 0.155273, acc0.544000	
+07-Jul-19 13:12:08 - epoch 11, train loss 0.142084, valid loss 0.155186, acc0.542500	
+07-Jul-19 13:12:53 - epoch 12, train loss 0.142463, valid loss 0.155248, acc0.533500	
