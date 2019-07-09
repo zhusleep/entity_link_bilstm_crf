@@ -14,12 +14,14 @@ from utils import seed_torch, read_data, load_glove, calc_f1,get_threshold
 from pytorch_pretrained_bert import BertTokenizer,BertAdam
 import logging
 import time
+from torch.nn import functional as F
+
 
 
 file_namne = 'data/raw_data/train.json'
-train_part, valid_part = data_manager.read_entity_embedding(file_name=file_namne, valid_num=10000)
+train_part, valid_part = data_manager.read_entity_embedding(file_name=file_namne)
 seed_torch(2019)
-
+print('train size %d, valid size %d', (len(train_part), len(valid_part)))
 t = Tokenizer(max_feature=10000, segment=False, lowercase=True)
 corpus = [x[0] for x in train_part+valid_part]
 t.fit(corpus)
@@ -30,7 +32,7 @@ print('一共有%d 个字' % t.num_words)
 train_dataset = Entity_Vector([x[0] for x in train_part], t, pos=[x[1] for x in train_part],
                               vector=[x[2] for x in train_part], label=[x[3] for x in train_part])
 valid_dataset = Entity_Vector([x[0] for x in valid_part], t, pos=[x[1] for x in valid_part],
-                              vector=[x[2] for x in train_part], label=[x[3] for x in valid_part])
+                              vector=[x[2] for x in valid_part], label=[x[3] for x in valid_part])
 
 batch_size = 1
 
@@ -42,13 +44,13 @@ embedding_file = 'embedding/miniembedding_baike_entity_vector.npy'
 if os.path.exists(embedding_file):
     embedding_matrix = np.load(embedding_file)
 else:
-    #embedding = '/home/zhukaihua/Desktop/nlp/embedding/baike'
-    embedding = '/home/zhu/Desktop/word_embedding/sgns.baidubaike.bigram-char'
+    embedding = '/home/zhukaihua/Desktop/nlp/embedding/baike'
+    #embedding = '/home/zhu/Desktop/word_embedding/sgns.baidubaike.bigram-char'
     #embedding = '/home/zhukaihua/Desktop/nlp/embedding/Tencent_AILab_ChineseEmbedding.txt'
     embedding_matrix = load_glove(embedding, t.num_words+100, t)
     np.save(embedding_file, embedding_matrix)
 
-train_batch_size = 1024
+train_batch_size = 2048
 valid_batch_size = 1024
 
 model = EntityLink_entity_vector(vocab_size=embedding_matrix.shape[0], init_embedding=embedding_matrix,
@@ -62,7 +64,7 @@ model.to(device)
 
 valid_dataloader = DataLoader(valid_dataset, collate_fn=collate_fn_link_entity_vector, shuffle=False, batch_size=valid_batch_size)
 
-epoch = 20
+epoch = 100
 t_total = int(epoch*len(train_part)/train_batch_size)
 # optimizer = BertAdam([
 #                 {'params': model.LSTM.parameters()},
@@ -71,12 +73,14 @@ t_total = int(epoch*len(train_part)/train_batch_size)
 #                 {'params': model.span_extractor.parameters()},
 #                 {'params': model.bert.parameters(), 'lr': 2e-5}
 #             ],  lr=1e-3, warmup=0.05,t_total=t_total)
-optimizer = torch.optim.Adam(model.parameters())
+optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
 
 clip = 50
 
-loss_fn = nn.CrossEntropyLoss()
+#loss_fn = nn.CrossEntropyLoss()
+loss_fn = nn.MSELoss()
 for epoch in range(epoch):
+    print(epoch)
     model.train()
     train_loss = 0
     torch.cuda.manual_seed_all(epoch)
@@ -85,6 +89,8 @@ for epoch in range(epoch):
         #model.zero_grad()
         X = nn.utils.rnn.pad_sequence(X, batch_first=True).type(torch.LongTensor)
         X = X.to(device)
+
+        vector = vector.to(device)
         length = length.to(device)
         #ner = ner.type(torch.float).cuda()
         mask_X = get_mask(X, length, is_cuda=use_cuda).to(device)
@@ -92,7 +98,7 @@ for epoch in range(epoch):
         label = label.to(device)
 
         pred = model(X, mask_X, pos, vector, length)
-        loss = loss_fn(pred, type)
+        loss = loss_fn(pred, vector)
         loss.backward()
 
         #loss = loss_fn(pred, ner)
@@ -101,13 +107,15 @@ for epoch in range(epoch):
         # Clip gradients: gradients are modified in place
         nn.utils.clip_grad_norm_(model.parameters(), clip)
         train_loss += loss.item()
-    train_loss = train_loss/len(train_part)
+        # break
+    train_loss = train_loss/len(train_part)*1e5
 
     model.eval()
     valid_loss = 0
+    valid_cosloss = 0
     pred_set = []
     label_set = []
-    for index, X, type, pos, length in tqdm(valid_dataloader):
+    for index, X, label, pos, vector, length in tqdm(valid_dataloader):
         X = nn.utils.rnn.pad_sequence(X, batch_first=True).type(torch.LongTensor)
         X = X.to(device)
         length = length.to(device)
@@ -115,24 +123,30 @@ for epoch in range(epoch):
         # ner = ner.type(torch.float).cuda()
         mask_X = get_mask(X, length, is_cuda=use_cuda).to(device)
         pos = pos.type(torch.LongTensor).to(device)
-        type = type.to(device)
+        label = label.to(device)
+        vector = vector.to(device)
 
         with torch.no_grad():
-            pred = model(X, mask_X, pos, length)
-        loss = loss_fn(pred, type)
-        #print('loss',loss)
+            pred = model(X, mask_X, pos, vector, length)
+        loss = loss_fn(pred, vector)
+        cos_loss = torch.sum(F.cosine_similarity(pred, vector)).item()
+        valid_cosloss += cos_loss
+        # print('loss',loss)
 
-        pred_set.append(pred.cpu().numpy())
-        label_set.append(type.cpu().numpy())
+        # pred_set.append(pred.cpu().numpy())
+        # label_set.append(type.cpu().numpy())
         valid_loss += loss.item()
-    valid_loss = valid_loss / len(dev_X)
-    pred_set = np.concatenate(pred_set, axis=0)
-    label_set = np.concatenate(label_set, axis=0)
-    top_class = np.argmax(pred_set, axis=1)
-    equals = top_class == label_set
-    accuracy = np.mean(equals)
-    print('acc', accuracy)
-    print('train loss　%f, val loss %f'% (train_loss, valid_loss))
+    valid_loss = valid_loss / len(valid_part)*1e5
+    valid_cosloss = valid_cosloss/len(valid_part)*1e5
+    # pred_set = np.concatenate(pred_set, axis=0)
+    # label_set = np.concatenate(label_set, axis=0)
+    # top_class = np.argmax(pred_set, axis=1)
+    # equals = top_class == label_set
+    # accuracy = np.mean(equals)
+    # print('acc', accuracy)
+    print('train loss　%f, val loss %f, val_cos_loss %f' % (train_loss, valid_loss, valid_cosloss))
     # INFO_THRE, thre_list = get_threshold(pred_set, label_set, len(data_manager.type_list))
     # INFO = 'epoch %d, train loss %f, valid loss %f' % (epoch, train_loss, valid_loss)
     # logging.info(INFO + '\t' + INFO_THRE)
+
+# 19 train loss　0.128424, val loss 0.153328, val_cos_loss 91155.319716

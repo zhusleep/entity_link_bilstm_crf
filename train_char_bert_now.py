@@ -10,7 +10,7 @@ from tokenize_pkg.tokenize import Tokenizer
 from tqdm import tqdm as tqdm
 import torch.nn as nn
 from utils import seed_torch, read_data, load_glove, calc_f1
-from pytorch_pretrained_bert import BertTokenizer,BertAdam
+from pytorch_pretrained_bert import BertTokenizer, BertAdam
 import logging
 import time
 

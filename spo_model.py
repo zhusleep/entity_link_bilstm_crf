@@ -741,11 +741,22 @@ class EntityLink_entity_vector(nn.Module):
                                 encoder_size=encoder_size,
                                 bidirectional=True)
         hidden_size=100
-        self.hidden = nn.Linear(2*encoder_size, hidden_size)
+        self.hidden = nn.Linear(4*encoder_size, 100)
         self.classify = nn.Sequential(
             nn.BatchNorm1d(encoder_size*4),
             nn.Dropout(p=dropout),
             nn.Linear(in_features=encoder_size*4, out_features=num_outputs)
+        )
+        self.nonlinear = nn.Tanh()
+
+        self.hidden2tag = nn.Sequential(
+            # nn.Linear(config.hidden_size * 2 + config.words_dim, config.hidden_size * 2),
+            #nn.BatchNorm1d(6 * encoder_size),
+            nn.Linear(6*encoder_size, 2*encoder_size),
+
+            self.nonlinear,
+            nn.Dropout(p=dropout),
+            nn.Linear(2*encoder_size, 100)
         )
 
     def forward(self,token_tensor,mask_X,pos,vector,length):
@@ -757,15 +768,20 @@ class EntityLink_entity_vector(nn.Module):
             X1,
             pos
         )
+        #self.hidden(spans_contexts)
         pred = self.hidden(spans_contexts)
-        grades = torch.sum(pred*vector)
+
+        # X2 = torch.cat([X1, spans_contexts], dim=-1)
+        # X2 = X2.permute(1,0,2)
+        # pred = self.hidden2tag(X2)
+        # pred = pred.permute(1,0,2)
+        #grades = torch.sum(pred*vector)
 
         #X2 = self.lstm_attention(X1)
         #X3 = torch.cat([spans_contexts.squeeze(0),X2],dim=-1)
         #pred = self.classify(spans_contexts.squeeze(0))
         #print(pred.size())
-        return
-
+        return pred
 
 
 class EntityLink_v2(nn.Module):

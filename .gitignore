@@ -3,4 +3,4 @@ data/*
 .idea/*
 __pycache__/*
 *.pkl
-
+entity_embedding/*

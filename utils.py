@@ -33,7 +33,7 @@ def calc_f1(pred,label,dev,ner_list):
             elif word==E_token and start is not None:
                 end = index
                 if ''.join(label_sentence[start:end + 1]) in kb_set:
-                    span.append((start,end+1))
+                    span.append((start, end+1))
                     start = None
                 else:
                     start = None
@@ -78,6 +78,63 @@ def calc_f1(pred,label,dev,ner_list):
         print('something wrong!')
 
     return acc,recall,f1,pred_result,label_result
+
+
+def cal_ner_result(pred,dev,ner_list):
+    ## ['O', 'B', 'I', 'E', 'S']
+    B_token = ner_list.index('B')
+    I_token = ner_list.index('I')
+    E_token = ner_list.index('E')
+    S_token = ner_list.index('S')
+    O_token = ner_list.index('O')
+
+    def parse(sentence,label_sentence,sign):
+        """
+        find B*E or S
+        :param sentence:
+        :return:
+        """
+        span = []
+        start = None
+        for index, word in enumerate(sentence):
+            if word==B_token:
+                start = index
+            elif word==S_token:
+                if ''.join(label_sentence[index:index+1]) in kb_set: ## 在数据库中发现实体名
+                    span.append((index, index+1))
+                    start = None
+                else:
+                    start = None
+            elif word==E_token and start is not None:
+                end = index
+                if ''.join(label_sentence[start:end + 1]) in kb_set:
+                    span.append((start, end+1))
+                    start = None
+                else:
+                    start = None
+        # 相邻两entity可以合并则合并
+        if len(span) <= 1 or sign == 'label':
+            return span
+        new_span = []
+        for i in range(len(span)-1):
+            if span[i][1]==span[i+1][0] and ''.join(label_sentence[span[i][0]:span[i+1][1]]) in kb_set:
+                new_span.append((span[i][0], span[i+1][1]))
+                if i == len(span)-2:
+                    return new_span
+            else:
+                new_span.append((span[i][0], span[i][1]))
+        new_span.append((span[-1][0], span[-1][1]))
+        return new_span
+    pred_count = 0
+    label_count = 0
+    acc_count = 0
+    pred_result = []
+    label_result = []
+    for i in range(len(pred)):
+        m_pred = parse(pred[i],dev[i],'pred')
+        pred_result.append(m_pred)
+
+    return pred_result
 
 
 def split_list(item, n):
@@ -288,3 +345,4 @@ def sequence_cross_entropy_with_logits(logits: torch.FloatTensor,
         # shape : (batch_size,)
         per_batch_loss = negative_log_likelihood.sum(1) / (weights.sum(1).float() + 1e-13)
         return per_batch_loss
+

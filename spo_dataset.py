@@ -86,13 +86,14 @@ class SPO_BERT(Dataset):
 
     def __getitem__(self, index):
         sentence = torch.tensor(self.X[index])
-        ner = torch.tensor(self.ner[index])
+        if self.ner is not None:
+            ner = torch.tensor(self.ner[index])
         length = self.length[index]
         # if self.ner is not None:
         #     ner = torch.tensor(self.ner[index])
         #if self.combined_char_t is not None:
 
-        if  ner is not None:
+        if  self.ner is not None:
             return index, sentence, ner, length
         else:
             return index, sentence, length
@@ -312,7 +313,11 @@ class Entity_Vector(Dataset):
         pos = self.pos[index]
         label = self.label[index]
         length = self.length[index]
-        vector = torch.tensor(self.vector[index])
+        #print(self.vector[index])
+        # print(len(self.vector))
+        # print(index)
+        # print(len(self.vector[index]))
+        vector = torch.tensor(self.vector[index]).unsqueeze(0)
         # if self.ner is not None:
         #     ner = torch.tensor(self.ner[index])
         #if self.combined_char_t is not None:
@@ -381,10 +386,11 @@ def collate_fn_link_entity_vector(batch):
 
     if len(batch[0]) == 6:
         index, sentence, label, pos, vector, length = zip(*batch)
+
         pos = torch.tensor(pos, dtype=torch.int)
         length = torch.tensor(length, dtype=torch.int)
         label = torch.tensor(label, dtype=torch.long)
-
+        vector = torch.cat(vector, dim=0)
         return index, sentence, label, pos, vector, length
     else:
         index, X, length = zip(*batch)

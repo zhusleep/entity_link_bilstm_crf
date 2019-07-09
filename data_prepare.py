@@ -3,6 +3,7 @@ import json
 from tqdm import  tqdm as tqdm
 import pickle, os
 
+
 class DataManager(object):
     def __init__(self):
         self.ner_list = ['O','B','I','E','S']
@@ -43,7 +44,7 @@ class DataManager(object):
         train_ner = []
         valid_ner = []
         for i in range(len(X_arr)):
-            if i not in  valid_index:
+            if i not in valid_index:
                 train_X.append(X_arr[i])
                 train_ner.append(ner_arr[i])
             else:
@@ -51,6 +52,29 @@ class DataManager(object):
                 valid_ner.append(ner_arr[i])
         return train_X,train_ner,valid_X,valid_ner
 
+    def parseData_predict(self,train_filename,test_filename):
+        X_arr = []
+        ner_arr = []
+        with open(train_filename, 'r') as f:
+            for line in tqdm(f):
+                s = json.loads(line)
+                X_arr.append(s['text'])
+                ner = np.array(['O'] * len(s['text']))
+                mention_ner = s['mention_data']
+                for m in mention_ner:
+                    ner[int(m['offset']):int(m['offset']) + len(m['mention'])] = self.BIEOS(m['mention'])
+
+                label = []
+                for label_type in ner:
+                    label.append(self.ner_list.index(label_type))
+                ner_arr.append(label)
+
+        X_arr_test = []
+        with open(test_filename, 'r') as f:
+            for line in tqdm(f):
+                s = json.loads(line)
+                X_arr_test.append(s['text'])
+        return X_arr, ner_arr, X_arr_test
 
 
     def parse_mention(self,file_name, valid_num):
@@ -311,10 +335,10 @@ class DataManager(object):
         self.kb_data = kb_data
         self.kb = kb
 
-    def read_entity_embedding(self, file_name):
+    def read_entity_embedding(self, file_name, train_num=200000):
         self.read_basic_info()
         from gensim.models import Word2Vec
-        entity_embedding = Word2Vec.load('w2v.model')
+        entity_embedding = Word2Vec.load('embedding/w2v.model')
         e_link = []
         with open(file_name, 'r') as f:
             for line in tqdm(f):
@@ -332,26 +356,67 @@ class DataManager(object):
                         e_vector = entity_embedding.wv.word_vec(self.kb[m_candidate_id]['subject_id'])
                         if m_candidate_id==m['kb_id']:
                             label = 1
+                            e_link.append([sentence, pos, e_vector, label])
+
                         else:
                             label = 0
 
-                        e_link.append([sentence, pos, e_vector, label])
-        train_num = 80000
+        train_num = train_num
         train_part = e_link[0:train_num]
         valid_part = e_link[train_num:]
         return train_part, valid_part
 
 
+
+
 data_manager = DataManager()
 
 
+import ahocorasick
+
+
 def read_kb(filename):
-    #kb_data = []
-    kb_dict = []
-    with open(filename, 'r') as f:
+    A = ahocorasick.Automaton()
+    train_data = []
+    train_data_dict = {}
+    with open('data/raw_data/train.json', 'r') as f:
+        for line in f:
+            raw = json.loads(line)
+            train_data.append(raw)
+            train_data_dict[raw['text_id']] = raw
+    kb = {}
+    with open('data/raw_data/kb_data', 'r') as f:
         for line in f:
             item = json.loads(line)
-            kb_dict.append(item['subject'])
-            for alia in item['alias']:
-                kb_dict.append(alia)
-    return set(kb_dict)
+            kb[item['subject_id']] = item
+    # 补充别名实体进入kb
+    for s in train_data:
+        for m in s['mention_data']:
+
+            if m['kb_id'] == 'NIL': continue
+            name_list = kb[m['kb_id']]['alias']
+            name_list += [kb[m['kb_id']]['subject']]
+            if m['mention'] not in name_list:
+                kb[m['kb_id']]['alias'] += [m['mention']]
+    name_id = {}
+    for kb_id in kb:
+        for item in kb[kb_id]['alias']:
+            if item not in name_id:
+                name_id[item] = [kb_id]
+            else:
+                name_id[item].append(kb_id)
+        if kb[kb_id]['subject'] not in name_id:
+            name_id[kb[kb_id]['subject']] = [kb_id]
+        else:
+            name_id[kb[kb_id]['subject']].append(kb_id)
+    for id in name_id:
+        name_id[id] = list(set(name_id[id]))
+
+    kb_dict = []
+    for key,value in name_id.items():
+
+        A.add_word(key, len(key))
+    A.make_automaton()
+    #return set(kb_dict)
+    return A
+
