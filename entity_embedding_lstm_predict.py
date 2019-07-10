@@ -34,15 +34,15 @@ embedding_file = 'embedding/miniembedding_baike_entity_vector.npy'
 if os.path.exists(embedding_file):
     embedding_matrix = np.load(embedding_file)
 else:
-    embedding = '/home/zhukaihua/Desktop/nlp/embedding/baike'
-    # embedding = '/home/zhu/Desktop/word_embedding/sgns.baidubaike.bigram-char'
+    #embedding = '/home/zhukaihua/Desktop/nlp/embedding/baike'
+    embedding = '/home/zhu/Desktop/word_embedding/sgns.baidubaike.bigram-char'
     # embedding = '/home/zhukaihua/Desktop/nlp/embedding/Tencent_AILab_ChineseEmbedding.txt'
     embedding_matrix = load_glove(embedding, t.num_words + 100, t)
     np.save(embedding_file, embedding_matrix)
 
 print('一共有%d 个字' % t.num_words)
 data_all = np.array(train_part)
-kfold = KFold(n_splits=9, shuffle=False, random_state=2019)
+kfold = KFold(n_splits=2, shuffle=False, random_state=2019)
 pred_vector = []
 round = 0
 for train_index, test_index in kfold.split(np.zeros(len(train_part))):
@@ -68,7 +68,7 @@ for train_index, test_index in kfold.split(np.zeros(len(train_part))):
 
     valid_dataloader = DataLoader(valid_dataset, collate_fn=collate_fn_link_entity_vector, shuffle=False, batch_size=valid_batch_size)
 
-    epoch = 20
+    epoch = 10
     t_total = int(epoch*len(train_part)/train_batch_size)
     # optimizer = BertAdam([
     #                 {'params': model.LSTM.parameters()},
@@ -82,7 +82,7 @@ for train_index, test_index in kfold.split(np.zeros(len(train_part))):
     clip = 50
 
     #loss_fn = nn.CrossEntropyLoss()
-    loss_fn = nn.MSELoss()
+    loss_fn = nn.CosineEmbeddingLoss(margin=0)
     for epoch in range(epoch):
         print('round', round, 'epoch', epoch)
         model.train()
@@ -94,15 +94,15 @@ for train_index, test_index in kfold.split(np.zeros(len(train_part))):
             X = nn.utils.rnn.pad_sequence(X, batch_first=True).type(torch.LongTensor)
             X = X.to(device)
 
-            vector = vector.to(device)
+            vector = vector.to(device).type(torch.float)
             length = length.to(device)
             #ner = ner.type(torch.float).cuda()
             mask_X = get_mask(X, length, is_cuda=use_cuda).to(device)
             pos = pos.type(torch.LongTensor).to(device)
-            label = label.to(device)
+            label = label.to(device).type(torch.float)
 
             pred = model(X, mask_X, pos, vector, length)
-            loss = loss_fn(pred, vector)
+            loss = loss_fn(pred, vector, target=label)
             loss.backward()
 
             #loss = loss_fn(pred, ner)
@@ -126,14 +126,13 @@ for train_index, test_index in kfold.split(np.zeros(len(train_part))):
             # ner = ner.type(torch.float).cuda()
             mask_X = get_mask(X, length, is_cuda=use_cuda).to(device)
             pos = pos.type(torch.LongTensor).to(device)
-            label = label.to(device)
-            vector = vector.to(device)
+            label = label.to(device).type(torch.float)
+            vector = vector.to(device).type(torch.float)
 
             with torch.no_grad():
                 pred = model(X, mask_X, pos, vector, length)
-            loss = loss_fn(pred, vector)
-            cos_loss = torch.sum(F.cosine_similarity(pred, vector)).item()
-            valid_cosloss += cos_loss
+            loss = loss_fn(pred, vector, target=label)
+            #cos_loss = torch.sum(F.cosine_similarity(pred, vector)).item()
             # print('loss',loss)
 
             pred_set.append(pred.cpu().numpy())
@@ -148,7 +147,7 @@ for train_index, test_index in kfold.split(np.zeros(len(train_part))):
         # equals = top_class == label_set
         # accuracy = np.mean(equals)
         # print('acc', accuracy)
-        print('train loss　%f, val loss %f, val_cos_loss %f' % (train_loss, valid_loss, valid_cosloss))
+        print('train loss　%f, val loss %f ' % (train_loss, valid_loss))
     torch.save(model.state_dict(), 'entity_embedding/gensim_vector_model_round %s'% (round))
     pred_vector.append(pred_set)
     round += 1

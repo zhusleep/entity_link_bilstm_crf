@@ -770,7 +770,8 @@ class EntityLink_entity_vector(nn.Module):
         )
         #self.hidden(spans_contexts)
         pred = self.hidden(spans_contexts)
-
+        #pred = torch.sum(pred*vector, dim=0)
+        #pred = F.cosine_similarity(pred, vector)
         # X2 = torch.cat([X1, spans_contexts], dim=-1)
         # X2 = X2.permute(1,0,2)
         # pred = self.hidden2tag(X2)

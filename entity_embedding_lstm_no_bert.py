@@ -17,7 +17,6 @@ import time
 from torch.nn import functional as F
 
 
-
 file_namne = 'data/raw_data/train.json'
 train_part, valid_part = data_manager.read_entity_embedding(file_name=file_namne)
 seed_torch(2019)

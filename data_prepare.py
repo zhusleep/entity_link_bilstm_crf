@@ -364,14 +364,13 @@ class DataManager(object):
                     for m_candidate_id in candidate_ids:
                         if m_candidate_id==m['kb_id']:
                             label = 1
-                            sentence = s['text']
-                            # mention 特征
-                            pos = [int(m['offset']), int(m['offset']) + len(m['mention']) - 1]
-                            e_vector = entity_embedding.wv.word_vec(self.kb[m_candidate_id]['subject_id'])
-                            e_link.append([sentence, pos, e_vector, label])
-
                         else:
-                            label = 0
+                            label = -1
+                        sentence = s['text']
+                        # mention 特征
+                        pos = [int(m['offset']), int(m['offset']) + len(m['mention']) - 1]
+                        e_vector = entity_embedding.wv.word_vec(self.kb[m_candidate_id]['subject_id'])
+                        e_link.append([sentence, pos, e_vector, label])
 
         train_num = train_num
         train_part = e_link[0:train_num]
@@ -393,18 +392,18 @@ def read_kb(filename):
     train_data_dict = {}
     with open('data/raw_data/train.json', 'r') as f:
         for line in f:
-            raw = json.loads(line)
+            raw = eval(str(json.loads(line)).lower())
             train_data.append(raw)
             train_data_dict[raw['text_id']] = raw
     kb = {}
     with open('data/raw_data/kb_data', 'r') as f:
         for line in f:
-            item = json.loads(line)
+            item = eval(str(json.loads(line)).lower())
             kb[item['subject_id']] = item
     # 补充别名实体进入kb
     for s in train_data:
         for m in s['mention_data']:
-            if m['kb_id'] == 'NIL': continue
+            if m['kb_id'] == 'nil': continue
             if m['mention'] != kb[m['kb_id']]['subject'] and m['mention'] not in kb[m['kb_id']]['alias']:
                 kb[m['kb_id']]['alias'] += [m['mention']]
     name_id = {}
