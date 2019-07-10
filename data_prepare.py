@@ -310,25 +310,38 @@ class DataManager(object):
         kb_data = []
         kb = {}
         type_list = []
+        train_data = []
+        with open('data/raw_data/train.json', 'r') as f:
+            for line in f:
+                raw = eval(str(json.loads(line)).lower())
+                train_data.append(raw)
         with open('data/raw_data/kb_data', 'r') as f:
             for line in f:
-                item = json.loads(line)
+                item = eval(str(json.loads(line)).lower())
                 type_list.append(item['type'][0])
                 kb[item['subject_id']] = item
                 kb_data.append(item)
+
+        for s in train_data:
+            for m in s['mention_data']:
+                if m['kb_id'] == 'nil':
+                    continue
+                if m['mention'] != kb[m['kb_id']]['subject'] and m['mention'] not in kb[m['kb_id']]['alias']:
+                    kb[m['kb_id']]['alias'] += [m['mention']]
         type_list = list(set(type_list))
+
         self.type_list = type_list
         name_id = {}
-        for kb_item in kb_data:
-            for item in kb_item['alias']:
+        for kb_id in kb:
+            for item in kb[kb_id]['alias']:
                 if item not in name_id:
-                    name_id[item] = [kb_item['subject_id']]
+                    name_id[item] = [kb_id]
                 else:
-                    name_id[item].append(kb_item['subject_id'])
-            if kb_item['subject'] not in name_id:
-                name_id[kb_item['subject']] = [kb_item['subject_id']]
+                    name_id[item].append(kb_id)
+            if kb[kb_id]['subject'] not in name_id:
+                name_id[kb[kb_id]['subject']] = [kb_id]
             else:
-                name_id[kb_item['subject']].append(kb_item['subject_id'])
+                name_id[kb[kb_id]['subject']].append(kb_id)
         for id in name_id:
             name_id[id] = list(set(name_id[id]))
         self.name_id = name_id
@@ -342,20 +355,19 @@ class DataManager(object):
         e_link = []
         with open(file_name, 'r') as f:
             for line in tqdm(f):
-                s = json.loads(line)
+                s = eval(str(json.loads(line)).lower())
                 mention_ner = s['mention_data']
                 for m in mention_ner:
                     if m['mention'] not in self.name_id:
                         continue
                     candidate_ids = self.name_id[m['mention']]
                     for m_candidate_id in candidate_ids:
-
-                        sentence = s['text']
-                        # mention 特征
-                        pos = [int(m['offset']), int(m['offset']) + len(m['mention']) - 1]
-                        e_vector = entity_embedding.wv.word_vec(self.kb[m_candidate_id]['subject_id'])
                         if m_candidate_id==m['kb_id']:
                             label = 1
+                            sentence = s['text']
+                            # mention 特征
+                            pos = [int(m['offset']), int(m['offset']) + len(m['mention']) - 1]
+                            e_vector = entity_embedding.wv.word_vec(self.kb[m_candidate_id]['subject_id'])
                             e_link.append([sentence, pos, e_vector, label])
 
                         else:
@@ -392,11 +404,8 @@ def read_kb(filename):
     # 补充别名实体进入kb
     for s in train_data:
         for m in s['mention_data']:
-
             if m['kb_id'] == 'NIL': continue
-            name_list = kb[m['kb_id']]['alias']
-            name_list += [kb[m['kb_id']]['subject']]
-            if m['mention'] not in name_list:
+            if m['mention'] != kb[m['kb_id']]['subject'] and m['mention'] not in kb[m['kb_id']]['alias']:
                 kb[m['kb_id']]['alias'] += [m['mention']]
     name_id = {}
     for kb_id in kb:

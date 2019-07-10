@@ -139,7 +139,8 @@ for epoch in range(epoch):
     INFO = 'epoch %d, train loss %f, valid loss %f, acc %f, recall %f, f1 %f '% (epoch, train_loss, valid_loss,acc,recall,f1)
     logging.info(INFO)
     print(INFO)
-    if epoch ==2:break
+    if epoch == 2:
+        break
     #print(INFO+'\t'+INFO_THRE)
 
 # 正负样本分析

@@ -87,33 +87,33 @@ optimizer = BertAdam([
             ],  lr=1e-3, warmup=0.05, t_total=t_total)
 clip = 50
 
-
-for epoch in range(epoch):
-    model.train()
-    train_loss = 0
-    for index, X, ner, length in tqdm(train_dataloader):
-        #model.zero_grad()
-        X = nn.utils.rnn.pad_sequence(X, batch_first=True).type(torch.LongTensor)
-        X = X.cuda()
-        length = length.cuda()
-        #ner = ner.type(torch.float).cuda()
-        mask_X = get_mask(X, length, is_cuda=True).cuda()
-        ner = nn.utils.rnn.pad_sequence(ner, batch_first=True).type(torch.LongTensor)
-        ner = ner.cuda()
-
-        loss = model.cal_loss(X, mask_X, length, label=ner)
-        loss.backward()
-
-        #loss = loss_fn(pred, ner)
-        nn.utils.clip_grad_norm_(model.parameters(), clip)
-        optimizer.step()
-        optimizer.zero_grad()
-        # Clip gradients: gradients are modified in place
-        train_loss += loss.item()
-    train_loss = train_loss/len(train_X)
-
-torch.save(model.state_dict(), 'model_ner/ner_bert')
-#model.load_state_dict(torch.load('model_ner/ner_bert'))
+#
+# for epoch in range(epoch):
+#     model.train()
+#     train_loss = 0
+#     for index, X, ner, length in tqdm(train_dataloader):
+#         #model.zero_grad()
+#         X = nn.utils.rnn.pad_sequence(X, batch_first=True).type(torch.LongTensor)
+#         X = X.cuda()
+#         length = length.cuda()
+#         #ner = ner.type(torch.float).cuda()
+#         mask_X = get_mask(X, length, is_cuda=True).cuda()
+#         ner = nn.utils.rnn.pad_sequence(ner, batch_first=True).type(torch.LongTensor)
+#         ner = ner.cuda()
+#
+#         loss = model.cal_loss(X, mask_X, length, label=ner)
+#         loss.backward()
+#
+#         #loss = loss_fn(pred, ner)
+#         nn.utils.clip_grad_norm_(model.parameters(), clip)
+#         optimizer.step()
+#         optimizer.zero_grad()
+#         # Clip gradients: gradients are modified in place
+#         train_loss += loss.item()
+#     train_loss = train_loss/len(train_X)
+#
+# torch.save(model.state_dict(), 'model_ner/ner_bert')
+model.load_state_dict(torch.load('model_ner/ner_bert'))
 
 
 model.eval()
@@ -141,7 +141,7 @@ dev = pd.DataFrame()
 dev['text'] = dev_X
 pred_mention = []
 pred_pos = []
-for index,row in dev.iterrows():
+for index, row in dev.iterrows():
     temp_mention = []
     for item in result[index]:
         temp_mention.append(''.join(row['text'][item[0]:item[1]]))
@@ -150,3 +150,6 @@ for index,row in dev.iterrows():
 dev['pred'] = pred_mention
 dev['pos'] = result
 dev.to_pickle('result/ner_bert_result.pkl')
+
+
+

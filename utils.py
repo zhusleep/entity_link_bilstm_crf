@@ -64,8 +64,8 @@ def calc_f1(pred,label,dev,ner_list):
         pred_count += len(m_pred)
         label_count += len(m_label)
         acc_count += sum([1 if x in m_label else 0 for x in m_pred])
-
-    if pred_count==0:
+    print('pred_count %d,label_count %d' % (pred_count, label_count))
+    if pred_count == 0:
         print('somtthing wrong')
         acc = 0
     else:
@@ -131,9 +131,10 @@ def cal_ner_result(pred,dev,ner_list):
     pred_result = []
     label_result = []
     for i in range(len(pred)):
-        m_pred = parse(pred[i],dev[i],'pred')
+        m_pred = parse(pred[i], dev[i], 'pred')
         pred_result.append(m_pred)
-
+        pred_count += len(m_pred)
+    print('pred_count %d' % pred_count)
     return pred_result
 
 

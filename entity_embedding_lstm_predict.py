@@ -42,7 +42,7 @@ else:
 
 print('一共有%d 个字' % t.num_words)
 data_all = np.array(train_part)
-kfold = KFold(n_splits=9,shuffle=False,random_state=2019)
+kfold = KFold(n_splits=9, shuffle=False, random_state=2019)
 pred_vector = []
 round = 0
 for train_index, test_index in kfold.split(np.zeros(len(train_part))):

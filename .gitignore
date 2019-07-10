@@ -4,3 +4,4 @@ data/*
 __pycache__/*
 *.pkl
 entity_embedding/*
+model_ner/ner_bert

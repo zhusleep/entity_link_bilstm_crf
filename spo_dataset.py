@@ -37,7 +37,7 @@ class SPO(Dataset):
         #     ner = torch.tensor(self.ner[index])
         #if self.combined_char_t is not None:
 
-        if  ner is not None:
+        if ner is not None:
             return index, sentence, ner,length
         else:
             return index, sentence,length
