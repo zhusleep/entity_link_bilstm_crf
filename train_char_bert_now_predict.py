@@ -76,7 +76,7 @@ optimizer_grouped_parameters = [
     {'params': [p for n, p in param_optimizer if any(nd in n for nd in no_decay)], 'weight_decay': 0.0}
     ]
 
-epoch = 2
+epoch = 20
 t_total = int(epoch*len(train_X)/batch_size)
 optimizer = BertAdam([
                 {'params': model.LSTM.parameters()},
@@ -88,32 +88,33 @@ optimizer = BertAdam([
 clip = 50
 
 #
-# for epoch in range(epoch):
-#     model.train()
-#     train_loss = 0
-#     for index, X, ner, length in tqdm(train_dataloader):
-#         #model.zero_grad()
-#         X = nn.utils.rnn.pad_sequence(X, batch_first=True).type(torch.LongTensor)
-#         X = X.cuda()
-#         length = length.cuda()
-#         #ner = ner.type(torch.float).cuda()
-#         mask_X = get_mask(X, length, is_cuda=True).cuda()
-#         ner = nn.utils.rnn.pad_sequence(ner, batch_first=True).type(torch.LongTensor)
-#         ner = ner.cuda()
-#
-#         loss = model.cal_loss(X, mask_X, length, label=ner)
-#         loss.backward()
-#
-#         #loss = loss_fn(pred, ner)
-#         nn.utils.clip_grad_norm_(model.parameters(), clip)
-#         optimizer.step()
-#         optimizer.zero_grad()
-#         # Clip gradients: gradients are modified in place
-#         train_loss += loss.item()
-#     train_loss = train_loss/len(train_X)
-#
-# torch.save(model.state_dict(), 'model_ner/ner_bert')
-model.load_state_dict(torch.load('model_ner/ner_bert'))
+for epoch in range(epoch):
+    model.train()
+    train_loss = 0
+    for index, X, ner, length in tqdm(train_dataloader):
+        #model.zero_grad()
+        X = nn.utils.rnn.pad_sequence(X, batch_first=True).type(torch.LongTensor)
+        X = X.cuda()
+        length = length.cuda()
+        #ner = ner.type(torch.float).cuda()
+        mask_X = get_mask(X, length, is_cuda=True).cuda()
+        ner = nn.utils.rnn.pad_sequence(ner, batch_first=True).type(torch.LongTensor)
+        ner = ner.cuda()
+
+        loss = model.cal_loss(X, mask_X, length, label=ner)
+        loss.backward()
+
+        #loss = loss_fn(pred, ner)
+        nn.utils.clip_grad_norm_(model.parameters(), clip)
+        optimizer.step()
+        optimizer.zero_grad()
+        # Clip gradients: gradients are modified in place
+        train_loss += loss.item()
+    train_loss = train_loss/len(train_X)
+    if epoch==2:break
+
+torch.save(model.state_dict(), 'model_ner/ner_bert')
+#model.load_state_dict(torch.load('model_ner/ner_bert'))
 
 
 model.eval()
@@ -150,6 +151,5 @@ for index, row in dev.iterrows():
 dev['pred'] = pred_mention
 dev['pos'] = result
 dev.to_pickle('result/ner_bert_result.pkl')
-
 
 

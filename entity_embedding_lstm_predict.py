@@ -34,15 +34,15 @@ embedding_file = 'embedding/miniembedding_baike_entity_vector.npy'
 if os.path.exists(embedding_file):
     embedding_matrix = np.load(embedding_file)
 else:
-    #embedding = '/home/zhukaihua/Desktop/nlp/embedding/baike'
-    embedding = '/home/zhu/Desktop/word_embedding/sgns.baidubaike.bigram-char'
+    embedding = '/home/zhukaihua/Desktop/nlp/embedding/baike'
+    #embedding = '/home/zhu/Desktop/word_embedding/sgns.baidubaike.bigram-char'
     # embedding = '/home/zhukaihua/Desktop/nlp/embedding/Tencent_AILab_ChineseEmbedding.txt'
     embedding_matrix = load_glove(embedding, t.num_words + 100, t)
     np.save(embedding_file, embedding_matrix)
 
 print('一共有%d 个字' % t.num_words)
 data_all = np.array(train_part)
-kfold = KFold(n_splits=2, shuffle=False, random_state=2019)
+kfold = KFold(n_splits=5, shuffle=False, random_state=2019)
 pred_vector = []
 round = 0
 for train_index, test_index in kfold.split(np.zeros(len(train_part))):

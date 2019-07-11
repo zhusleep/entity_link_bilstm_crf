@@ -25,12 +25,14 @@ class DataManager(object):
     def parseData(self, file_name, valid_num):
         X_arr = []
         ner_arr = []
+        id_arr = []
         with open(file_name, 'r') as f:
             for line in tqdm(f):
-                s = json.loads(line)
+                s = eval(str(json.loads(line)).lower())
                 X_arr.append(s['text'])
                 ner = np.array(['O'] * len(s['text']))
                 mention_ner = s['mention_data']
+                id_arr.append(s['text_id'])
                 for m in mention_ner:
                     ner[int(m['offset']):int(m['offset']) + len(m['mention'])] = self.BIEOS(m['mention'])
 
@@ -38,26 +40,31 @@ class DataManager(object):
                 for label_type in ner:
                     label.append(self.ner_list.index(label_type))
                 ner_arr.append(label)
-        valid_index = np.random.choice(len(X_arr), valid_num, replace=False)
+        #valid_index = np.random.choice(len(X_arr), valid_num, replace=False)
+        valid_index = np.arange(80000,90001)
         train_X = []
         valid_X = []
         train_ner = []
         valid_ner = []
+        train_id = []
+        valid_id = []
         for i in range(len(X_arr)):
             if i not in valid_index:
                 train_X.append(X_arr[i])
                 train_ner.append(ner_arr[i])
+                train_id.append(id_arr[i])
             else:
                 valid_X.append(X_arr[i])
                 valid_ner.append(ner_arr[i])
-        return train_X,train_ner,valid_X,valid_ner
+                valid_id.append(id_arr[i])
+        return train_X,train_ner,train_id,valid_X,valid_ner,valid_id
 
     def parseData_predict(self,train_filename,test_filename):
         X_arr = []
         ner_arr = []
         with open(train_filename, 'r') as f:
             for line in tqdm(f):
-                s = json.loads(line)
+                s = eval(str(json.loads(line)).lower())
                 X_arr.append(s['text'])
                 ner = np.array(['O'] * len(s['text']))
                 mention_ner = s['mention_data']
@@ -72,7 +79,7 @@ class DataManager(object):
         X_arr_test = []
         with open(test_filename, 'r') as f:
             for line in tqdm(f):
-                s = json.loads(line)
+                s = eval(str(json.loads(line)).lower())
                 X_arr_test.append(s['text'])
         return X_arr, ner_arr, X_arr_test
 

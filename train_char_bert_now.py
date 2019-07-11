@@ -9,7 +9,7 @@ from torch.utils.data import DataLoader, RandomSampler, TensorDataset
 from tokenize_pkg.tokenize import Tokenizer
 from tqdm import tqdm as tqdm
 import torch.nn as nn
-from utils import seed_torch, read_data, load_glove, calc_f1
+from utils import seed_torch, read_data, load_glove, calc_f1, cal_ner_result
 from pytorch_pretrained_bert import BertTokenizer, BertAdam
 import logging
 import time
@@ -24,8 +24,9 @@ logging.basicConfig(filename=current_name,
 
 seed_torch(2019)
 file_namne = 'data/raw_data/train.json'
-train_X, train_ner, dev_X, dev_ner = data_manager.parseData(file_name=file_namne,valid_num=10000)
+train_X, train_ner,train_id, dev_X, dev_ner, dev_id = data_manager.parseData(file_name=file_namne,valid_num=10000)
 assert len(train_X) == len(train_ner)
+print('dev size ', len(dev_X))
 ## deal for bert
 train_X = [['[CLS]']+list(temp)+['[SEP]'] for temp in train_X]
 dev_X = [['[CLS]']+list(temp)+['[SEP]'] for temp in dev_X]
@@ -142,6 +143,30 @@ for epoch in range(epoch):
     if epoch == 2:
         break
     #print(INFO+'\t'+INFO_THRE)
+# epoch 2, train loss 2.276405, valid loss 2.600097, acc 0.853327, recall 0.835633, f1 0.844388
+result = cal_ner_result(pred_set, dev_X, data_manager.ner_list)
+#acc,recall,f1,pred_result,label_result = calc_f1(pred_set, label_set, dev_X, data_manager.ner_list)
+#INFO = 'epoch %d, train loss %f, valid loss %f, acc %f, recall %f, f1 %f '% (epoch, train_loss, valid_loss,acc,recall,f1)
+#logging.info(INFO)
+#print(INFO)
+#print(INFO+'\t'+INFO_THRE)
+
+# 正负样本分析
+dev = pd.DataFrame()
+dev['text'] = dev_X
+pred_mention = []
+pred_pos = []
+for index, row in dev.iterrows():
+    temp_mention = []
+    for item in result[index]:
+        temp_mention.append(''.join(row['text'][item[0]:item[1]]))
+    pred_mention.append(temp_mention)
+
+dev['pred'] = pred_mention
+dev['pos'] = result
+dev.to_pickle('result/ner_bert_result.pkl')
+
+
 
 # 正负样本分析
 dev = pd.DataFrame()
