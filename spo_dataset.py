@@ -100,7 +100,7 @@ class SPO_BERT(Dataset):
 
 
 class SPO_BERT_LINK(Dataset):
-    def __init__(self, X, tokenizer, pos, type=None):
+    def __init__(self, X, tokenizer, pos, type=None, max_len=510):
         super(SPO_BERT_LINK, self).__init__()
         self.raw_X = X
         self.type = type
@@ -108,11 +108,13 @@ class SPO_BERT_LINK(Dataset):
         self.X = self.deal_for_bert(X, self.tokenizer)
         # X = pad_sequences(X, maxlen=198)
         self.pos = pos
+        self.max_len = max_len
         self.length = [len(sen) for sen in self.X]
 
     def deal_for_bert(self,x,t):
         bert_tokens = []
         for item in x:
+            item = item[0:510]
             temp = []
             for w in item:
                 if w in self.tokenizer.vocab:

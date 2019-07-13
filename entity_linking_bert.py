@@ -55,7 +55,7 @@ optimizer = BertAdam([
                 {'params': model.classify.parameters()},
                 {'params': model.span_extractor.parameters()},
                 {'params': model.bert.parameters(), 'lr': 2e-5}
-            ],  lr=1e-3, warmup=0.05,t_total=t_total)
+            ],  lr=1e-3, warmup=0.05, t_total=t_total)
 clip = 50
 
 loss_fn = nn.CrossEntropyLoss()

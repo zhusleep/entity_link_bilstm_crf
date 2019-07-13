@@ -1,7 +1,7 @@
 import numpy as np
 import json
-from tqdm import  tqdm as tqdm
-import pickle, os
+from tqdm import tqdm as tqdm
+import pickle, os, re
 
 
 class DataManager(object):
@@ -336,7 +336,6 @@ class DataManager(object):
                 if m['mention'] != kb[m['kb_id']]['subject'] and m['mention'] not in kb[m['kb_id']]['alias']:
                     kb[m['kb_id']]['alias'] += [m['mention']]
         type_list = list(set(type_list))
-
         self.type_list = type_list
         name_id = {}
         for kb_id in kb:
@@ -384,8 +383,35 @@ class DataManager(object):
         valid_part = e_link[train_num:]
         return train_part, valid_part
 
+    def data_enhance(self,max_len=50):
+        # 读取基本信息
+        self.read_basic_info()
+        sentence_with_type = []
+        for sen in tqdm(self.kb_data):
+            name_list = list(set(sen['alias']+[sen['subject']]))
+            pattern = r'.*(%s).*'%str(name_list)
+            for m in sen['data']:
+                if m['predicate'] == '摘要':
+                    abstract = m['object']
+                    abstract = abstract.split('。')
+                    for sub_abstract in abstract:
+                        for name in name_list:
+                            sub_abstract = sub_abstract[0:max_len]
+                            if name in sub_abstract:
+                                left = sub_abstract.index(name)
+                                right = left+len(name)-1
+                                sentence_with_type.append([sub_abstract,left,right,
+                                                           self.type_list.index(sen['type'][0]),
+                                                           sen['subject_id']])
+                        if len(sentence_with_type)<10:
+                            print(sentence_with_type)
+                        else:
+                            continue
 
-
+                else:
+                    continue
+        self.enhanced_data = sentence_with_type
+        return sentence_with_type
 
 data_manager = DataManager()
 
