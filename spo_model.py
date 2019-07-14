@@ -613,7 +613,7 @@ class EntityLink_bert(nn.Module):
 
         self.dropout1d = nn.Dropout2d(self.seq_dropout)
         self.span_extractor = EndpointSpanExtractor(encoder_size * 2)
-
+        # selfspanextractor效果很差
         bert_model = 'bert-base-chinese'
         self.bert = BertModel.from_pretrained(bert_model)
         self.use_layer = -1

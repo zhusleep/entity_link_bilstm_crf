@@ -25,7 +25,7 @@ else:
     data_corpus = data_manager.enhanced_data
 # data_corpus = pickle.load(open('data/data_enhance.pkl', 'rb'))
 
-kfold = KFold(n_splits=5, shuffle=False, random_state=2019)
+kfold = KFold(n_splits=1000, shuffle=False, random_state=2019)
 pred_vector = []
 round = 0
 for train_index, valid_index in kfold.split(np.zeros(len(data_corpus))):
@@ -134,6 +134,10 @@ for train_index, valid_index in kfold.split(np.zeros(len(data_corpus))):
         accuracy = np.mean(equals)
         print('acc', accuracy)
         print('train loss　%f, val loss %f'% (train_loss, valid_loss))
+        if epoch==2:
+            break
+    torch.save(model.state_dict(), 'model_type/deep_type.pth')
+    break
 
         # INFO_THRE, thre_list = get_threshold(pred_set, label_set, len(data_manager.type_list))
         # INFO = 'epoch %d, train loss %f, valid loss %f' % (epoch, train_loss, valid_loss)

@@ -86,34 +86,26 @@ class DataManager(object):
 
     def parse_mention(self,file_name, valid_num):
         # type classification
+        self.read_basic_info()
+
         kb_data = []
-        kb = {}
-        with open('data/raw_data/kb_data', 'r') as f:
-            for line in f:
-                item = json.loads(line)
-                kb[item['subject_id']] = item
+        kb = self.kb
                 #kb_data.append(item)
         #---------------------读取数据库知识
         e_link = []
-        type_list = []
         c = 0
-        with open(file_name, 'r') as f:
-            for line in tqdm(f):
-                s = json.loads(line)
-                mention_ner = s['mention_data']
-                for m in mention_ner:
-                    if m['kb_id'] == 'NIL':
-                        continue
-                    sentence = s['text']
-                    pos = [int(m['offset']), int(m['offset'])+len(m['mention'])-1]
-                    if pos[1]>=len(sentence):
-                        raise Exception
-                    m_type = kb[m['kb_id']]['type'][0]
-                    type_list.append(m_type)
-                    e_link.append([sentence, pos, m_type])
-        print(c)
-        type_list = list(set(type_list))
-        self.type_list = type_list
+        for s in self.train_data:
+            mention_ner = s['mention_data']
+            for m in mention_ner:
+                if m['kb_id'] == 'nil':
+                    continue
+                sentence = s['text']
+                pos = [int(m['offset']), int(m['offset'])+len(m['mention'])-1]
+                if pos[1]>=len(sentence):
+                    raise Exception
+                m_type = kb[m['kb_id']]['type'][0]
+                e_link.append([sentence, pos, m_type])
+        type_list = self.type_list
         train_num = 200000
         train_part = e_link[0:200000]
         valid_part = e_link[200000:]
@@ -351,6 +343,7 @@ class DataManager(object):
         for id in name_id:
             name_id[id] = list(set(name_id[id]))
         self.name_id = name_id
+        self.train_data = train_data
         self.kb_data = kb_data
         self.kb = kb
 
@@ -388,8 +381,7 @@ class DataManager(object):
         self.read_basic_info()
         sentence_with_type = []
         for sen in tqdm(self.kb_data):
-            name_list = list(set(sen['alias']+[sen['subject']]))
-            pattern = r'.*(%s).*'%str(name_list)
+            name_list = [sen['subject']]+sen['alias']
             for m in sen['data']:
                 if m['predicate'] == '摘要':
                     abstract = m['object']
@@ -403,6 +395,7 @@ class DataManager(object):
                                 sentence_with_type.append([sub_abstract,left,right,
                                                            self.type_list.index(sen['type'][0]),
                                                            sen['subject_id']])
+
                         if len(sentence_with_type)<10:
                             print(sentence_with_type)
                         else:

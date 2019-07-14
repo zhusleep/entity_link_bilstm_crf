@@ -14,8 +14,19 @@ from utils import seed_torch, read_data, load_glove, calc_f1,get_threshold
 from pytorch_pretrained_bert import BertTokenizer,BertAdam
 import logging
 import time
+from sklearn.externals import joblib
 
-
+# if not os.path.exists('data/data_enhance_backup.pkl'):
+#     data_corpus = data_manager.data_enhance(max_len=50)
+#     joblib.dump(data_manager, 'data/data_enhance_backup.pkl')
+#
+# else:
+#     data_manager = joblib.load('data/data_enhance_backup.pkl')
+#     data_corpus = data_manager.enhanced_data
+# train_X_kb = [['[CLS]']+list(temp[0])+['[SEP]'] for temp in data_corpus]
+# train_pos_kb = [[x[1] + 1, x[2] + 1] for x in data_corpus]
+# train_type_kb = [x[3] for x in data_corpus]
+# print(max(train_type_kb),min(train_type_kb), len(data_manager.type_list))
 file_namne = 'data/raw_data/train.json'
 train_X, train_pos, train_type, dev_X, dev_pos, dev_type = data_manager.parse_mention(file_name=file_namne,valid_num=10000)
 seed_torch(2019)
@@ -23,6 +34,11 @@ train_X = [['[CLS]']+list(temp)+['[SEP]'] for temp in train_X]
 dev_X = [['[CLS]']+list(temp)+['[SEP]'] for temp in dev_X]
 train_pos = [[x[0]+1,x[1]+1]for x in train_pos]
 dev_pos = [[x[0]+1,x[1]+1]for x in dev_pos]
+print(max(train_type),min(train_type))
+# add kb
+# train_X = train_X+train_X_kb
+# train_pos += train_pos_kb
+# train_type += train_type_kb
 
 
 BERT_MODEL = 'bert-base-chinese'
@@ -37,11 +53,17 @@ t = BertTokenizer.from_pretrained(
 train_dataset = SPO_BERT_LINK(train_X, t, pos=train_pos, type=train_type)
 valid_dataset = SPO_BERT_LINK(dev_X, t, pos=dev_pos, type=dev_type)
 
-train_batch_size = 512
-valid_batch_size = 512
+train_batch_size = 128
+valid_batch_size = 128
 
 model = EntityLink_bert(encoder_size=128, dropout=0.2, num_outputs=len(data_manager.type_list))
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+#model.load_state_dict(torch.load('model_type/deep_type.pth'))
+
+use_cuda=True
+if use_cuda:
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+else:
+    device = torch.device("cpu")
 model.to(device)
 
 train_dataloader = DataLoader(train_dataset, collate_fn=collate_fn_link, shuffle=True, batch_size=train_batch_size)
@@ -65,12 +87,12 @@ for epoch in range(epoch):
     for index, X, type, pos, length in tqdm(train_dataloader):
         #model.zero_grad()
         X = nn.utils.rnn.pad_sequence(X, batch_first=True).type(torch.LongTensor)
-        X = X.cuda()
-        length = length.cuda()
+        X = X.to(device)
+        length = length.to(device)
         #ner = ner.type(torch.float).cuda()
-        mask_X = get_mask(X, length, is_cuda=True).cuda()
-        pos = pos.type(torch.LongTensor).cuda()
-        type = type.cuda()
+        mask_X = get_mask(X, length, is_cuda=use_cuda).to(device)
+        pos = pos.type(torch.LongTensor).to(device)
+        type = type.to(device)
         #print(index)
         pred = model(X, mask_X, pos, length)
         loss = loss_fn(pred, type)
@@ -120,3 +142,23 @@ for epoch in range(epoch):
     # INFO = 'epoch %d, train loss %f, valid loss %f' % (epoch, train_loss, valid_loss)
     # logging.info(INFO + '\t' + INFO_THRE)
     # print(INFO + '\t' + INFO_THRE)
+# acc 0.7933704754896808
+# train loss　0.008100, val loss 0.005171
+# acc 0.8103998037772873
+# train loss　0.004624, val loss 0.004680
+# acc 0.8161638459651704
+# train loss　0.003730, val loss 0.004623
+#   0%|          | 0/1563 [00:00<?, ?it/s]acc 0.8191597463120642
+# train loss　0.003022, val loss 0.004722
+# acc 0.8223133256245839
+# train loss　0.002412, val loss 0.004954
+# acc 0.8238375556256351
+# train loss　0.001904, val loss 0.005256
+# acc 0.8233119590735485
+# train loss　0.001499, val loss 0.005590
+#   0%|          | 0/1563 [00:00<?, ?it/s]acc 0.8213146921756194
+# train loss　0.001206, val loss 0.005952
+# acc 0.8224359648200708
+# train loss　0.000966, val loss 0.006328
+#   0%|          | 0/1563 [00:00<?, ?it/s]acc 0.8232769193034094
+# train loss　0.000773, val loss 0.006691

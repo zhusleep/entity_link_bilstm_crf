@@ -6,3 +6,4 @@ __pycache__/*
 entity_embedding/*
 model_ner/ner_bert
 *.model
+*.pth
