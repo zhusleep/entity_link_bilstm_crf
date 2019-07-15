@@ -297,15 +297,33 @@ class SPO_LINK(Dataset):
 
 
 class Entity_Vector(Dataset):
-    def __init__(self, X, tokenizer, pos, vector, label=None):
+    def __init__(self, X, tokenizer, pos, vector, label=None, use_bert=False):
         super(Entity_Vector, self).__init__()
         self.raw_X = X
         self.label = label
         self.tokenizer = tokenizer
-        self.X = tokenizer.transform(X)        # X = pad_sequences(X, maxlen=198)
+        if not use_bert:
+            self.X = tokenizer.transform(X)        # X = pad_sequences(X, maxlen=198)
+        else:
+            self.X = self.deal_for_bert(X, self.tokenizer)
         self.pos = pos
         self.vector = vector
         self.length = [len(sen) for sen in self.X]
+
+    def deal_for_bert(self, x, t):
+        bert_tokens = []
+        for item in x:
+            temp = []
+            for w in item:
+                if w in self.tokenizer.vocab:
+                    temp.append(w)
+                else:
+                    temp.append('[UNK]')
+
+            # sen = t.tokenize(''.join(item))
+            indexed_tokens = t.convert_tokens_to_ids(temp)
+            bert_tokens.append(indexed_tokens)
+        return bert_tokens
 
     def __len__(self):
         return len(self.X)
