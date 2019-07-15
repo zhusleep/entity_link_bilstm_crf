@@ -629,9 +629,9 @@ class EntityLink_bert(nn.Module):
         )
 
     def forward(self, token_tensor, mask_X, pos, length):
-        self.bert.eval()
-        with torch.no_grad():
-            bert_outputs, _ = self.bert(token_tensor, attention_mask=(token_tensor > 0).long(),
+        # self.bert.eval()
+        # with torch.no_grad():
+        bert_outputs, _ = self.bert(token_tensor, attention_mask=(token_tensor > 0).long(),
                                         token_type_ids=None,
                                         output_all_encoded_layers=True)
 
