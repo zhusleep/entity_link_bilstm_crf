@@ -43,6 +43,63 @@ class SPO(Dataset):
             return index, sentence,length
 
 
+class QAPair(Dataset):
+    def __init__(self, data, tokenizer, predictor, max_len=50):
+        super(QAPair, self).__init__()
+
+        self.data = data
+        self.question = self.data['question'].apply(lambda x: tokenizer.transform([x])[0]).reset_index(drop=True)
+        self.answer = self.data['answer'].apply(lambda x: tokenizer.transform([x])[0]).reset_index(drop=True)
+        self.la = self.data['la'].reset_index(drop=True)
+        self.lb = self.data['lb'].reset_index(drop=True)
+        self.label = self.data['label'].reset_index(drop=True)
+        self.numerical_df = self.data[predictor].reset_index(drop=True)
+
+    def __len__(self):
+        return len(self.data)
+
+    def __getitem__(self, index):
+        #print('index', index)
+        sa = torch.tensor(self.question[index], dtype=torch.int)
+        sb = torch.tensor(self.answer[index], dtype=torch.int)
+        la = self.la[index]
+        lb = self.lb[index]
+        numerical_features = self.numerical_df.loc[index, :].values
+
+        label = self.label[index]
+        return sa, sb, la, lb, numerical_features, label
+
+
+def qapair_collate_fn(batch):
+    if (len(batch[0]) == 6):
+        sa, sb, la, lb, numerical_feats, label = zip(*batch)
+        la = torch.tensor(la)
+        lb = torch.tensor(lb)
+        numerical_feats = torch.tensor(numerical_feats)
+        label = torch.tensor(label)
+        return sa, sb, la, lb, numerical_feats, label
+    else:
+        has_label = len(batch[0]) == 8
+
+        if has_label:
+            sa, sb, la, lb, cata, catb, numerical_feats, label = zip(*batch)
+            label = torch.tensor(label)
+        else:
+            sa, sb, la, lb, cata, catb, numerical_feats = zip(*batch)
+
+        la = torch.tensor(la)
+        lb = torch.tensor(lb)
+        cata = torch.tensor(cata)
+        catb = torch.tensor(catb)
+        numerical_feats = torch.tensor(numerical_feats)
+
+        if has_label:
+            return sa, sb, la, lb, cata, catb, numerical_feats, label
+        else:
+            return sa, sb, la, lb, cata, catb, numerical_feats
+
+
+
 class SPO_BERT(Dataset):
     def __init__(self, X, tokenizer, label=None,  ner=None):
         super(SPO_BERT, self).__init__()
@@ -553,4 +610,27 @@ def get_mask(sequences_batch, sequences_lengths, is_cuda=True):
     else:
         return mask
 
+
+def get_mask_bertpiece(sequences_batch, sequences_lengths, pos, is_cuda=True):
+    """
+    Get the mask for a batch of padded variable length sequences.
+    Args:
+        sequences_batch: A batch of padded variable length sequences
+            containing word indices. Must be a 2-dimensional tensor of size
+            (batch, sequence).
+        sequences_lengths: A tensor containing the lengths of the sequences in
+            'sequences_batch'. Must be of size (batch).
+    Returns:
+        A mask of size (batch, max_sequence_length), where max_sequence_length
+        is the length of the longest sequence in the batch.
+    """
+    batch_size = sequences_batch.size()[0]
+    max_length = torch.max(sequences_lengths)
+    mask = torch.zeros(batch_size, max_length, dtype=torch.uint8)
+    for i in range(batch_size):
+        mask[i, pos[i][0]:pos[i][1]+1] = 1
+    if is_cuda:
+        return mask.cuda()
+    else:
+        return mask
 

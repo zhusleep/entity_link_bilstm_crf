@@ -54,8 +54,8 @@ for train_index, test_index in kfold.split(np.zeros(len(train_part))):
     valid_dataset = Entity_Vector([x[0] for x in valid_part], t, pos=[x[1] for x in valid_part],
                                   vector=[x[2] for x in valid_part], label=[x[3] for x in valid_part])
 
-    train_batch_size = 1024
-    valid_batch_size = 1024
+    train_batch_size = 128
+    valid_batch_size = 128
 
     model = EntityLink_entity_vector(vocab_size=embedding_matrix.shape[0], init_embedding=embedding_matrix,
                        encoder_size=128, dropout=0.2, num_outputs=len(data_manager.type_list))
@@ -68,7 +68,7 @@ for train_index, test_index in kfold.split(np.zeros(len(train_part))):
 
     valid_dataloader = DataLoader(valid_dataset, collate_fn=collate_fn_link_entity_vector, shuffle=False, batch_size=valid_batch_size)
 
-    epoch = 10
+    epoch = 2
     t_total = int(epoch*len(train_part)/train_batch_size)
     # optimizer = BertAdam([
     #                 {'params': model.LSTM.parameters()},
@@ -132,9 +132,9 @@ for train_index, test_index in kfold.split(np.zeros(len(train_part))):
             with torch.no_grad():
                 pred = model(X, mask_X, pos, vector, length)
             loss = loss_fn(pred, vector, target=label)
-            #cos_loss = torch.sum(F.cosine_similarity(pred, vector)).item()
+            # cos_loss = torch.nn.MSELoss(pred, vector).item()
             # print('loss',loss)
-
+            # valid_cosloss +=cos_loss
             pred_set.append(pred.cpu().numpy())
             # label_set.append(type.cpu().numpy())
             valid_loss += loss.item()
@@ -148,6 +148,7 @@ for train_index, test_index in kfold.split(np.zeros(len(train_part))):
         # accuracy = np.mean(equals)
         # print('acc', accuracy)
         print('train loss　%f, val loss %f ' % (train_loss, valid_loss))
+        print(valid_cosloss)
     torch.save(model.state_dict(), 'entity_embedding/gensim_vector_model_round %s'% (round))
     pred_vector.append(pred_set)
     round += 1

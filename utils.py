@@ -265,6 +265,7 @@ def load_glove(embedding_file, max_features, tokenizer):
         if embedding_vector is not None: embedding_matrix[i] = embedding_vector
         else:
             unknow += 1
+            print(word)
     print('一共%d个oov'%unknow)
     return embedding_matrix
 

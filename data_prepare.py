@@ -2,6 +2,7 @@ import numpy as np
 import json
 from tqdm import tqdm as tqdm
 import pickle, os, re
+import pandas as pd
 
 
 class DataManager(object):
@@ -83,29 +84,43 @@ class DataManager(object):
                 X_arr_test.append(s['text'])
         return X_arr, ner_arr, X_arr_test
 
-
     def parse_mention(self,file_name, valid_num):
         # type classification
         self.read_basic_info()
 
         kb_data = []
         kb = self.kb
-                #kb_data.append(item)
+        # kb_data.append(item)
         #---------------------读取数据库知识
         e_link = []
-        c = 0
         for s in self.train_data:
             mention_ner = s['mention_data']
             for m in mention_ner:
                 if m['kb_id'] == 'nil':
                     continue
+                name_list = [kb[m['kb_id']]['subject']] + kb[m['kb_id']]['alias']
+                if m['mention'] not in name_list:
+
+                    # kb[m['kb_id']]['alias'] += [m['mention']]
+                    keep = False
+                    for name_c in ''.join(name_list):
+                        if name_c in m['mention']:
+                            # print(name_c,m['mention'])
+                            keep = True
+                            break
+
+                    if not keep:
+                        continue
+
                 sentence = s['text']
                 pos = [int(m['offset']), int(m['offset'])+len(m['mention'])-1]
-                if pos[1]>=len(sentence):
+                if pos[1] >= len(sentence):
                     raise Exception
                 m_type = kb[m['kb_id']]['type'][0]
-                e_link.append([sentence, pos, m_type])
+                e_link.append([s['text_id'], sentence, pos, m_type])
+
         type_list = self.type_list
+        return e_link
         train_num = 200000
         train_part = e_link[0:200000]
         valid_part = e_link[200000:]
@@ -306,6 +321,18 @@ class DataManager(object):
         return train_part, valid_part
 
     def read_basic_info(self):
+        type_list_f = 'data/type_list.pkl'
+        name_id_f = 'data/name_id.pkl'
+        train_data_f = 'data/train_data.pkl'
+        kb_data_f = 'data/kb_data.pkl'
+        kb_f = 'data/kb.pkl'
+        if os.path.exists('data/kb.pkl'):
+            self.type_list = pickle.load(open(type_list_f,'rb'))
+            self.name_id = pickle.load(open(name_id_f,'rb'))
+            self.train_data = pickle.load(open(train_data_f,'rb'))
+            self.kb_data = pickle.load(open(kb_data_f,'rb'))
+            self.kb = pickle.load(open(kb_f,'rb'))
+            return
         kb_data = []
         kb = {}
         type_list = []
@@ -321,12 +348,6 @@ class DataManager(object):
                 kb[item['subject_id']] = item
                 kb_data.append(item)
 
-        for s in train_data:
-            for m in s['mention_data']:
-                if m['kb_id'] == 'nil':
-                    continue
-                if m['mention'] != kb[m['kb_id']]['subject'] and m['mention'] not in kb[m['kb_id']]['alias']:
-                    kb[m['kb_id']]['alias'] += [m['mention']]
         type_list = list(set(type_list))
         self.type_list = type_list
         name_id = {}
@@ -347,6 +368,12 @@ class DataManager(object):
         self.kb_data = kb_data
         self.kb = kb
 
+        pickle.dump(self.type_list, open(type_list_f, 'wb'))
+        pickle.dump(self.name_id, open(name_id_f, 'wb'))
+        pickle.dump(self.train_data, open(train_data_f, 'wb'))
+        pickle.dump(self.kb, open(kb_f, 'wb'))
+        pickle.dump(self.kb_data, open(kb_data_f, 'wb'))
+
     def read_entity_embedding(self, file_name, train_num=200000):
         self.read_basic_info()
         from gensim.models import Word2Vec
@@ -357,8 +384,12 @@ class DataManager(object):
                 s = eval(str(json.loads(line)).lower())
                 mention_ner = s['mention_data']
                 for m in mention_ner:
-                    if m['mention'] not in self.name_id:
+                    if m['mention'] not in self.name_id:  # 不能注销，因为有些实体没有or m['kb_id']=='nil':
                         continue
+                    if m['kb_id'] != 'nil':
+                        name_list = [self.kb[m['kb_id']]['subject']] + self.kb[m['kb_id']]['alias']
+                        if m['mention'] not in name_list:
+                            continue
                     candidate_ids = self.name_id[m['mention']]
                     for m_candidate_id in candidate_ids:
                         if m_candidate_id==m['kb_id']:
@@ -375,6 +406,47 @@ class DataManager(object):
         train_part = e_link[0:train_num]
         valid_part = e_link[train_num:]
         return train_part, valid_part
+
+    def read_deep_match(self):
+        self.read_basic_info()
+        data = pd.read_pickle('data/final.pkl').iloc[:, :]
+        exclude = ['text_id',
+                   'kb_id',
+                   'train_mention',
+                   'label',
+                   'm_id', 'type']
+        # exclude = []
+        temp = []
+        for x in data.columns:
+            if x not in exclude: temp.append(x)
+        self.predictor = temp
+        # self.predictor = ['label_mean',
+        #  'label_count',
+        #  'm_label_mean',
+        #  'm_label_count']
+        print(len(self.predictor))
+        max_len=50
+        data['question'] = data['text_id'].apply(lambda x: self.train_data[int(x)-1]['text'][0:max_len])
+
+        def extract_info(kb):
+            if not kb['data']:
+                return '的'
+            for item in kb['data']:
+                if item['predicate']=='摘要':
+                    first_sentence = item['object'].split('。')[0]
+                    if first_sentence:
+                        return first_sentence
+            return '的'
+
+        data['answer'] = data['kb_id'].apply(lambda x: extract_info(self.kb[x])[0:max_len])
+        data['la'] = data['question'].apply(lambda x:len(x))
+        data['lb'] = data['answer'].apply(lambda x:len(x))
+        data.fillna(0,inplace=True)
+
+        for item in self.predictor:
+            data[item] = data[item].astype('float32')
+        return data
+
 
     def data_enhance(self,max_len=50):
         # 读取基本信息
