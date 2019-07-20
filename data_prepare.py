@@ -3,6 +3,7 @@ import json
 from tqdm import tqdm as tqdm
 import pickle, os, re
 import pandas as pd
+from gensim.models import Word2Vec
 
 
 class DataManager(object):
@@ -141,9 +142,30 @@ class DataManager(object):
         #valid_type = [type_list.index(x[2]) for x in valid_part]
         return train_X,train_pos,train_type,valid_X,valid_pos,valid_type
 
+    def deep_type_predict(self,filename):
+        self.read_basic_info()
+        test_data = self.read_test_data(filename)
+        # type classification
 
+        kb_data = []
+        kb = self.kb
+        # kb_data.append(item)
+        #---------------------读取数据库知识
+        e_link = []
+        for s in test_data:
+            mention_ner = s['mention_data']
+            for m in mention_ner:
+                if m['mention'] not in self.name_id: continue
 
+                sentence = s['text']
+                pos = [int(m['offset']), int(m['offset'])+len(m['mention'])-1]
+                if pos[1] >= len(sentence):
+                    raise Exception
+                m_type = None
+                e_link.append([s['text_id'], sentence, pos, m_type])
 
+        type_list = self.type_list
+        return e_link
 
     def parse_v2(self,file_name, valid_num):
         if os.path.exists('data/features.pkl'):
@@ -376,7 +398,6 @@ class DataManager(object):
 
     def read_entity_embedding(self, file_name, train_num=200000):
         self.read_basic_info()
-        from gensim.models import Word2Vec
         entity_embedding = Word2Vec.load('embedding/w2v.model')
         e_link = []
         with open(file_name, 'r') as f:
@@ -406,6 +427,47 @@ class DataManager(object):
         train_part = e_link[0:train_num]
         valid_part = e_link[train_num:]
         return train_part, valid_part
+
+    def read_test_data(self,filename):
+        # 戴安楠ner
+        ner_result = pd.read_csv(filename, sep='\t')
+        ner_result['offset'] = ner_result['offset'].apply(lambda x: eval(x.lower()))
+        ner_result['mention'] = ner_result['mention'].apply(lambda x: eval(x.lower()))
+        ner_result = ner_result.rename(columns={'mention': 'pred', 'offset': 'pos'})
+        test_data = []
+        for index, row in ner_result.iterrows():
+            item = {}
+            item['text_id'] = row['text_id']
+            item['text'] = row['text']
+            item['mention_data'] = []
+            for i, p in enumerate(row['pos']):
+                if row['pred'][i] not in self.name_id:continue
+                item['mention_data'].append({'mention': row['pred'][i], 'offset': str(p)})
+            test_data.append(item)
+        return test_data
+
+    def read_deep_cosine_test(self, filename):
+        self.read_basic_info()
+        test_data = self.read_test_data(filename)
+
+        entity_embedding = Word2Vec.load('embedding/w2v.model')
+        e_link = []
+        for s in tqdm(test_data):
+            mention_ner = s['mention_data']
+            for m in mention_ner:
+                if m['mention'] not in self.name_id:  # 不能注销，因为有些实体没有or m['kb_id']=='nil':
+                    continue
+                candidate_ids = self.name_id[m['mention']]
+                for m_candidate_id in candidate_ids:
+                    label = -1
+                    sentence = s['text']
+                    # mention 特征
+                    pos = [int(m['offset']), int(m['offset']) + len(m['mention']) - 1]
+                    e_vector = entity_embedding.wv.word_vec(self.kb[m_candidate_id]['subject_id'])
+                    e_link.append([sentence, pos, e_vector, label])
+        return e_link
+
+
 
     def read_deep_match(self):
         self.read_basic_info()

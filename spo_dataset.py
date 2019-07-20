@@ -190,16 +190,16 @@ class SPO_BERT_LINK(Dataset):
     def __getitem__(self, index):
         sentence = torch.tensor(self.X[index])
         pos = self.pos[index]
-        type = self.type[index]
         length = self.length[index]
         # if self.ner is not None:
         #     ner = torch.tensor(self.ner[index])
         #if self.combined_char_t is not None:
 
-        if  type is not None:
+        if self.type is not None:
+            type = self.type[index]
             return index, sentence, type, pos, length
         else:
-            return index, sentence,length
+            return index, sentence, pos, length
 
 
 class entity_linking_v2(Dataset):
@@ -454,9 +454,10 @@ def collate_fn_link(batch):
         type= torch.tensor(type, dtype=torch.long)
         return index, sentence, type, pos, length
     else:
-        index, X, length = zip(*batch)
-        length = torch.tensor(length, dtype=torch.long)
-        return index, X, length,
+        index, sentence, pos, length = zip(*batch)
+        pos = torch.tensor(pos, dtype=torch.int)
+        length = torch.tensor(length, dtype=torch.int)
+        return index, sentence, pos, length
 
 
 def collate_fn_link_entity_vector(batch):

@@ -30,17 +30,15 @@ from sklearn.externals import joblib
 # train_type_kb = [x[3] for x in data_corpus]
 # print(max(train_type_kb),min(train_type_kb), len(data_manager.type_list))
 file_namne = 'data/raw_data/train.json'
-data_all = data_manager.parse_mention(file_name=file_namne, valid_num=10000)
+data_all = data_manager.deep_type_predict(filename='result/el_dev_result(1).csv')
 print('一共有%d 个字' % len(data_all))
 #data_all = np.array(data_all)
 kfold = KFold(n_splits=5, shuffle=False, random_state=2019)
 pred_vector = []
 round = 0
 train_batch_size = 2048
-for train_index, test_index in kfold.split(np.zeros(len(data_all))):
-    train_part = [data_all[i] for i in train_index]
-    valid_part = [data_all[i] for i in test_index]
 
+for round in range(5):
     BERT_MODEL = 'bert-base-chinese'
     CASED = False
     t = BertTokenizer.from_pretrained(
@@ -60,23 +58,16 @@ for train_index, test_index in kfold.split(np.zeros(len(data_all))):
 
     # [s['text_id'], sentence, pos, m_type]
     seed_torch(2019)
-    train_X = [['[CLS]']+list(temp[1])+['[SEP]'] for temp in train_part]
-    dev_X = [['[CLS]']+list(temp[1])+['[SEP]'] for temp in valid_part]
-    train_pos = [[x[2][0]+1, x[2][1]+1]for x in train_part]
-    dev_pos = [[x[2][0]+1, x[2][1]+1]for x in valid_part]
-    train_type = [data_manager.type_list.index(x[3]) for x in train_part]
-    dev_type = [data_manager.type_list.index(x[3]) for x in valid_part]
+    dev_X = [['[CLS]']+list(temp[1])+['[SEP]'] for temp in data_all]
+    dev_pos = [[x[2][0]+1, x[2][1]+1]for x in data_all]
 
-    print(max(train_type), min(train_type))
     # add kb
     # train_X = train_X+train_X_kb
     # train_pos += train_pos_kb
     # train_type += train_type_kb
 
-    train_dataset = SPO_BERT_LINK(train_X, t, pos=train_pos, type=train_type)
-    valid_dataset = SPO_BERT_LINK(dev_X, t, pos=dev_pos, type=dev_type)
+    valid_dataset = SPO_BERT_LINK(dev_X, t, pos=dev_pos, type=None)
 
-    train_batch_size = 64
     valid_batch_size = 128
 
     #model.load_state_dict(torch.load('model_type/deep_type.pth'))
@@ -88,88 +79,86 @@ for train_index, test_index in kfold.split(np.zeros(len(data_all))):
         device = torch.device("cpu")
     model.to(device)
 
-    train_dataloader = DataLoader(train_dataset, collate_fn=collate_fn_link, shuffle=True, batch_size=train_batch_size)
-    valid_dataloader = DataLoader(valid_dataset, collate_fn=collate_fn_link, shuffle=True, batch_size=valid_batch_size)
+    valid_dataloader = DataLoader(valid_dataset, collate_fn=collate_fn_link, shuffle=False, batch_size=valid_batch_size)
+    model.eval()
+    valid_loss = 0
+    pred_set = []
+    label_set = []
+    for index, X, type, pos, length in tqdm(valid_dataloader):
+        X = nn.utils.rnn.pad_sequence(X, batch_first=True).type(torch.LongTensor)
+        X = X.cuda()
+        length = length.cuda()
+        mask_X = get_mask(X, length, is_cuda=True).cuda()
+        pos = pos.type(torch.LongTensor).cuda()
+        type = type.cuda()
+        mask_for_pool = get_mask_bertpiece(X, length, pos, is_cuda=True).type(torch.float)
 
-    epoch = 10
-    t_total = int(epoch*len(train_X)/train_batch_size)
-    optimizer = BertAdam([
-                    {'params': model.LSTM.parameters()},
-                    {'params': model.hidden.parameters()},
-                    {'params': model.classify.parameters()},
-                    {'params': model.span_extractor.parameters()},
-                    {'params': model.bert.parameters(), 'lr': 2e-5}
-                ],  lr=1e-3, warmup=0.05, t_total=t_total)
-    clip = 50
-
-    loss_fn = nn.CrossEntropyLoss()
-    pred_vector = []
-    for epoch in range(epoch):
-        model.train()
-        train_loss = 0
-        for index, X, type, pos, length in tqdm(train_dataloader):
-            #model.zero_grad()
-            X = nn.utils.rnn.pad_sequence(X, batch_first=True).type(torch.LongTensor)
-            X = X.to(device)
-            length = length.to(device)
-            #ner = ner.type(torch.float).cuda()
-            mask_X = get_mask(X, length, is_cuda=use_cuda).to(device)
-            pos = pos.type(torch.LongTensor).to(device)
-            type = type.to(device)
-            #print(index)
-            mask_for_pool = get_mask_bertpiece(X, length, pos, is_cuda=True).type(torch.float)
+        with torch.no_grad():
             pred = model(X, mask_X, pos, length, mask_for_pool).to(device)
-            loss = loss_fn(pred, type)
-            loss.backward()
+        # print(pred.size(),type.size(),torch.max(type))
 
-            #loss = loss_fn(pred, ner)
-            optimizer.step()
-            optimizer.zero_grad()
-            nn.utils.clip_grad_norm_(model.parameters(), clip)
+        loss = loss_fn(pred, type)
+        # print('loss',loss)
+        pred_set.append(pred.cpu().numpy())
+        label_set.append(type.cpu().numpy())
+        valid_loss += loss.item()
+    valid_loss = valid_loss / len(dev_X)
+    pred_set = np.concatenate(pred_set, axis=0)
+    label_set = np.concatenate(label_set, axis=0)
+    top_class = np.argmax(pred_set, axis=1)
+    equals = top_class == label_set
+    accuracy = np.mean(equals)
+    print('acc', accuracy)
+    print('train loss　%f, val loss %f' % (train_loss, valid_loss))
 
-            # Clip gradients: gradients are modified in place
-            train_loss += loss.item()
-        train_loss = train_loss/len(train_X)
-
-        model.eval()
-        valid_loss = 0
-        pred_set = []
-        label_set = []
-        for index, X, type, pos, length in tqdm(valid_dataloader):
-            X = nn.utils.rnn.pad_sequence(X, batch_first=True).type(torch.LongTensor)
-            X = X.cuda()
-            length = length.cuda()
-            mask_X = get_mask(X, length, is_cuda=True).cuda()
-            pos = pos.type(torch.LongTensor).cuda()
-            type = type.cuda()
-            mask_for_pool = get_mask_bertpiece(X, length, pos, is_cuda=True).type(torch.float)
-
-            with torch.no_grad():
-                pred = model(X, mask_X, pos, length, mask_for_pool).to(device)
-            #print(pred.size(),type.size(),torch.max(type))
-
-            loss = loss_fn(pred, type)
-            #print('loss',loss)
-            pred_set.append(pred.cpu().numpy())
-            label_set.append(type.cpu().numpy())
-            valid_loss += loss.item()
-        valid_loss = valid_loss / len(dev_X)
-        pred_set = np.concatenate(pred_set, axis=0)
-        label_set = np.concatenate(label_set, axis=0)
-        top_class = np.argmax(pred_set, axis=1)
-        equals = top_class == label_set
-        accuracy = np.mean(equals)
-        print('acc', accuracy)
-        print('train loss　%f, val loss %f' % (train_loss, valid_loss))
-
-    torch.save(model.state_dict(), 'model_type/deep_type_t_%d.pth'%round)
-    pred_vector.append(pred_set)
-    round += 1
-    # INFO_THRE, thre_list = get_threshold(pred_set, label_set, len(data_manager.type_list))
-    # INFO = 'epoch %d, train loss %f, valid loss %f' % (epoch, train_loss, valid_loss)
-    # logging.info(INFO + '\t' + INFO_THRE)
+torch.save(model.state_dict(), 'model_type/deep_type_t_%d.pth' % round)
+pred_vector.append(pred_set)
+round += 1
+# INFO_THRE, thre_list = get_threshold(pred_set, label_set, len(data_manager.type_list))
+# INFO = 'epoch %d, train loss %f, valid loss %f' % (epoch, train_loss, valid_loss)
+# logging.info(INFO + '\t' + INFO_THRE)
 pred_vector = np.concatenate(pred_vector, axis=0)
 np.save('model_type/type_vector.npy', pred_vector)
+    # epoch = 5
+    # t_total = int(epoch*len(train_X)/train_batch_size)
+    # optimizer = BertAdam([
+    #                 {'params': model.LSTM.parameters()},
+    #                 {'params': model.hidden.parameters()},
+    #                 {'params': model.classify.parameters()},
+    #                 {'params': model.span_extractor.parameters()},
+    #                 {'params': model.bert.parameters(), 'lr': 2e-5}
+    #             ],  lr=1e-3, warmup=0.05, t_total=t_total)
+    # clip = 50
+    #
+    # loss_fn = nn.CrossEntropyLoss()
+    # for epoch in range(epoch):
+    #     model.train()
+    #     train_loss = 0
+    #     for index, X, type, pos, length in tqdm(train_dataloader):
+    #         #model.zero_grad()
+    #         X = nn.utils.rnn.pad_sequence(X, batch_first=True).type(torch.LongTensor)
+    #         X = X.to(device)
+    #         length = length.to(device)
+    #         #ner = ner.type(torch.float).cuda()
+    #         mask_X = get_mask(X, length, is_cuda=use_cuda).to(device)
+    #         pos = pos.type(torch.LongTensor).to(device)
+    #         type = type.to(device)
+    #         #print(index)
+    #         mask_for_pool = get_mask_bertpiece(X, length, pos, is_cuda=True).type(torch.float)
+    #         pred = model(X, mask_X, pos, length, mask_for_pool).to(device)
+    #         loss = loss_fn(pred, type)
+    #         loss.backward()
+    #
+    #         #loss = loss_fn(pred, ner)
+    #         optimizer.step()
+    #         optimizer.zero_grad()
+    #         nn.utils.clip_grad_norm_(model.parameters(), clip)
+    #
+    #         # Clip gradients: gradients are modified in place
+    #         train_loss += loss.item()
+    #     train_loss = train_loss/len(train_X)
+
+
 # acc 0.7933060109289618
 # train loss　0.015648, val loss 0.005099
 # acc 0.7930327868852459
