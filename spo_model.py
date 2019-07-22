@@ -550,21 +550,21 @@ class SPO_Model_Bert(nn.Module):
                                 bidirectional=True)
         hidden_size=100
         self.hidden = nn.Linear(2*encoder_size, hidden_size)
-        self.NER = nn.Linear(hidden_size, num_tags)
+        self.NER = nn.Linear(768, num_tags)
         self.crf_model = CRF(num_tags=num_tags, batch_first=True)
 
         self.use_crf = True
 
     def cal_loss(self,token_tensor,mask_X,length,label=None):
-        self.bert.eval()
-        with torch.no_grad():
-            bert_outputs, _ = self.bert(token_tensor, attention_mask=(token_tensor > 0).long(), token_type_ids=None,
+        # self.bert.eval()
+        # with torch.no_grad():
+        bert_outputs, _ = self.bert(token_tensor, attention_mask=(token_tensor > 0).long(), token_type_ids=None,
                             output_all_encoded_layers=True)
 
         bert_outputs = torch.cat(bert_outputs[self.use_layer:], dim=-1)
-        X1 = self.LSTM(bert_outputs, length)
-        X1 = self.hidden(X1)
-        logits = self.NER(X1)
+        #X1 = self.LSTM(bert_outputs, length)
+        #X1 = self.hidden(bert_outputs)
+        logits = self.NER(bert_outputs)
         if not self.use_crf:
             class_probabilities = F.softmax(logits, dim=2)
             loss = sequence_cross_entropy_with_logits(class_probabilities, label, weights=mask_X,
@@ -583,9 +583,9 @@ class SPO_Model_Bert(nn.Module):
 
         bert_outputs = torch.cat(bert_outputs[self.use_layer:], dim=-1)
 
-        X1 = self.LSTM(bert_outputs, length)
-        X1 = self.hidden(X1)
-        logits = self.NER(X1)
+        #X1 = self.LSTM(bert_outputs, length)
+        #X1 = self.hidden(bert_outputs)
+        logits = self.NER(bert_outputs)
         if self.use_crf:
             pred = self.crf_model.decode(logits, mask=mask_X)
         else:
@@ -643,7 +643,7 @@ class EntityLink_bert(nn.Module):
             X1,
             pos
         )
-        spans_contexts = torch.cat([spans_contexts_2,pooled_output],dim=-1)
+        spans_contexts = torch.cat([spans_contexts_2, pooled_output],dim=-1)
         pred = self.classify(spans_contexts.squeeze(0))
         #print(pred.size())
         return pred
@@ -806,6 +806,8 @@ class EntityLink_entity_vector(nn.Module):
 
 class EntityLink_v2(nn.Module):
     def __init__(self,
+                 vocab_size=0,
+                 word_embed_size=0,
                  encoder_size=64,
                  dim_num_feat=0,
                  dropout=0.2,
@@ -816,7 +818,7 @@ class EntityLink_v2(nn.Module):
         # self.word_embedding = nn.Embedding(vocab_size,
         #                                    word_embed_size,
         #                                    padding_idx=0)
-        # self.pos_embedding = nn.Embedding(pos_embed_size, pos_dim, padding_idx=0)
+        self.type_embedding = nn.Embedding(vocab_size, word_embed_size, padding_idx=0)
         self.seq_dropout = seq_dropout
 
         self.dropout1d = nn.Dropout2d(self.seq_dropout)
@@ -833,68 +835,68 @@ class EntityLink_v2(nn.Module):
         hidden_size = 100
         self.hidden = nn.Linear(2*encoder_size, hidden_size)
         self.span_linear = nn.Linear(768*2, 768)
+        self.span_extractor = EndpointSpanExtractor(768)
 
         self.classify = nn.Sequential(
             nn.BatchNorm1d(encoder_size*4),
             nn.Dropout(p=dropout),
             nn.Linear(in_features=encoder_size*4, out_features=num_outputs)
         )
-        self.mlp = nn.Sequential(
-            nn.BatchNorm1d(4608),
+        self.mlp1 = nn.Sequential(
+            nn.BatchNorm1d(768*2+1),
             nn.Dropout(p=dropout),
-            nn.Linear(in_features=4608, out_features=128),
+            nn.Linear(in_features=768*2+1, out_features=128),
             nn.ReLU(inplace=True)
         )
         self.mlp2 = nn.Sequential(
-            nn.BatchNorm1d(128 + 2),
+            nn.BatchNorm1d(128),
             nn.Dropout(p=dropout),
-            nn.Linear(in_features=128+2, out_features=1),
+            nn.Linear(in_features=128, out_features=1),
             nn.Sigmoid()
         )
 
-    def forward(self, query, l_query, pos, candidate_abstract, l_abstract,
-                candidate_labels, l_labels, candidate_type, candidate_abstract_numwords,
-                candidate_numattrs, mask_abstract, mask_query, mask_labels):
-        self.bert.eval()
+    def forward(self, query, pos, candidate_abstract, candidate_type):
+        #self.bert.eval()
         with torch.no_grad():
             query_bert_outputs, _ = self.bert(query, attention_mask=(query > 0).long(),
                                               token_type_ids=None,
                                               output_all_encoded_layers=True)
             query_bert_outputs = torch.cat(query_bert_outputs[self.use_layer:], dim=-1)
+            query_spans_contexts = self.span_extractor(
+                query_bert_outputs,
+                pos
+            ).squeeze(0)
+            # X2 = self.lstm_attention(X1)
+            # X3 = torch.cat([spans_contexts.squeeze(0),X2],dim=-1)
+
             candidate_abstract_bert_outputs, _ = self.bert(candidate_abstract, attention_mask=(candidate_abstract > 0).long(),
                                                            token_type_ids=None,
-                                                           output_all_encoded_layers=True)
-            candidate_abstract_bert_outputs = torch.cat(candidate_abstract_bert_outputs[self.use_layer:], dim=-1)
-            candidate_labels_bert_outputs, _ = self.bert(candidate_labels, attention_mask=(candidate_labels > 0).long(),
-                                                           token_type_ids=None,
-                                                           output_all_encoded_layers=True)
-            candidate_labels_bert_outputs = torch.cat(candidate_labels_bert_outputs[self.use_layer:], dim=-1)
+                                                           output_all_encoded_layers=False)
+        candidate_abstract_bert_outputs = self.lstm_attention(candidate_abstract_bert_outputs)
 
-        #query_lstm = self.LSTM(query_bert_outputs, l_query)
-        query_attn_pool = self.lstm_attention(query_bert_outputs, mask=mask_query)
+        #type_outputs = self.type_embedding(candidate_type)
 
         #candidate_abstract_lstm = self.LSTM(candidate_abstract_bert_outputs, l_abstract)
-        candidate_abstract_pool = self.lstm_attention(candidate_abstract_bert_outputs, mask=mask_abstract)
+        #candidate_abstract_pool = self.lstm_attention(candidate_abstract_bert_outputs, mask=mask_abstract)
 
-        #candidate_labels_lstm = self.LSTM(candidate_labels_bert_outputs, l_labels)
-        candidate_labels_pool = self.lstm_attention(candidate_labels_bert_outputs, mask=mask_labels)
+        #spans_contexts = self.span_extractor(query_bert_outputs, pos)
+        spans_contexts = self.span_linear(query_spans_contexts)
 
-        spans_contexts = self.span_extractor(query_bert_outputs, pos)
-        spans_contexts = self.span_linear(spans_contexts)
+        relation_vector = torch.cat([candidate_abstract_bert_outputs*spans_contexts,
+                                     candidate_abstract_bert_outputs - spans_contexts,
+                                     # type_outputs*spans_contexts,
+                                     # type_outputs - spans_contexts,
+                                     torch.sum(candidate_abstract_bert_outputs * spans_contexts, dim=-1).unsqueeze(1)
+                                     ], dim=-1)
 
-        relation_vector = torch.cat([query_attn_pool, candidate_abstract_pool, candidate_labels_pool,
-                   query_attn_pool*candidate_abstract_pool,
-                   candidate_labels_pool*query_attn_pool,
-                   spans_contexts*candidate_labels_pool,
-                   ], dim=-1)
         # print(relation_vector.size())
 
-        relation_vector = self.mlp(relation_vector)
-        relation_vector = torch.cat([relation_vector,
-                                     candidate_abstract_numwords.unsqueeze(1),
-                                     candidate_numattrs.unsqueeze(1)], dim=-1)
-        # print(relation_vector.size())
-        output = self.mlp2(relation_vector)
+        output = self.mlp2(self.mlp1(relation_vector))
+        # relation_vector = torch.cat([relation_vector,
+        #                              candidate_abstract_numwords.unsqueeze(1),
+        #                              candidate_numattrs.unsqueeze(1)], dim=-1)
+        # # print(relation_vector.size())
+        # output = self.mlp2(relation_vector)
         # pred = self.classify(spans_contexts.squeeze(0))
 
         return output

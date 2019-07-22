@@ -25,9 +25,12 @@ class DataManager(object):
             raise Exception('mention为空')
 
     def parseData(self, file_name, valid_num):
+        self.read_basic_info()
+
         X_arr = []
         ner_arr = []
         id_arr = []
+        wrong_label = 0
         with open(file_name, 'r') as f:
             for line in tqdm(f):
                 s = eval(str(json.loads(line)).lower())
@@ -35,6 +38,38 @@ class DataManager(object):
                 ner = np.array(['O'] * len(s['text']))
                 mention_ner = s['mention_data']
                 id_arr.append(s['text_id'])
+                # 过滤掉错误的标注
+                temp_zero = np.zeros(len(s['text']))
+                wrong = False
+                for m in mention_ner:
+                    #temp.append([m['offset'],m['offset']+len(m['mention']),m['mention']])
+                    for offset in range(int(m['offset']), int(m['offset'])+len(m['mention'])):
+                        if temp_zero[offset]==0:
+                            temp_zero[offset] = 1
+                        else:
+                            wrong = True
+                            break
+                if wrong:
+                    print(mention_ner)
+                    wrong_label += 1
+                    # 长句优先，短句去掉
+                    temp = []
+                    for m in mention_ner:
+                        temp.append([int(m['offset']), int(m['offset'])+len(m['mention']), len(m['mention']), m['mention']])
+                    temp = sorted(temp,key=lambda x:x[2],reverse=True)
+                    temp_zero = np.zeros(len(s['text']))
+                    new_mention_ner = []
+                    for m in temp:
+                        if np.sum(temp_zero[m[0]:m[1]]) != 0:
+                            continue
+                        else:
+                            if m[3] not in self.name_id:
+                                continue
+                            temp_zero[m[0]:m[1]] = 1
+                            new_mention_ner.append({'offset': m[0], 'mention': m[3]})
+
+                    mention_ner = new_mention_ner
+                #
                 for m in mention_ner:
                     ner[int(m['offset']):int(m['offset']) + len(m['mention'])] = self.BIEOS(m['mention'])
 
@@ -42,8 +77,9 @@ class DataManager(object):
                 for label_type in ner:
                     label.append(self.ner_list.index(label_type))
                 ner_arr.append(label)
+        print('错误标注样本数%d' % wrong_label)
         #valid_index = np.random.choice(len(X_arr), valid_num, replace=False)
-        valid_index = np.arange(80000,90001)
+        valid_index = np.arange(80000, 90001)
         train_X = []
         valid_X = []
         train_ner = []
@@ -62,14 +98,49 @@ class DataManager(object):
         return train_X,train_ner,train_id,valid_X,valid_ner,valid_id
 
     def parseData_predict(self,train_filename,test_filename):
+        self.read_basic_info()
         X_arr = []
         ner_arr = []
+        wrong_label = 0
         with open(train_filename, 'r') as f:
             for line in tqdm(f):
                 s = eval(str(json.loads(line)).lower())
                 X_arr.append(s['text'])
                 ner = np.array(['O'] * len(s['text']))
                 mention_ner = s['mention_data']
+                # 过滤掉错误的标注
+                temp_zero = np.zeros(len(s['text']))
+                wrong = False
+                for m in mention_ner:
+                    # temp.append([m['offset'],m['offset']+len(m['mention']),m['mention']])
+                    for offset in range(int(m['offset']), int(m['offset']) + len(m['mention'])):
+                        if temp_zero[offset] == 0:
+                            temp_zero[offset] = 1
+                        else:
+                            wrong = True
+                            break
+                if wrong:
+                    print(mention_ner)
+                    wrong_label += 1
+                    # 长句优先，短句去掉
+                    temp = []
+                    for m in mention_ner:
+                        temp.append(
+                            [int(m['offset']), int(m['offset']) + len(m['mention']), len(m['mention']), m['mention']])
+                    temp = sorted(temp, key=lambda x: x[2], reverse=True)
+                    temp_zero = np.zeros(len(s['text']))
+                    new_mention_ner = []
+                    for m in temp:
+                        if np.sum(temp_zero[m[0]:m[1]]) != 0:
+                            continue
+                        else:
+                            if m[3] not in self.name_id:
+                                continue
+                            temp_zero[m[0]:m[1]] = 1
+                            new_mention_ner.append({'offset': m[0], 'mention': m[3]})
+
+                    mention_ner = new_mention_ner
+                #
                 for m in mention_ner:
                     ner[int(m['offset']):int(m['offset']) + len(m['mention'])] = self.BIEOS(m['mention'])
 
@@ -77,6 +148,7 @@ class DataManager(object):
                 for label_type in ner:
                     label.append(self.ner_list.index(label_type))
                 ner_arr.append(label)
+        print('错误标注样本数%d' % wrong_label)
 
         X_arr_test = []
         with open(test_filename, 'r') as f:
@@ -168,88 +240,163 @@ class DataManager(object):
         return e_link
 
     def parse_v2(self,file_name, valid_num):
-        if os.path.exists('data/features.pkl'):
-            e_link = pickle.load(open('data/features.pkl', 'rb'))
-            train_num = 2000
-            train_part = e_link[0:train_num]
-            valid_part = e_link[-500:]
-            print('train size %d, valid size %d' % (len(train_part), len(valid_part)))
-            return train_part, valid_part
-        # type classification
-        kb_data = []
-        kb = {}
-        type_list = []
-        with open('data/raw_data/kb_data', 'r') as f:
-            for line in f:
-                item = json.loads(line)
-                type_list.append(item['type'][0])
-                kb[item['subject_id']] = item
-                kb_data.append(item)
-        type_list = list(set(type_list))
-        self.type_list = type_list
-        name_id = {}
-        for kb_item in kb_data:
-            for item in kb_item['alias']:
-                if item not in name_id:
-                    name_id[item] = [kb_item['subject_id']]
-                else:
-                    name_id[item].append(kb_item['subject_id'])
-            if kb_item['subject'] not in name_id:
-                name_id[kb_item['subject']] = [kb_item['subject_id']]
-            else:
-                name_id[kb_item['subject']].append(kb_item['subject_id'])
-        # ---------------------读取数据库知识
+        self.read_basic_info()
+        data = pd.read_pickle('data/final.pkl').loc[0:10000, ['text_id','mention_start','train_mention','kb_id','label','num_candidates']]
+        exclude = ['text_id',
+                   'kb_id',
+                   'train_mention',
+                   'label',
+                   'm_id', 'type']
+        # exclude = []
+        temp = []
+        for x in data.columns:
+            if x not in exclude: temp.append(x)
+        self.predictor = temp
+        #self.predictor = ['create_works']
+        # self.predictor = ['label_mean',
+        #  'label_count',
+        #  'm_label_mean',
+        #  'm_label_count']
+        print(len(self.predictor))
+        max_len=50
+        data['question'] = data['text_id'].apply(lambda x: self.train_data[int(x)-1]['text'][0:max_len])
+
+        def extract_info(kb):
+            if not kb['data']:
+                return '的'
+            for item in kb['data']:
+                if item['predicate']=='摘要':
+                    first_sentence = item['object'].split('。')[0]
+                    if first_sentence:
+                        return first_sentence
+            return '的'
+
+        data['answer'] = data['kb_id'].apply(lambda x: extract_info(self.kb[x])[0:max_len])
+        data['la'] = data['question'].apply(lambda x: len(x))
+        data['lb'] = data['answer'].apply(lambda x: len(x))
+        data.fillna(0,inplace=True)
+
+        for item in self.predictor:
+            data[item] = data[item].astype('float32')
+
         e_link = []
 
-        with open(file_name, 'r') as f:
-            for line in tqdm(f):
-                s = json.loads(line)
-                mention_ner = s['mention_data']
-                for m in mention_ner:
-                    if m['mention'] not in name_id:
-                        continue
-                    # query 特征
-                    sentence = s['text']
-                    # mention 特征
-                    pos = [int(m['offset']), int(m['offset'])+len(m['mention'])-1]
-                    # kb candidate特征
-                    candidate_ids = name_id[m['mention']]
-                    # 结构化知识 摘要，type, 标签，属性信息,属性个数，摘要字数
-                    for m_candidate_id in candidate_ids:
+        for index, row in tqdm(data.iterrows()):
+            e_link.append({'label': row['label'],
+                           'query': row['question'],
+                           'pos': [row['mention_start'],row['mention_start']+len(row['train_mention'])-1],
+                           'candidate_abstract': row['answer'],
+                           'candidate_type': self.type_list.index(self.kb[row['kb_id']]['type'][0]),
+                           })
+        return e_link
 
-                        candidate_abstract = ''
-                        candidate_label = ''
-                        candidate_abstract_numwords = 0  # 摘要的丰富程度
-                        candidate_numattrs = 0  # 评价词条的丰富程度
-                        candidate_detail = kb[m_candidate_id]
-                        # todo query和abstract的重合程度/mention的tfidf特征
-                        for predicate in candidate_detail['data']:
-                            candidate_numattrs += 1
-                            if predicate['predicate'] == '摘要':
-                                candidate_abstract = predicate['object']
-                                candidate_abstract_numwords = len(candidate_abstract)
-                            if predicate['predicate'] == '标签':
-                                candidate_label += predicate['object']
-                        if m_candidate_id==m['kb_id']:
-                            label = 1
-                        else:
-                            label = 0
-                        e_link.append({'label': label,
-                                       'query': sentence,
-                                       'pos': pos,
-                                       'candidate_abstract': candidate_abstract,
-                                       'candidate_labels': candidate_label,
-                                       'candidate_type': self.type_list.index(candidate_detail['type'][0]),
-                                       'candidate_abstract_numwords': candidate_abstract_numwords,
-                                       'candidate_numattrs': candidate_numattrs})
+    def deep_distance(self):
+        self.read_basic_info()
+        data = pd.read_pickle('data/final.pkl').loc[:,
+               ['text_id', 'mention_start', 'train_mention', 'kb_id', 'label', 'num_candidates']]
+        exclude = ['text_id',
+                   'kb_id',
+                   'train_mention',
+                   'label',
+                   'm_id', 'type']
+        # exclude = []
+        temp = []
+        for x in data.columns:
+            if x not in exclude: temp.append(x)
+        self.predictor = temp
+        # self.predictor = ['create_works']
+        # self.predictor = ['label_mean',
+        #  'label_count',
+        #  'm_label_mean',
+        #  'm_label_count']
+        print(len(self.predictor))
+        max_len = 100
+        data['question'] = data['text_id'].apply(lambda x: self.train_data[int(x) - 1]['text'][0:max_len])
 
-        train_num = 2000000
-        train_part = e_link[0:train_num]
-        valid_part = e_link[train_num:]
-        pickle.dump(e_link, open('data/features.pkl', 'wb'))
+        def extract_info(kb):
+            if not kb['data']:
+                return '的'
+            name_list = [kb['subject']] +kb['alias']
+            context = ''
+            for item in kb['data']:
+                context += item['object']
+                context += item['predicate']
 
-        #valid_type = [type_list.index(x[2]) for x in valid_part]
-        return train_part, valid_part
+            return context
+
+        data['answer'] = data['kb_id'].apply(lambda x: extract_info(self.kb[x])[0:max_len])
+        data['la'] = data['question'].apply(lambda x: len(x))
+        data['lb'] = data['answer'].apply(lambda x: len(x))
+        data.fillna(0, inplace=True)
+
+        for item in self.predictor:
+            data[item] = data[item].astype('float32')
+
+        e_link = []
+
+        def find_ans_pos(kb,answer):
+            name_list = [kb['subject']] +kb['alias']
+            for n in name_list:
+                if n in answer:
+                    start = answer.index(n)
+                    return [start, start+len(n)]
+            return [0, 0]
+        for index, row in tqdm(data.iterrows()):
+            e_link.append({'label': row['label'],
+                           'query': row['question'],
+                           'pos': [row['mention_start'], row['mention_start'] + len(row['train_mention']) - 1],
+                           'pos_answer': find_ans_pos(self.kb[row['kb_id']],row['answer']),
+                           'candidate_abstract': row['answer'],
+                           'candidate_type': self.type_list.index(self.kb[row['kb_id']]['type'][0]),
+                           })
+        return e_link
+        # for s in tqdm(self.train_data):
+        #     mention_ner = s['mention_data']
+        #     m_list = []
+        #     for m in mention_ner:
+        #         m_list.append(m['mention'])
+        #     for m in mention_ner:
+        #
+        #         if m['mention'] not in self.name_id:  # 不能注销，因为有些实体没有or m['kb_id']=='nil':
+        #             continue
+        #         if m['kb_id'] != 'nil':
+        #             name_list = [self.kb[m['kb_id']]['subject']] + self.kb[m['kb_id']]['alias']
+        #             if m['mention'] not in name_list:
+        #                 continue
+        #         # query 特征
+        #         sentence = s['text']
+        #         # mention 特征
+        #         pos = [int(m['offset']), int(m['offset']) + len(m['mention']) - 1]
+        #         # kb candidate特征
+        #         candidate_ids = self.name_id[m['mention']]
+        #         # 结构化知识 摘要，type, 标签，属性信息,属性个数，摘要字数
+        #         for m_candidate_id in candidate_ids:
+        #             candidate_numattrs = 0
+        #             candidate_abstract_numwords = 0
+        #             candidate_detail = self.kb[m_candidate_id]
+        #             candi_text = ''
+        #             for predicate in candidate_detail['data']:
+        #                 candidate_numattrs += 1
+        #                 candi_text += predicate['predicate']
+        #                 candi_text += predicate['object']
+        #
+        #                 if predicate['predicate'] == '摘要':
+        #                     candidate_abstract = predicate['object']
+        #                     candidate_abstract_numwords = len(candidate_abstract)
+        #             #                 if predicate['predicate'] == '标签':
+        #             #                     candidate_label += predicate['object']
+        #             if m_candidate_id == m['kb_id']:
+        #                 label = 1
+        #             else:
+        #                 label = 0
+        #             e_link.append({'label': label,
+        #                            'query': sentence,
+        #                            'pos': pos,
+        #                            'candidate_abstract': candi_text,
+        #                            'candidate_type': self.type_list.index(candidate_detail['type'][0]),
+        #                            })
+        # return e_link
+
 
     def parse_v3(self,file_name, valid_num):
         if os.path.exists('data/features.pkl'):
@@ -384,7 +531,7 @@ class DataManager(object):
             else:
                 name_id[kb[kb_id]['subject']].append(kb_id)
         for id in name_id:
-            name_id[id] = list(set(name_id[id]))
+            name_id[id] = sorted(list(set(name_id[id])))
         self.name_id = name_id
         self.train_data = train_data
         self.kb_data = kb_data
@@ -430,10 +577,16 @@ class DataManager(object):
 
     def read_test_data(self,filename):
         # 戴安楠ner
-        ner_result = pd.read_csv(filename, sep='\t')
-        ner_result['offset'] = ner_result['offset'].apply(lambda x: eval(x.lower()))
-        ner_result['mention'] = ner_result['mention'].apply(lambda x: eval(x.lower()))
-        ner_result = ner_result.rename(columns={'mention': 'pred', 'offset': 'pos'})
+        # ner_result = pd.read_csv(filename, sep='\t')
+        # ner_result['offset'] = ner_result['offset'].apply(lambda x: eval(x.lower()))
+        # ner_result['mention'] = ner_result['mention'].apply(lambda x: eval(x.lower()))
+        # ner_result = ner_result.rename(columns={'mention': 'pred', 'offset': 'pos'})
+
+        # my ner
+        ner_result = pd.read_pickle('result/ner_bert_result.pkl')
+        ner_result['text'] = ner_result['text'].apply(lambda x: ''.join(x[1:-1]))
+        ner_result['pos'] = ner_result['pos'].apply(lambda x: [k[0] - 1 for k in x])
+        ner_result['text_id'] = ner_result.index + 1
         test_data = []
         for index, row in ner_result.iterrows():
             item = {}
@@ -482,6 +635,7 @@ class DataManager(object):
         for x in data.columns:
             if x not in exclude: temp.append(x)
         self.predictor = temp
+        self.predictor = ['create_works']
         # self.predictor = ['label_mean',
         #  'label_count',
         #  'm_label_mean',
@@ -501,8 +655,8 @@ class DataManager(object):
             return '的'
 
         data['answer'] = data['kb_id'].apply(lambda x: extract_info(self.kb[x])[0:max_len])
-        data['la'] = data['question'].apply(lambda x:len(x))
-        data['lb'] = data['answer'].apply(lambda x:len(x))
+        data['la'] = data['question'].apply(lambda x: len(x))
+        data['lb'] = data['answer'].apply(lambda x: len(x))
         data.fillna(0,inplace=True)
 
         for item in self.predictor:
@@ -560,12 +714,12 @@ def read_kb(filename):
         for line in f:
             item = eval(str(json.loads(line)).lower())
             kb[item['subject_id']] = item
-    # 补充别名实体进入kb
-    for s in train_data:
-        for m in s['mention_data']:
-            if m['kb_id'] == 'nil': continue
-            if m['mention'] != kb[m['kb_id']]['subject'] and m['mention'] not in kb[m['kb_id']]['alias']:
-                kb[m['kb_id']]['alias'] += [m['mention']]
+    # # 补充别名实体进入kb
+    # for s in train_data:
+    #     for m in s['mention_data']:
+    #         if m['kb_id'] == 'nil': continue
+    #         if m['mention'] != kb[m['kb_id']]['subject'] and m['mention'] not in kb[m['kb_id']]['alias']:
+    #             kb[m['kb_id']]['alias'] += [m['mention']]
     name_id = {}
     for kb_id in kb:
         for item in kb[kb_id]['alias']:

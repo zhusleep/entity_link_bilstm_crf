@@ -1,5 +1,6 @@
 import random, os, torch
 import numpy as np
+import json
 from data_prepare import read_kb
 from sklearn.metrics import classification_report
 kb_set = read_kb('data/raw_data/kb_data')
@@ -25,18 +26,22 @@ def calc_f1(pred,label,dev,ner_list):
             if word==B_token:
                 start = index
             elif word==S_token:
-                if ''.join(label_sentence[index:index+1]) in kb_set: ## 在数据库中发现实体名
-                    span.append((index, index+1))
-                    start = None
-                else:
-                    start = None
+                # if ''.join(label_sentence[index:index+1]) in kb_set: ## 在数据库中发现实体名
+                #     span.append((index, index+1))
+                #     start = None
+                # else:
+                #     start = None
+                span.append((index, index + 1))
+                start = None
             elif word==E_token and start is not None:
                 end = index
-                if ''.join(label_sentence[start:end + 1]) in kb_set:
-                    span.append((start, end+1))
-                    start = None
-                else:
-                    start = None
+                # if ''.join(label_sentence[start:end + 1]) in kb_set:
+                #     span.append((start, end+1))
+                #     start = None
+                # else:
+                #     start = None
+                span.append((start, end + 1))
+                start = None
         # 相邻两entity可以合并则合并
         if len(span) <= 1 or sign == 'label':
             return span
@@ -55,10 +60,28 @@ def calc_f1(pred,label,dev,ner_list):
     acc_count = 0
     pred_result = []
     label_result = []
+    # test bugs ###############################
+    # 原生ner
+    train_data = []
+    with open('data/raw_data/train.json', 'r') as f:
+        for line in f:
+            raw = eval(str(json.loads(line)).lower())
+            train_data.append(raw)
+    originla_train_data = train_data[80000:]
+    m_list = []
+    for item in originla_train_data:
+        temp = []
+        for m in item['mention_data']:
+            temp.append(m['mention'])
+        m_list.append(temp)
+
     for i in range(len(pred)):
         assert len(pred[i])==len(label[i])
         m_pred = parse(pred[i],dev[i],'pred')
         m_label = parse(label[i],dev[i],'label')
+        if len(m_label)!=len(m_list[i]):
+            print(i,m_label,m_list[i],label[i])
+
         pred_result.append(m_pred)
         label_result.append(m_label)
         pred_count += len(m_pred)
@@ -100,18 +123,29 @@ def cal_ner_result(pred,dev,ner_list):
             if word==B_token:
                 start = index
             elif word==S_token:
-                if ''.join(label_sentence[index:index+1]) in kb_set: ## 在数据库中发现实体名
-                    span.append((index, index+1))
-                    start = None
-                else:
-                    start = None
-            elif word==E_token and start is not None:
+                # if ''.join(label_sentence[index:index+1]) in kb_set: ## 在数据库中发现实体名
+                #     span.append((index, index+1))
+                #     start = None
+                # else:
+                #     start = None
+                span.append((index, index + 1))
+                start = None
+            elif word == E_token and start is not None:
                 end = index
-                if ''.join(label_sentence[start:end + 1]) in kb_set:
-                    span.append((start, end+1))
-                    start = None
-                else:
-                    start = None
+                # if ''.join(label_sentence[start:end + 1]) in kb_set:
+                #     span.append((start, end+1))
+                #     start = None
+                # else:
+                #     start = None
+                span.append((start, end + 1))
+                start = None
+            # elif word==E_token and start is not None:
+            #     end = index
+            #     if ''.join(label_sentence[start:end + 1]) in kb_set:
+            #         span.append((start, end+1))
+            #         start = None
+            #     else:
+            #         start = None
         # 相邻两entity可以合并则合并
         if len(span) <= 1 or sign == 'label':
             return span

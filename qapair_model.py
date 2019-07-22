@@ -155,10 +155,6 @@ class QAModel_sim(nn.Module):
                 module.bias_hh_l0_reverse.data[hidden_size:(2 * hidden_size)] = 1.0
 
 
-
-
-
-
 class QAModel(nn.Module):
     def __init__(self,
                  vocab_size=20000,
@@ -188,9 +184,9 @@ class QAModel(nn.Module):
             nn.Sigmoid()
         )
         self.mlp2 = nn.Sequential(
-            nn.BatchNorm1d(64+dim_num_feat),
+            nn.BatchNorm1d(64+1),
             nn.Dropout(p=dropout),
-            nn.Linear(in_features=64+dim_num_feat, out_features=1),
+            nn.Linear(in_features=64+1, out_features=1),
             nn.Sigmoid()
         )
         self.apply(self._init_qa_weights)

@@ -24,7 +24,7 @@ logging.basicConfig(filename=current_name,
 
 seed_torch(2019)
 trainfile_name = 'data/raw_data/train.json'
-testfile_name = 'data/raw_data/develop.json'
+testfile_name = 'data/eval.json'
 train_X, train_ner, dev_X = data_manager.parseData_predict(train_filename=trainfile_name, test_filename=testfile_name)
 assert len(train_X) == len(train_ner)
 ## deal for bert
@@ -111,9 +111,9 @@ for epoch in range(epoch):
         # Clip gradients: gradients are modified in place
         train_loss += loss.item()
     train_loss = train_loss/len(train_X)
-    if epoch==2:break
+    if epoch==1:break
 
-torch.save(model.state_dict(), 'model_ner/ner_bert')
+torch.save(model.state_dict(), 'model_ner/ner_bert_predict')
 #model.load_state_dict(torch.load('model_ner/ner_bert'))
 
 

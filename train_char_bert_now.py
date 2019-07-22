@@ -50,19 +50,6 @@ valid_dataset = SPO_BERT(dev_X, t, ner=dev_ner)
 batch_size = 60
 
 
-# # 准备embedding数据
-# #embedding_file = 'embedding/miniembedding_baike.npy'
-# embedding_file = 'embedding/miniembedding_engineer_qq_att.npy'
-#
-# if os.path.exists(embedding_file):
-#     embedding_matrix = np.load(embedding_file)
-# else:
-#     #embedding = '/home/zhukaihua/Desktop/nlp/embedding/baike'
-#     #embedding = '/home/zhu/Desktop/word_embedding/sgns.baidubaike.bigram-char'
-#     embedding = '/home/zhukaihua/Desktop/nlp/embedding/Tencent_AILab_ChineseEmbedding.txt'
-#     embedding_matrix = load_glove(embedding, t.num_words+100, t)
-#     np.save(embedding_file, embedding_matrix)
-
 model = SPO_Model_Bert(encoder_size=128, dropout=0.5, num_tags=5)
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model.to(device)
@@ -77,7 +64,7 @@ optimizer_grouped_parameters = [
     {'params': [p for n, p in param_optimizer if any(nd in n for nd in no_decay)], 'weight_decay': 0.0}
     ]
 
-epoch = 20
+epoch = 3
 t_total = int(epoch*len(train_X)/batch_size)
 optimizer = BertAdam([
                 {'params': model.LSTM.parameters()},
@@ -92,6 +79,7 @@ clip = 50
 for epoch in range(epoch):
     model.train()
     train_loss = 0
+    #model.load_state_dict(torch.load('model_ner/ner_bert.pth'))
     for index, X, ner, length in tqdm(train_dataloader):
         #model.zero_grad()
         X = nn.utils.rnn.pad_sequence(X, batch_first=True).type(torch.LongTensor)
@@ -144,6 +132,14 @@ for epoch in range(epoch):
         break
     #print(INFO+'\t'+INFO_THRE)
 # epoch 2, train loss 2.276405, valid loss 2.600097, acc 0.853327, recall 0.835633, f1 0.844388
+
+# epoch 0, train loss 7.571405, valid loss 4.125435, acc 0.792118, recall 0.801637, f1 0.796849
+#epoch 2, train loss 2.299900, valid loss 2.531002, acc 0.829199, recall 0.814094, f1 0.821577
+
+# epoch 1, train loss 2.551638, valid loss 2.621777, acc 0.817674, recall 0.838187, f1 0.827803
+
+# epoch 1, train loss 2.537534, valid loss 2.608440, acc 0.817316, recall 0.841038, f1 0.829007
+torch.save(model.state_dict(), 'model_ner/ner_bert.pth')
 result = cal_ner_result(pred_set, dev_X, data_manager.ner_list)
 #acc,recall,f1,pred_result,label_result = calc_f1(pred_set, label_set, dev_X, data_manager.ner_list)
 #INFO = 'epoch %d, train loss %f, valid loss %f, acc %f, recall %f, f1 %f '% (epoch, train_loss, valid_loss,acc,recall,f1)
@@ -184,4 +180,4 @@ for index,row in dev.iterrows():
     label_mention.append(temp)
 dev['pred'] = pred_mention
 dev['label'] = label_mention
-dev.to_csv('result/analysis.csv')
+dev.to_csv('result/analysis.csv',sep='\t')

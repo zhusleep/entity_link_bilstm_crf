@@ -1,0 +1,26 @@
+21-Jul-19 13:56:46 - loading vocabulary file https://s3.amazonaws.com/models.huggingface.co/bert/bert-base-chinese-vocab.txt from cache at /home/zhukaihua/.pytorch_pretrained_bert/8a0c070123c1f794c42a29c6904beb7c1b8715741e235bee04aca2c7636fc83f.9b42061518a39ca00b8b52059fd2bede8daa613f8a8671500e518a8c29de8c00
+21-Jul-19 13:56:48 - loading archive file https://s3.amazonaws.com/models.huggingface.co/bert/bert-base-chinese.tar.gz from cache at /home/zhukaihua/.pytorch_pretrained_bert/42d4a64dda3243ffeca7ec268d5544122e67d9d06b971608796b483925716512.02ac7d664cff08d793eb00d6aac1d04368a1322435e5fe0a27c70b0b3a85327f
+21-Jul-19 13:56:48 - extracting archive file /home/zhukaihua/.pytorch_pretrained_bert/42d4a64dda3243ffeca7ec268d5544122e67d9d06b971608796b483925716512.02ac7d664cff08d793eb00d6aac1d04368a1322435e5fe0a27c70b0b3a85327f to temp dir /tmp/tmpnodzxpyb
+21-Jul-19 13:56:51 - Model config {
+  "attention_probs_dropout_prob": 0.1,
+  "directionality": "bidi",
+  "hidden_act": "gelu",
+  "hidden_dropout_prob": 0.1,
+  "hidden_size": 768,
+  "initializer_range": 0.02,
+  "intermediate_size": 3072,
+  "max_position_embeddings": 512,
+  "num_attention_heads": 12,
+  "num_hidden_layers": 12,
+  "pooler_fc_size": 768,
+  "pooler_num_attention_heads": 12,
+  "pooler_num_fc_layers": 3,
+  "pooler_size_per_head": 128,
+  "pooler_type": "first_token_transform",
+  "type_vocab_size": 2,
+  "vocab_size": 21128
+}
+
+21-Jul-19 14:13:43 - epoch 0, train loss 6.878810, valid loss 3.813425, acc 0.808128, recall 0.822164, f1 0.815085 
+21-Jul-19 14:30:32 - epoch 1, train loss 2.978759, valid loss 2.650671, acc 0.830756, recall 0.813655, f1 0.822117 
+21-Jul-19 14:47:35 - epoch 2, train loss 2.299900, valid loss 2.531002, acc 0.829199, recall 0.814094, f1 0.821577 
