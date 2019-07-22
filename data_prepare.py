@@ -290,9 +290,9 @@ class DataManager(object):
                            })
         return e_link
 
-    def deep_distance(self):
+    def deep_distance(self, pkl_file):
         self.read_basic_info()
-        data = pd.read_pickle('data/final.pkl').loc[:,
+        data = pd.read_pickle(pkl_file).loc[:,
                ['text_id', 'mention_start', 'train_mention', 'kb_id', 'label', 'num_candidates']]
         exclude = ['text_id',
                    'kb_id',

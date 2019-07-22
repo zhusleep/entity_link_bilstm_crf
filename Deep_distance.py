@@ -16,11 +16,11 @@ from pytorch_pretrained_bert import BertTokenizer,BertAdam
 import logging
 import time
 from sklearn.model_selection import KFold, train_test_split
-from  sklearn.metrics import mean_squared_error as mse
-from  scipy.spatial.distance import cosine as cos
+from sklearn.metrics import mean_squared_error as mse
+from scipy.spatial.distance import cosine as cos
 
-file_namne = 'data/raw_data/train.json'
-data_all = data_manager.deep_distance()
+file_namne = 'data/step1.pkl'
+data_all = data_manager.deep_distance(file_namne)
 seed_torch(2019)
 
 BERT_MODEL = 'bert-base-chinese'
