@@ -739,44 +739,40 @@ class EntityLink_entity_vector(nn.Module):
         #self.lstm_attention = Attention(encoder_size*2)
 
             self.dropout1d = nn.Dropout2d(self.seq_dropout)
+            self.LSTM = LSTMEncoder(embed_size=word_embed_size,
+                                    encoder_size=encoder_size,
+                                    bidirectional=True)
+            self.classify = nn.Sequential(
+                nn.BatchNorm1d(encoder_size * 4),
+                nn.Dropout(p=dropout),
+                nn.Linear(in_features=encoder_size * 4, out_features=num_outputs)
+            )
+            span_size = 2 * encoder_size
+
         else:
             bert_model = 'bert-base-chinese'
             self.bert = BertModel.from_pretrained(bert_model)
-
-        self.span_extractor = EndpointSpanExtractor(2*encoder_size)
+            span_size = 768
+        self.span_extractor = EndpointSpanExtractor(span_size)
 
         self.use_layer = -1
-        self.LSTM = LSTMEncoder(embed_size=word_embed_size,
-                                encoder_size=encoder_size,
-                                bidirectional=True)
-        hidden_size=100
-        self.hidden = nn.Linear(4*encoder_size, 100)
         self.use_layer = -1
-        self.LSTM = LSTMEncoder(embed_size=300,
-                                encoder_size=encoder_size,
-                                bidirectional=True)
         hidden_size = 100
-        num_outputs = 100
         self.hidden = nn.Linear(4 * encoder_size, hidden_size)
-        self.classify = nn.Sequential(
-            nn.BatchNorm1d(encoder_size * 4),
-            nn.Dropout(p=dropout),
-            nn.Linear(in_features=encoder_size * 4, out_features=num_outputs)
-        )
 
     def forward(self,token_tensor,mask_X,pos,vector,length):
         if self.use_bert:
-            self.bert.eval()
-            with torch.no_grad():
-                bert_outputs, _ = self.bert(token_tensor, attention_mask=(token_tensor > 0).long(),
+            # self.bert.eval()
+            # with torch.no_grad():
+            bert_outputs, _ = self.bert(token_tensor, attention_mask=(token_tensor > 0).long(),
                                             token_type_ids=None,
                                             output_all_encoded_layers=True)
 
             bert_outputs = torch.cat(bert_outputs[self.use_layer:], dim=-1)
-            X1 = self.LSTM(bert_outputs, length)
+            #X1 = self.LSTM(bert_outputs, length)
 
             spans_contexts = self.span_extractor(
-                X1,
+                bert_outputs,
                 pos
             )
         else:

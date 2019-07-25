@@ -16,8 +16,7 @@ import logging
 import time
 from torch.nn import functional as F
 from sklearn.model_selection import KFold, train_test_split
-
-
+from sklearn.externals import joblib
 
 file_namne = 'data/raw_data/train.json'
 train_part, valid_part = data_manager.read_entity_embedding(file_name=file_namne,train_num=10000000)
@@ -25,8 +24,9 @@ seed_torch(2019)
 print('train size %d, valid size %d', (len(train_part), len(valid_part)))
 
 t = Tokenizer(max_feature=10000, segment=False, lowercase=True)
-corpus = [x[0] for x in train_part]
+corpus = [x[0] for x in train_part]+data_manager.read_eval()
 t.fit(corpus)
+joblib.dump(t, 'data/tokenizer.pkl')
 # 准备embedding数据
 embedding_file = 'embedding/miniembedding_baike_entity_vector.npy'
 # embedding_file = 'embedding/miniembedding_engineer_qq_att.npy'

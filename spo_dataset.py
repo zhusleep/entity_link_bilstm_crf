@@ -257,6 +257,8 @@ class entity_linking_v2(Dataset):
         #            candidate_type, candidate_abstract_numwords, candidate_numattrs
         # else:
         #     return index
+
+
 class deep_distance_dataset(Dataset):
     def __init__(self, X, tokenizer, max_len=510):
         super(deep_distance_dataset, self).__init__()

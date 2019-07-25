@@ -24,7 +24,7 @@ logging.basicConfig(filename=current_name,
 
 seed_torch(2019)
 trainfile_name = 'data/raw_data/train.json'
-testfile_name = 'data/eval.json'
+testfile_name = 'data/raw_data/eval722.json'
 train_X, train_ner, dev_X = data_manager.parseData_predict(train_filename=trainfile_name, test_filename=testfile_name)
 assert len(train_X) == len(train_ner)
 ## deal for bert
@@ -87,11 +87,15 @@ optimizer = BertAdam([
             ],  lr=1e-3, warmup=0.05, t_total=t_total)
 clip = 50
 
+model.load_state_dict(torch.load('model_ner/ner_bert_predict.pth'))
 #
 for epoch in range(epoch):
     model.train()
     train_loss = 0
     for index, X, ner, length in tqdm(train_dataloader):
+        # for eval ###################################
+        break
+        # ##########################################
         #model.zero_grad()
         X = nn.utils.rnn.pad_sequence(X, batch_first=True).type(torch.LongTensor)
         X = X.cuda()
@@ -113,8 +117,8 @@ for epoch in range(epoch):
     train_loss = train_loss/len(train_X)
     if epoch==1:break
 
-torch.save(model.state_dict(), 'model_ner/ner_bert_predict')
-#model.load_state_dict(torch.load('model_ner/ner_bert'))
+#torch.save(model.state_dict(), 'model_ner/ner_bert_predict.pth')
+#
 
 
 model.eval()

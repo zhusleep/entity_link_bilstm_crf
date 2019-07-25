@@ -18,17 +18,7 @@ import logging
 import time
 from sklearn.externals import joblib
 
-# if not os.path.exists('data/data_enhance_backup.pkl'):
-#     data_corpus = data_manager.data_enhance(max_len=50)
-#     joblib.dump(data_manager, 'data/data_enhance_backup.pkl')
-#
-# else:
-#     data_manager = joblib.load('data/data_enhance_backup.pkl')
-#     data_corpus = data_manager.enhanced_data
-# train_X_kb = [['[CLS]']+list(temp[0])+['[SEP]'] for temp in data_corpus]
-# train_pos_kb = [[x[1] + 1, x[2] + 1] for x in data_corpus]
-# train_type_kb = [x[3] for x in data_corpus]
-# print(max(train_type_kb),min(train_type_kb), len(data_manager.type_list))
+
 file_namne = 'data/raw_data/train.json'
 data_all = data_manager.parse_mention(file_name=file_namne, valid_num=10000)
 print('一共有%d 个字' % len(data_all))
@@ -39,7 +29,13 @@ round = 0
 train_batch_size = 2048
 for train_index, test_index in kfold.split(np.zeros(len(data_all))):
     train_part = [data_all[i] for i in train_index]
-    valid_part = [data_all[i] for i in test_index]
+
+    valid_part = []
+    for i in test_index:
+        if data_all[i][-1]!= 0:
+            valid_part.append(data_all[i])
+    #valid_part = [data_all[i] for i in test_index]
+
 
     BERT_MODEL = 'bert-base-chinese'
     CASED = False
@@ -105,31 +101,7 @@ for train_index, test_index in kfold.split(np.zeros(len(data_all))):
 
     loss_fn = nn.CrossEntropyLoss()
     for epoch in range(epoch):
-    #     model.train()
-    #     train_loss = 0
-    #     for index, X, type, pos, length in tqdm(train_dataloader):
-    #         #model.zero_grad()
-    #         X = nn.utils.rnn.pad_sequence(X, batch_first=True).type(torch.LongTensor)
-    #         X = X.to(device)
-    #         length = length.to(device)
-    #         #ner = ner.type(torch.float).cuda()
-    #         mask_X = get_mask(X, length, is_cuda=use_cuda).to(device)
-    #         pos = pos.type(torch.LongTensor).to(device)
-    #         type = type.to(device)
-    #         #print(index)
-    #         mask_for_pool = get_mask_bertpiece(X, length, pos, is_cuda=True).type(torch.float)
-    #         pred = model(X, mask_X, pos, length, mask_for_pool).to(device)
-    #         loss = loss_fn(pred, type)
-    #         loss.backward()
-    #
-    #         #loss = loss_fn(pred, ner)
-    #         optimizer.step()
-    #         optimizer.zero_grad()
-    #         nn.utils.clip_grad_norm_(model.parameters(), clip)
-    #
-    #         # Clip gradients: gradients are modified in place
-    #         train_loss += loss.item()
-    #     train_loss = train_loss/len(train_X)
+
         train_loss = 0
         model.eval()
         valid_loss = 0

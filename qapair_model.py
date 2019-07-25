@@ -181,12 +181,18 @@ class QAModel(nn.Module):
             nn.BatchNorm1d(2*4*4*encoder_size),
             nn.Dropout(p=dropout),
             nn.Linear(in_features=2*4*4*encoder_size, out_features=64),
-            nn.Sigmoid()
+            nn.ReLU()
         )
         self.mlp2 = nn.Sequential(
-            nn.BatchNorm1d(64+1),
+            nn.BatchNorm1d(64+400),
             nn.Dropout(p=dropout),
-            nn.Linear(in_features=64+1, out_features=1),
+            nn.Linear(in_features=64+400, out_features=64),
+            nn.ReLU()
+        )
+        self.mlp3 = nn.Sequential(
+            nn.BatchNorm1d(64),
+            nn.Dropout(p=dropout),
+            nn.Linear(in_features=64, out_features=1),
             nn.Sigmoid()
         )
         self.apply(self._init_qa_weights)
@@ -217,7 +223,7 @@ class QAModel(nn.Module):
         v = torch.cat([va_avg, va_max, vb_avg, vb_max], dim=-1)
         v = self.mlp(v)
         v = torch.cat([v, num_feats], dim=-1)
-        v = self.mlp2(v)
+        v = self.mlp3(self.mlp2(v))
 
         return v
 

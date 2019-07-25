@@ -161,7 +161,6 @@ class DataManager(object):
         # type classification
         self.read_basic_info()
 
-        kb_data = []
         kb = self.kb
         # kb_data.append(item)
         #---------------------读取数据库知识
@@ -171,9 +170,10 @@ class DataManager(object):
             for m in mention_ner:
                 if m['kb_id'] == 'nil':
                     continue
+                normal_schema = 1
                 name_list = [kb[m['kb_id']]['subject']] + kb[m['kb_id']]['alias']
                 if m['mention'] not in name_list:
-
+                    normal_schema = 0
                     # kb[m['kb_id']]['alias'] += [m['mention']]
                     keep = False
                     for name_c in ''.join(name_list):
@@ -190,29 +190,11 @@ class DataManager(object):
                 if pos[1] >= len(sentence):
                     raise Exception
                 m_type = kb[m['kb_id']]['type'][0]
-                e_link.append([s['text_id'], sentence, pos, m_type])
+                e_link.append([s['text_id'], sentence, pos, m_type, normal_schema])
 
         type_list = self.type_list
         return e_link
-        train_num = 200000
-        train_part = e_link[0:200000]
-        valid_part = e_link[200000:]
 
-        train_X = [x[0] for x in train_part]
-        train_pos = [x[1] for x in train_part]
-
-        train_type = []
-        for x in train_part:
-            train_type.append(type_list.index(x[2]))
-
-        #train_type = [type_list.index(x[2]) for x in train_part]
-        valid_X = [x[0] for x in valid_part]
-        valid_pos = [x[1] for x in valid_part]
-        valid_type = []
-        for x in valid_part:
-            valid_type.append(type_list.index(x[2]))
-        #valid_type = [type_list.index(x[2]) for x in valid_part]
-        return train_X,train_pos,train_type,valid_X,valid_pos,valid_type
 
     def deep_type_predict(self,filename):
         self.read_basic_info()
@@ -292,26 +274,12 @@ class DataManager(object):
 
     def deep_distance(self, pkl_file):
         self.read_basic_info()
+
         data = pd.read_pickle(pkl_file).loc[:,
                ['text_id', 'mention_start', 'train_mention', 'kb_id', 'label', 'num_candidates']]
-        exclude = ['text_id',
-                   'kb_id',
-                   'train_mention',
-                   'label',
-                   'm_id', 'type']
-        # exclude = []
-        temp = []
-        for x in data.columns:
-            if x not in exclude: temp.append(x)
-        self.predictor = temp
-        # self.predictor = ['create_works']
-        # self.predictor = ['label_mean',
-        #  'label_count',
-        #  'm_label_mean',
-        #  'm_label_count']
-        print(len(self.predictor))
+
         max_len = 100
-        data['question'] = data['text_id'].apply(lambda x: self.train_data[int(x) - 1]['text'][0:max_len])
+        data['question'] = data['text_id'].apply(lambda x: self.train_data[int(x)-1]['text'][0:max_len])
 
         def extract_info(kb):
             if not kb['data']:
@@ -321,25 +289,17 @@ class DataManager(object):
             for item in kb['data']:
                 context += item['object']
                 context += item['predicate']
-
             return context
 
         data['answer'] = data['kb_id'].apply(lambda x: extract_info(self.kb[x])[0:max_len])
-        data['la'] = data['question'].apply(lambda x: len(x))
-        data['lb'] = data['answer'].apply(lambda x: len(x))
-        data.fillna(0, inplace=True)
-
-        for item in self.predictor:
-            data[item] = data[item].astype('float32')
 
         e_link = []
-
         def find_ans_pos(kb,answer):
             name_list = [kb['subject']] +kb['alias']
             for n in name_list:
                 if n in answer:
                     start = answer.index(n)
-                    return [start, start+len(n)]
+                    return [start, start+len(n)-1]
             return [0, 0]
         for index, row in tqdm(data.iterrows()):
             e_link.append({'label': row['label'],
@@ -350,53 +310,50 @@ class DataManager(object):
                            'candidate_type': self.type_list.index(self.kb[row['kb_id']]['type'][0]),
                            })
         return e_link
-        # for s in tqdm(self.train_data):
-        #     mention_ner = s['mention_data']
-        #     m_list = []
-        #     for m in mention_ner:
-        #         m_list.append(m['mention'])
-        #     for m in mention_ner:
-        #
-        #         if m['mention'] not in self.name_id:  # 不能注销，因为有些实体没有or m['kb_id']=='nil':
-        #             continue
-        #         if m['kb_id'] != 'nil':
-        #             name_list = [self.kb[m['kb_id']]['subject']] + self.kb[m['kb_id']]['alias']
-        #             if m['mention'] not in name_list:
-        #                 continue
-        #         # query 特征
-        #         sentence = s['text']
-        #         # mention 特征
-        #         pos = [int(m['offset']), int(m['offset']) + len(m['mention']) - 1]
-        #         # kb candidate特征
-        #         candidate_ids = self.name_id[m['mention']]
-        #         # 结构化知识 摘要，type, 标签，属性信息,属性个数，摘要字数
-        #         for m_candidate_id in candidate_ids:
-        #             candidate_numattrs = 0
-        #             candidate_abstract_numwords = 0
-        #             candidate_detail = self.kb[m_candidate_id]
-        #             candi_text = ''
-        #             for predicate in candidate_detail['data']:
-        #                 candidate_numattrs += 1
-        #                 candi_text += predicate['predicate']
-        #                 candi_text += predicate['object']
-        #
-        #                 if predicate['predicate'] == '摘要':
-        #                     candidate_abstract = predicate['object']
-        #                     candidate_abstract_numwords = len(candidate_abstract)
-        #             #                 if predicate['predicate'] == '标签':
-        #             #                     candidate_label += predicate['object']
-        #             if m_candidate_id == m['kb_id']:
-        #                 label = 1
-        #             else:
-        #                 label = 0
-        #             e_link.append({'label': label,
-        #                            'query': sentence,
-        #                            'pos': pos,
-        #                            'candidate_abstract': candi_text,
-        #                            'candidate_type': self.type_list.index(candidate_detail['type'][0]),
-        #                            })
-        # return e_link
 
+
+    def deep_distance_test(self, pkl_file):
+        self.read_basic_info()
+        test_data = self.read_test_data(filename=None)
+        test_id_to_text = {}
+        for item in test_data:
+            test_id_to_text[item['text_id']] = item['text']
+
+        data = pd.read_pickle(pkl_file).loc[:,
+               ['text_id', 'mention_start', 'train_mention', 'kb_id', 'label', 'num_candidates']]
+
+        max_len = 100
+        data['question'] = data['text_id'].apply(lambda x: test_id_to_text[x][0:max_len])
+
+        def extract_info(kb):
+            if not kb['data']:
+                return '的'
+            name_list = [kb['subject']] +kb['alias']
+            context = ''
+            for item in kb['data']:
+                context += item['object']
+                context += item['predicate']
+            return context
+
+        data['answer'] = data['kb_id'].apply(lambda x: extract_info(self.kb[x])[0:max_len])
+
+        e_link = []
+        def find_ans_pos(kb,answer):
+            name_list = [kb['subject']] +kb['alias']
+            for n in name_list:
+                if n in answer:
+                    start = answer.index(n)
+                    return [start, start+len(n)-1]
+            return [0, 0]
+        for index, row in tqdm(data.iterrows()):
+            e_link.append({'label': row['label'],
+                           'query': row['question'],
+                           'pos': [row['mention_start'], row['mention_start'] + len(row['train_mention']) - 1],
+                           'pos_answer': find_ans_pos(self.kb[row['kb_id']],row['answer']),
+                           'candidate_abstract': row['answer'],
+                           'candidate_type': self.type_list.index(self.kb[row['kb_id']]['type'][0]),
+                           })
+        return e_link
 
     def parse_v3(self,file_name, valid_num):
         if os.path.exists('data/features.pkl'):
@@ -517,7 +474,7 @@ class DataManager(object):
                 kb[item['subject_id']] = item
                 kb_data.append(item)
 
-        type_list = list(set(type_list))
+        type_list = sorted(list(set(type_list)))
         self.type_list = type_list
         name_id = {}
         for kb_id in kb:
@@ -575,7 +532,7 @@ class DataManager(object):
         valid_part = e_link[train_num:]
         return train_part, valid_part
 
-    def read_test_data(self,filename):
+    def read_test_data(self, filename):
         # 戴安楠ner
         # ner_result = pd.read_csv(filename, sep='\t')
         # ner_result['offset'] = ner_result['offset'].apply(lambda x: eval(x.lower()))
@@ -622,9 +579,9 @@ class DataManager(object):
 
 
 
-    def read_deep_match(self):
+    def read_deep_match(self, pkl_file):
         self.read_basic_info()
-        data = pd.read_pickle('data/final.pkl').iloc[:, :]
+        data = pd.read_pickle(pkl_file).iloc[:, :]
         exclude = ['text_id',
                    'kb_id',
                    'train_mention',
@@ -635,7 +592,7 @@ class DataManager(object):
         for x in data.columns:
             if x not in exclude: temp.append(x)
         self.predictor = temp
-        self.predictor = ['create_works']
+        #self.predictor = ['create_works']
         # self.predictor = ['label_mean',
         #  'label_count',
         #  'm_label_mean',
@@ -660,7 +617,60 @@ class DataManager(object):
         data.fillna(0,inplace=True)
 
         for item in self.predictor:
-            data[item] = data[item].astype('float32')
+            if data.dtypes[item] == 'float64':
+                data[item] = data[item].astype('float32')
+            if data.dtypes[item] == 'int64':
+                data[item] = data[item].astype('int32')
+        return data
+
+    def read_deep_match_test(self, pkl_file):
+        self.read_basic_info()
+        test_data = self.read_test_data(None)
+        test_id_to_text = {}
+        for item in test_data:
+            test_id_to_text[item['text_id']] = item['text']
+
+        data = pd.read_pickle(pkl_file).iloc[:, :]
+        exclude = ['text_id',
+                   'kb_id',
+                   'train_mention',
+                   'label',
+                   'm_id', 'type']
+        # exclude = []
+        temp = []
+        for x in data.columns:
+            if x not in exclude: temp.append(x)
+        self.predictor = temp
+        #self.predictor = ['create_works']
+        # self.predictor = ['label_mean',
+        #  'label_count',
+        #  'm_label_mean',
+        #  'm_label_count']
+        print(len(self.predictor))
+        max_len=50
+        data['question'] = data['text_id'].apply(lambda x: test_id_to_text[int(x)][0:max_len])
+
+        def extract_info(kb):
+            if not kb['data']:
+                return '的'
+            for item in kb['data']:
+                if item['predicate']=='摘要':
+                    first_sentence = item['object'].split('。')[0]
+                    if first_sentence:
+                        return first_sentence
+            return '的'
+
+        data['answer'] = data['kb_id'].apply(lambda x: extract_info(self.kb[x])[0:max_len])
+        data['la'] = data['question'].apply(lambda x: len(x))
+        data['lb'] = data['answer'].apply(lambda x: len(x))
+        data.fillna(0,inplace=True)
+
+        for item in self.predictor:
+            if data.dtypes[item] == 'float64':
+                data[item] = data[item].astype('float32')
+            if data.dtypes[item] == 'int64':
+                data[item] = data[item].astype('int32')
+        data['label'] = -1
         return data
 
 
@@ -693,6 +703,15 @@ class DataManager(object):
                     continue
         self.enhanced_data = sentence_with_type
         return sentence_with_type
+
+    def read_eval(self):
+        sentence = []
+        with open('data/raw_data/eval722.json', 'r') as f:
+            for line in f:
+                sentence.append(eval(str(json.loads(line)).lower())['text'])
+        print('eval length %d'% len(sentence))
+        return sentence
+
 
 data_manager = DataManager()
 

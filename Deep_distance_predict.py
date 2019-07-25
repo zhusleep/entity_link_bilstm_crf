@@ -19,8 +19,8 @@ from sklearn.model_selection import KFold, train_test_split
 from sklearn.metrics import mean_squared_error as mse
 from scipy.spatial.distance import cosine as cos
 
-file_namne = 'data/step1_test.pkl'
-data_all = data_manager.deep_distance(file_namne)
+file_name = 'data/step1_test.pkl'
+data_all = data_manager.deep_distance_test(file_name)
 seed_torch(2019)
 
 BERT_MODEL = 'bert-base-chinese'
@@ -40,7 +40,7 @@ round = 0
 
 valid_dataset = deep_distance_dataset(data_all, t, max_len=510)
 
-valid_batch_size = 256
+valid_batch_size = 128
 bert_model = 'bert-base-chinese'
 from pytorch_pretrained_bert.modeling import BertModel
 

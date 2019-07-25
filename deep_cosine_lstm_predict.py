@@ -16,14 +16,18 @@ import logging
 import time
 from torch.nn import functional as F
 from sklearn.model_selection import KFold, train_test_split
+from sklearn.externals import joblib
 
-file_namne = 'data/raw_data/train.json'
-train_part, valid_part = data_manager.read_entity_embedding(file_name=file_namne,train_num=10000000)
-seed_torch(2019)
+# file_namne = 'data/raw_data/train.json'
+# train_part, valid_part = data_manager.read_entity_embedding(file_name=file_namne,train_num=10000000)
+# seed_torch(2019)
+#
+# t = Tokenizer(max_feature=10000, segment=False, lowercase=True)
+# corpus = [x[0] for x in train_part]+data_manager.read_eval()
+# t.fit(corpus)
 
-t = Tokenizer(max_feature=10000, segment=False, lowercase=True)
-corpus = [x[0] for x in train_part]
-t.fit(corpus)
+t = joblib.load('data/tokenizer.pkl')
+
 
 train_part = data_manager.read_deep_cosine_test(filename='result/el_dev_result(1).csv')
 seed_torch(2019)
