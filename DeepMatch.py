@@ -44,8 +44,8 @@ print('一共有%d 个字' % t.num_words)
 kfold = KFold(n_splits=4, shuffle=False, random_state=2019)
 pred_vector = []
 train_batch_size = 2048
+round = 0
 for train_index, test_index in kfold.split(np.zeros(len(data_all))):
-    round = 0
     model = QAModel(vocab_size=embedding_matrix.shape[0], embed_size=300, encoder_size=64, dropout=0.5,
                     seq_dropout=0.2, init_embedding=embedding_matrix, dim_num_feat=346)
 
@@ -67,8 +67,8 @@ for train_index, test_index in kfold.split(np.zeros(len(data_all))):
     valid_dataloader = DataLoader(valid_dataset, collate_fn=qapair_collate_fn, shuffle=False, batch_size=train_batch_size)
 
     loss_fn = nn.BCELoss()
-    optimizer = torch.optim.Adam(model.parameters(), lr=5e-3)
-    for epoch in range(6):
+    optimizer = torch.optim.Adam(model.parameters(), lr=2e-3)
+    for epoch in range(5):
         model.train()
         model.to(device)
         train_loss = 0
@@ -123,7 +123,7 @@ for train_index, test_index in kfold.split(np.zeros(len(data_all))):
 
         #find_best_acc(trn_preds, trn_labels)
         torch.save(model.state_dict(), 'model_type/model_type_v2_%d_%d.pth' % (round, epoch))
-        round += 1
+    round += 1
     pred_vector.append(trn_preds)
     print(len(pred_vector))
 

@@ -48,7 +48,7 @@ for r in tqdm(range(5)):
 
     model = QAModel(vocab_size=embedding_matrix.shape[0], embed_size=300, encoder_size=64, dropout=0.5,
                     seq_dropout=0.2, init_embedding=embedding_matrix, dim_num_feat=346)
-    model.load_state_dict(torch.load('model_type/model_type_%d_3.pth' % r))
+    model.load_state_dict(torch.load('model_type/model_type_v2_%d_5.pth' % r))
 
     use_cuda = True
     if use_cuda:
@@ -86,7 +86,7 @@ for r in tqdm(range(5)):
 print(len(pred_vector))
 
 pred_vector = np.concatenate(pred_vector, axis=0)
-np.save('model_type/deep_match_test.npy', pred_vector)
+np.save('model_type/deep_match_v2_test.npy', pred_vector)
 
 # 0.09
 #0.144

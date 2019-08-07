@@ -758,7 +758,7 @@ class EntityLink_entity_vector(nn.Module):
         self.use_layer = -1
         self.use_layer = -1
         hidden_size = 100
-        self.hidden = nn.Linear(4 * encoder_size, hidden_size)
+        self.hidden = nn.Linear(1536, hidden_size)
 
     def forward(self,token_tensor,mask_X,pos,vector,length):
         if self.use_bert:

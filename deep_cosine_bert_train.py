@@ -51,11 +51,12 @@ for train_index, test_index in kfold.split(np.zeros(len(train_part))):
                                   label=[x[3] for x in valid_part],
                                   use_bert=True)
 
-    train_batch_size = 128
-    valid_batch_size = 128
+    train_batch_size = 64
+    valid_batch_size = 64
 
     model = EntityLink_entity_vector(vocab_size=None, init_embedding=None,
-                       encoder_size=128, dropout=0.2, num_outputs=len(data_manager.type_list))
+                       encoder_size=128, dropout=0.2, num_outputs=len(data_manager.type_list),
+                                     use_bert=True)
     use_cuda=True
     if use_cuda:
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -155,3 +156,6 @@ for train_index, test_index in kfold.split(np.zeros(len(train_part))):
 pred_vector = np.concatenate(pred_vector, axis=0)
 np.save('entity_embedding/gensim_vector_bert.npy', pred_vector)
     # 19 train loss　0.128424, val loss 0.153328, val_cos_loss 91155.319716
+
+
+
